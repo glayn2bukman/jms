@@ -32,10 +32,11 @@ body {
     border-color:#ff0000;
 */}
 
+/*bars(menubar, bottom(submit) bar)*/
 .bars {
     position:absolute;
     
-    width:99%;
+    width:100%;
     height:6%;
     
     margin:auto;
@@ -45,6 +46,46 @@ body {
 */
 }
 
+/*menu*/
+#menu {
+    /*keep menu fixed(dont scroll it when you scroll the page)*/
+    position:fixed;
+    top:0px; left:0px;
+    background-color:#000000;
+    
+    height:4.5%;
+}
+
+.menu_item {
+    position:fixed;
+    top:0px;
+    
+    font-size:1.3em;
+    text-align:center;
+
+    margin:auto;
+    
+    border-left:1px solid;
+}
+
+#quit {
+    border:0px;
+    width:30%;
+    left:0px;
+    color:#bb0000;
+}
+#logout {
+    width:30%;
+    left:30%;
+    color:#009494;
+}
+#my_account {
+    width:40%;
+    left:60%;
+    color:#00bb00;
+}
+
+/*general input style*/
 .round_corners {
     /*create rounded corners*/
     border:1px solid;
@@ -59,20 +100,10 @@ body {
     font-size:1em;
 }
 
-#menu {
-    /*keep menu fixed(dont scroll it when you scroll the page)*/
-    position:fixed;
-    top:0px; left:0px;
-}
-
-#bottom_bar {
-    top:92.5%; left:0%;
-}
-
 /* client name*/
 #client_label {
     position: absolute;
-    top:-10px; 
+    top:-5px; 
     left:0px;
     
     width:30%;
@@ -96,7 +127,7 @@ body {
 /* client segment*/
 #segment_label {
     position: absolute;
-    top:5.5%; 
+    top:7.5%; 
     left:0px;
     
     width:30%;
@@ -313,6 +344,11 @@ body {
     color:#ffffff;
         
     font-size:.9em;
+}
+
+/*bottom bar*/
+#bottom_bar {
+    top:92.5%; left:0%;
 }
 
 .buttons {
