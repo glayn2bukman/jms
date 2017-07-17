@@ -14,7 +14,7 @@ body {
 
 .round_corners {
     /*create rounded corners*/
-    border:0px solid;
+    border:1px solid;
     border-radius:20px;
     
     /*create gradient bg*/
@@ -24,24 +24,17 @@ body {
     
     /*allow widget to occupy entire width of parent*/
     display:block;
-    width:35%;
+    width:30%;
     margin:auto; /*place element in middle of its parent*/
     
     font-size:1.1em;
-
-}
-
-#login {
-    /*create gradient bg*/
-    background: #00aa00; /*just in case the browser daint support gradients*/
-    background: linear-gradient(to left, #333333, #666666); /*attempt gradient bg*/
 }
 
 #uname, #pswd {
     /*reset some attrs of input elements*/
     color: #cccccc; 
     padding:5px;
-    width:65%;
+    width:60%;
 }
 
 #logo {
