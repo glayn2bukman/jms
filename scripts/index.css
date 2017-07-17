@@ -1,0 +1,94 @@
+body {
+    /*let font-size of all elements in body by 100% of the default
+      this way, we can specify any other font in the body relative to this ie using the "em" units
+      eg 1.5em = 150% of the body font-size. Its easier and much better to control fonts this way
+    */
+    font-size:100%
+
+    position:absolute;
+    top:0; left:0;right:0;bottom:0;
+
+/*    border:1px solid;
+    border-color:#ff0000;
+*/}
+
+.round_corners {
+    /*create rounded corners*/
+    border:1px solid;
+    border-radius:20px;
+    
+    /*create gradient bg*/
+    background: #009494; /*just in case the browser daint support gradients*/
+    background: linear-gradient(to right, #333333, #009494); /*attempt gradient bg*/
+    color:#ffffff;
+    
+    /*allow widget to occupy entire width of parent*/
+    display:block;
+    width:30%;
+    margin:auto; /*place element in middle of its parent*/
+    
+    font-size:1.1em;
+}
+
+#uname, #pswd {
+    /*reset some attrs of input elements*/
+    color: #cccccc; 
+    padding:5px;
+    width:60%;
+}
+
+#logo {
+    color: #666666;
+    font-style:bold;
+    font-size:1.6em;
+    text-align:center;
+
+    position:absolute;
+    top:15%; left:10%;
+    width:80%;
+    
+    display: block;
+    margin:auto;
+    
+/*    border:1px solid;
+    border-color:#009494;
+*/}
+
+form {
+    position:absolute;
+    top:35%;
+    left:0px;
+    
+    width: 100%;
+    height:30%;
+    
+    text-align:center;
+
+/*    border:1px solid;
+    border-color:#009494;
+*/}
+
+#jms {
+    color:#009494;
+}
+
+footer {
+    position:absolute;
+    top:95%; left:0;
+    height:5%;
+    width:98%;
+    
+    font-size:.8em; 
+
+    display:block;
+    margin:auto; 
+    
+    color:#bbbbbb; 
+    text-align:center;
+
+/*    border:1px solid;
+    border-color:#009494;
+*/}
+
+
+
