@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>SalesRep</title>
+        <link href="scripts/salesrep.css" rel="stylesheet"/>
+    </head>
+
+    <body>
+        <p class="bars" id="menu"></p>
+
+        <form id="main_form">
+            <p id="client_label">Client's Name<p>
+            <input type="text" id="client" name="client" class="round_corners" placeholder="client name" required/>
+
+            <p id="segment_label">Segment<p>
+            <input type="text" name="client_category" id="client_category" class="round_corners" placeholder="client segment" required/>
+
+            <!-- select "known client" by default -->
+            <p id="known_client_label">Known Client</p>
+            <input type="radio" name="client_known" id="known_client" value="Known Client" checked/>
+
+            <p id="new_client_label">New Client</p>
+            <input type="radio" name="client_known" id="new_client" value="New Client"/>
+    
+            <p class="section_heading" id="contact_personnel">Contact Personnel</p>
+
+            <div class="cp" id="cp1_div">
+                <input tyle="text" name="cp1_names" id="cp1_names" class="round_corners" placeholder="full names"/>
+                <input tyle="number" name="cp1_contact" id="cp1_contact" class="round_corners" placeholder="contact"/>
+                <input tyle="email" name="cp1_email" id="cp1_email" class="round_corners" placeholder="email"/>
+            </div>    
+
+            <div class="cp" id="cp2_div">
+                <input tyle="text" name="cp2_names" id="cp2_names" class="round_corners" placeholder="full names"/>
+                <input tyle="number" name="cp2_contact" id="cp2_contact" class="round_corners" placeholder="contact"/>
+                <input tyle="email" name="cp2_email" id="cp2_email" class="round_corners" placeholder="email"/>
+            </div>    
+
+            <p class="section_heading" id="orders_section">Orders</p>
+                <input tyle="number" name="og" id="og" class="round_corners" placeholder="Order Generated"/>
+                <input tyle="number" name="or" id="or" class="round_corners" placeholder="Order Received"/>
+                <input tyle="number" name="dc" id="dc" class="round_corners" placeholder="Debt Collected"/>
+
+            <p class="section_heading" id="items_promoted_section">Items Promoted</p>
+
+            <table id="items_promoted_table">
+            </table>
+
+            <textarea placeholder="remark(s)" name="remark" id="remark"/></textarea>
+
+            <p class="bars" id="bottom_bar">
+                <input type="button" value="My Reports" id="my_reports" class="buttons"/>
+                <input type="submit" value="Send Report" id="send_report" class="buttons"/>
+            </p>
+        </form>
+    
+    <script src="scripts/salesrep.js"></script>
+        
+    </body>
+    
+    </html>

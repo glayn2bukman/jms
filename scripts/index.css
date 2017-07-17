@@ -8,14 +8,16 @@ body {
     position:absolute;
     top:0; left:0;right:0;bottom:0;
 
+    background-color:#1f1212;
 /*    border:1px solid;
     border-color:#ff0000;
 */}
 
 .round_corners {
     /*create rounded corners*/
-    border:0px solid;
+    border:1px solid;
     border-radius:20px;
+    text-indent:15px;
     
     /*create gradient bg*/
     background: #009494; /*just in case the browser daint support gradients*/
@@ -28,7 +30,6 @@ body {
     margin:auto; /*place element in middle of its parent*/
     
     font-size:1.1em;
-
 }
 
 #login {
