@@ -1,16 +1,39 @@
 <?xml version='1.0' encoding='utf-8'?>
-<manifest>
-    <supports-screens android:largeScreens="true" android:normalScreens="true" android:anyDensity="true" android:smallScreens="true"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
-    <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
-</manifest>
+<widget id="com.vxxi.mobile" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
 
-<application android:label="JMS" 
-    android:debuggable="true" 
-    android:theme="@android:style/Theme.Light"
-    />
+<name>Mobile App</name>
+
+<description>Test</description>
+
+<author email="davidg@vxxi.com" href="http://www.vxxi.com">Dave</author>
+
+<content src="index.html" />
+
+<preference name="phonegap-version" value="cli-6.3.0" />
+
+<preference name="DisallowOverscroll" value="true" />
+
+<preference name="android-minSdkVersion" value="14"/>
+
+<preference name="permissions" value ="none" />
+
+<allow-navigation href="*" />
+
+<access origin="*" />
+
+<allow-intent href="http://*/*" />
+
+<allow-intent href="https://*/*" />
+
+<allow-intent href="tel:*" />
+
+<allow-intent href="sms:*" />
+
+<allow-intent href="mailto:*" />
+
+<allow-intent href="geo:*" />
+
+<allow-intent href="market:*" />
+
+</widget>
