@@ -3,7 +3,7 @@ body {
       this way, we can specify any other font in the body relative to this ie using the "em" units
       eg 1.5em = 150% of the body font-size. Its easier and much better to control fonts this way
     */
-    font-size:100%
+    font-size:100%;
 
     position:absolute;
     top:0; left:0;right:0;bottom:0;
@@ -47,7 +47,6 @@ body {
 
 #logo {
     color: #666666;
-    font-style:bold;
     font-size:1.6em;
     text-align:center;
 
