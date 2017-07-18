@@ -33,6 +33,11 @@
             <uses-permission android:name="android.permission.READ_CONTACTS" />
             <uses-permission android:name="android.permission.WRITE_CONTACTS" />
         </config-file>
+
+        <!-- Add (rather than overwrite) a config-file block -->
+        <config-file target="AndroidManifest.xml" parent="./" mode="add">
+            <application android:name="customApplication"></application>
+        </config-file>
     </platform>
 
 </widget>
