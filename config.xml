@@ -21,11 +21,14 @@
     <allow-intent href="geo:*" />
     <allow-intent href="market:*" />
 
+    <config-file target="AndroidManifest.xml" parent="/*">
+        <uses-permission android:name="android.permission.INTERNET"/>
+        <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+        <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    </config-file>
+
     <plugin name="cordova-plugin-whitelist" />
 
-     <plugin
-       name="permissions-plugin"
-       spec="./permissions-plugin"/>
 
 </widget>
 
