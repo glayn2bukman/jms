@@ -23,9 +23,11 @@
 
     <plugin name="cordova-plugin-whitelist" />
 
-     <plugin
-       name="permissions-plugin"
-       spec="./permissions-plugin"/>
+    <platform name="android">
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+        </config-file>
+    </platform>
 
 </widget>
 
