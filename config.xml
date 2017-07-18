@@ -9,7 +9,7 @@
 
     <preference name="phonegap-version" value="cli-6.3.0" />
     <preference name="DisallowOverscroll" value="true" />
-    <preference name="android-minSdkVersion" value="14"/>
+    <preference name="android-minSdkVersion" value="20"/>
     <preference name="permissions" value ="none" />
 
     <allow-navigation href="*" />
