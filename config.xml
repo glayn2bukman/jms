@@ -1,39 +1,29 @@
 <?xml version='1.0' encoding='utf-8'?>
 
 <widget id="com.vxxi.mobile" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
+    <name>JMS</name>
+    <description>JMS HTML5</description>
 
-<name>Mobile App</name>
+    <author email="bukman@jermtechnology.com" href="http://www.jermtechnology.com">JermTechnology</author>
+    <content src="index.html" />
+    <preference name="phonegap-version" value="cli-6.3.0" />
+    <preference name="DisallowOverscroll" value="true" />
+    <preference name="android-minSdkVersion" value="14"/>
+    <preference name="permissions" value ="none" />
+    <allow-navigation href="*" />
+    <access origin="*" />
 
-<description>Test</description>
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <allow-intent href="tel:*" />
+    <allow-intent href="sms:*" />
+    <allow-intent href="mailto:*" />
+    <allow-intent href="geo:*" />
+    <allow-intent href="market:*" />
 
-<author email="davidg@vxxi.com" href="http://www.vxxi.com">Dave</author>
+    <plugin name="cordova-plugin-whitelist" />
 
-<content src="index.html" />
-
-<preference name="phonegap-version" value="cli-6.3.0" />
-
-<preference name="DisallowOverscroll" value="true" />
-
-<preference name="android-minSdkVersion" value="14"/>
-
-<preference name="permissions" value ="none" />
-
-<allow-navigation href="*" />
-
-<access origin="*" />
-
-<allow-intent href="http://*/*" />
-
-<allow-intent href="https://*/*" />
-
-<allow-intent href="tel:*" />
-
-<allow-intent href="sms:*" />
-
-<allow-intent href="mailto:*" />
-
-<allow-intent href="geo:*" />
-
-<allow-intent href="market:*" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
 </widget>
