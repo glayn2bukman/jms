@@ -1,20 +1,16 @@
 <?xml version='1.0' encoding='utf-8'?>
 
-<widget id="org.jerm.jms" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
+<widget id="com.vxxi.mobile" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
     <name>JMS</name>
     <description>JMS HTML5</description>
 
     <author email="bukman@jermtechnology.com" href="http://www.jermtechnology.com">Jerm Technology</author>
     <content src="index.html" />
-
     <preference name="phonegap-version" value="cli-6.3.0" />
     <preference name="DisallowOverscroll" value="true" />
-    <preference name="android-minSdkVersion" value="20"/>
+    <preference name="android-minSdkVersion" value="14"/>
     <preference name="permissions" value ="none" />
-
     <allow-navigation href="*" />
-    
-    <!-- access specifies what xternal links the app can communicate with... -->
     <access origin="*" />
 
     <allow-intent href="http://*/*" />
