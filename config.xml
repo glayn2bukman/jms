@@ -23,5 +23,9 @@
 
     <plugin name="cordova-plugin-whitelist" />
 
+    <!-- plugins to add custom permisions -->
+    <plugin name="cordova-plugin-camera" />
+    <plugin name="cordova-plugin-geolocation" />
+
 </widget>
 
