@@ -1,4 +1,4 @@
-function handler(){
+function login_handler(){
     if (this.status===200){
         if ( this.responseText.indexOf("Error")>=0 )
         {
@@ -8,9 +8,27 @@ function handler(){
                 type: "info",
                 confirmButtonText: "Ok"
               });
+              
+           return 0;
         }
 
-        else if ( this.responseText.indexOf(";Admin")>=0 )
+        if (typeof(Storage) !== "undefined") {
+            // sing localstorage clears the data when i redirect the page...
+            var user = new USER(this.responseText);
+            localStorage.setItem("user", user);
+            
+            //so to solve this, i use a simple hack -> store my data as a string in window.name!
+            window.name = this.responseText;
+        } else {
+            swal({
+                title: "Memory Error",
+                text: "No local Storage available",
+                type: "error",
+                confirmButtonText: "Ok"
+              });
+        }
+
+        if ( this.responseText.indexOf(";Admin")>=0 )
         {
             // load admin page...        
         }
@@ -46,7 +64,7 @@ function post(){
     req.open("POST", URL+"login", true);
 
     //req.onreadystatechange = handler;
-    req.onload = handler;
+    req.onload = login_handler;
 
     
     var form = new FormData();
@@ -54,5 +72,4 @@ function post(){
     form.append("pswd", document.getElementById("pswd").value);
     req.send(form);
 }
-
 
