@@ -4,13 +4,21 @@
         <meta charset="utf-8">
         <title>Login</title>
         <link href="scripts/index.css" rel="stylesheet"/>
+
+        <!-- sweet alert -->
+        <script src="scripts/sweetalert/sweetalert.min.js"></script>
+        <link rel="stylesheet" href="scripts/sweetalert/sweetalert.css">
+
+        <script src="scripts/globals.js"></script>
+        <script src="scripts/index.js"></script>
+
     </head>
 
     <body>
 
         <p id="logo"><b id="jms">JMS</b> Reporting Tool</p>
 
-        <form>
+        <form action="javascript:post();" id="form">
             <input type="text" id="uname" class="round_corners" placeholder="Username" required/>
             <br>
             <input type="password" id="pswd" class="round_corners" placeholder="Password" required/>
@@ -21,7 +29,7 @@
         <footer>
             (Powered by <a href="http://www.jermtechnology.com" style="color:#009494">JERM Technology</a>)
         </footer>
-        
+
     </body>
     
     </html>

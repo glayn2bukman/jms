@@ -4,13 +4,19 @@
         <meta charset="utf-8">
         <title>SalesRep</title>
         <link href="scripts/salesrep.css" rel="stylesheet"/>
+        <script src="scripts/globals.js"></script>
+
+        <!-- sweet alert -->
+        <script src="scripts/sweetalert/sweetalert.min.js"></script>
+        <link rel="stylesheet" href="scripts/sweetalert/sweetalert.css">
+
     </head>
 
     <body>
         <p class="bars" id="menu">
-            <p class="menu_item" id="quit"><b>Q</b>uit</p>
-            <p class="menu_item" id="logout"><b>L</b>ogout</p>
-            <p class="menu_item" id="my_account"><b>M</b>y Account</p>
+            <p class="menu_item" id="quit" onclick="javascript:quit();"><b>Q</b>uit</p>
+            <p class="menu_item" id="logout" onclick="javascript:logout();"><b>L</b>ogout</p>
+            <p class="menu_item" id="my_account" onclick="javascript:edit_account();"><b>M</b>y Account</p>
         </p>
 
         <form id="main_form">

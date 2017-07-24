@@ -26,7 +26,7 @@
 
 
     <platform name="android">
-      <icon src="data/JMS.png" width="180" height="180" />
+      <icon src="data/JMS.png" width="48" height="48" />
       <splash src="data/JMS.png" width="180" height="180" />
     </platform>
 
