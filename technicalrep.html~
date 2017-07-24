@@ -9,7 +9,6 @@
         <script src="scripts/sweetalert/sweetalert.min.js"></script>
         <link rel="stylesheet" href="scripts/sweetalert/sweetalert.css">
 
-        <script src="scripts/globals.js"></script>
     </head>
 
     <body>
