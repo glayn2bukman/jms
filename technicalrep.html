@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>SalesRep</title>
+        <link href="scripts/technicalrep.css" rel="stylesheet"/>
+        
+        <!-- sweet alert -->
+        <script src="scripts/sweetalert/sweetalert.min.js"></script>
+        <link rel="stylesheet" href="scripts/sweetalert/sweetalert.css">
+
+    </head>
+
+    <body>
+        <p class="bars" id="menu">
+            <p class="menu_item" id="quit"><b>Q</b>uit</p>
+            <p class="menu_item" id="logout"><b>L</b>ogout</p>
+            <p class="menu_item" id="my_account"><b>M</b>y Account</p>
+        </p>
+
+        <form id="main_form">
+
+            <p class="section_heading" id="CMEs_label">CMEs Conducted &ensp; </p>
+                <select name="CMEs" id="CMEs" class="round_corners" required>
+                    <option value="one" selected>1</option>
+                    <option value="two">2</option>
+                </select>
+
+            <p  class="section_heading" id="facility_label"> Facility</p>
+                <input type="text" class="round_corners" name="facility" id="facility" placeholder="Facility" required/>
+
+            <p  class="section_heading" id="area_trained_label"> Topic Trained</p>
+                <select name="area_trained" id="area_trained" class="round_corners" required>
+                    <option value="health" selected>Health</option>
+                    <option value="educ">Education</option>
+                </select>
+
+            <p  class="section_heading" id="remark_label"> Remark</p>
+                <textarea type="text" class="round_corners" name="remark" id="remark" placeholder="Remark(s)" required/></textarea>
+
+            <input type="submit" value="Send Report" id="send_report" class="buttons"/>
+
+        </form>
+
+    <script src="scripts/technicalrep.js"></script>
+
+    </body>
+
+</html>
