@@ -24,12 +24,6 @@
     <allow-intent href="geo:*" />
     <allow-intent href="market:*" />
 
-
-    <platform name="android">
-      <icon src="data/JMS.png" width="180" height="180" />
-      <splash src="data/JMS.png" width="180" height="180" />
-    </platform>
-
     <plugin name="cordova-plugin-whitelist" />
 
     <!-- plugins to add custom permisions -->
