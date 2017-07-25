@@ -1,0 +1,24 @@
+window.onload = function() 
+{
+
+    var edit_options = [
+                        "Reports", 
+                        "Clients Visited", 
+                        "New Clients",
+                        "Products Promoted",
+                        "Debts Collected",
+                        "Topics Taught",
+                        "Field Agents",
+                        "Client Segments",
+                        "Orders"
+                        ];
+
+    for (var i=0; i<edit_options.length; i++)
+    {
+        var option = document.createElement("option");
+        option.value = edit_options[i];
+        option.innerHTML = edit_options[i];
+        document.getElementById("edit_options").appendChild(option);
+    }
+
+}

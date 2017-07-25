@@ -15,15 +15,34 @@
         <script src="scripts/sweetalert/sweetalert.min.js"></script>
         <link rel="stylesheet" href="scripts/sweetalert/sweetalert.css">
 
+        <script src="scripts/admin.js"></script>
+
     </head>
 
     <body>
         <p class="bars" id="menu">
             <p class="menu_item" id="quit" onclick="javascript:quit();"><b>Q</b>uit</p>
+            <p class="menu_item" id="accounts"><b>A</b>ccounts</p>
+            <select class="menu_item round_corners" id="edit_options" required>
+            </select>
             <p class="menu_item" id="logout" onclick="javascript:logout();"><b>L</b>ogout</p>
         </p>
+        
+        <form id="main_form">
+            <p class="section_heading" id="search_label">Search</p>
+            <p id="search_fields">
+                <input type="text" id="target" class="round_corners grey" placeholder="search entry"/>
+                <select class="round_corners grey2" id="search_category"></select>
+                <select class="round_corners grey2" id="search_duration"></select>
+                <input type="button" id="search_btn" class="round_corners black" value="Search"/>
+            </p>
+        </form>
 
-    <script src="scripts/admin.js"></script>
+        <div id="results_div"></div>
+
+        <input type="button" value="Save Results" class="round_corners black" id="save_results"/>
+        <input type="button" value="Email Results" class="round_corners black" id="email_results"/>
+
     </body>
 
 </html>

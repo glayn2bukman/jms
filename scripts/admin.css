@@ -18,6 +18,39 @@ body {
     border-color:#ff0000;
 */}
 
+/*general input style*/
+.round_corners {
+    /*create rounded corners*/
+    border:1px solid;
+    border-radius:20px;
+    text-indent:15px;
+    
+    /*create gradient bg*/
+    background: #009494; /*just in case the browser daint support gradients*/
+    background: linear-gradient(to right, #333333, #009494); /*attempt gradient bg*/
+    color:#ffffff;
+        
+    font-size:1em;
+
+    position:absolute;
+}
+
+.grey {
+    background: linear-gradient(to right, #555555, #888888); /*attempt gradient bg*/
+    text-indent:5px;
+    color:#111111;
+}
+.grey2 {
+    background: linear-gradient(to right, #777777, #aaaaaa); /*attempt gradient bg*/
+    text-indent:5px;
+    color:#111111;
+}
+.black {
+    background: linear-gradient(to right, #000000, #333333); /*attempt gradient bg*/
+    text-indent:5px;
+    color:#ffffff;
+}
+
 /*bars(menubar, bottom(submit) bar)*/
 .bars {
     position:absolute;
@@ -40,6 +73,7 @@ body {
     background-color:#000000;
     
     height:7%;
+
 }
 
 .menu_item {
@@ -57,13 +91,127 @@ body {
 
 #quit {
     border:0px;
-    width:30%;
+    width:20%;
     left:0px;
     color:#bb0000;
 }
+#accounts {
+    width:25%;
+    left:20%;
+    color:#009400;
+}
+#edit_options {
+    top:-1px;
+    width:35%;
+    left:45%;
+    color:#000000;
+    height:7.5%;
+    text-indent:0px;
+}
 #logout {
-    width:30%;
-    left:30%;
+    width:20%;
+    left:80%;
     color:#009494;
 }
+
+#main_form {
+    position:absolute;
+    left:1%;
+    top:8%;
+    
+    width:99%;
+    height:15%;
+    
+/*    border:1px solid;
+    border-color:#000000;
+*/}
+
+.section_heading {
+    position:absolute;
+    font-size:1.2em;
+    /*font-weight:bold;*/
+}
+
+#search_label {
+    top:-20px;
+    left:0px;
+    
+    width:70%;
+    height:40%;
+
+/*    border:1px solid;
+    border-color:#000000;
+*/}
+
+#search_fields {
+    position:absolute;
+    top:20%;
+    left:0px;
+    
+    width:100%;
+    height:60%;
+
+/*    border:1px solid;
+    border-color:#000000;
+*/}
+
+#results_div {
+    position:absolute;
+    top:27%;
+    left:1%;
+    
+    width:99%;
+    height:63%;
+
+    background-color:rgb(0,120,85);
+    
+    border:1px solid;
+    border-color:#009494;
+    border-radius:20px;
+
+    overflow:auto;
+
+    text-indent:2px;
+    
+    font-size:.9em;
+}
+
+#save_results {
+    top:91%;
+    left:20%;
+    height:9%;
+    
+    
+    width:25%;
+}
+#email_results {
+    top:91%;
+    left:55%;
+    height:9%;
+    
+    width:25%;
+}
+
+#target {
+    width:35%;
+    left:0px;
+}
+#search_category {
+    width:30%;
+    left:36%;
+}
+#search_duration {
+    width:20%;
+    left:66.5%;
+}
+#search_btn {
+    width:13%;
+    left:87%;
+}
+
+
+
+
+
+
 
