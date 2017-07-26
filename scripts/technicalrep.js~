@@ -33,4 +33,5 @@ function on_fail_to_locate()
 window.onload = function()
 {
     locate();
+
 }

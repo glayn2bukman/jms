@@ -24,7 +24,7 @@
             <p class="menu_item" id="my_account" onclick="javascript:edit_account();"><b>M</b>y Account</p>
         </p>
 
-        <form id="main_form">
+        <form id="main_form" action="javascript:submit_report();">
             <p id="client_label">Client's Name<p>
             <input type="text" id="client" name="client" class="round_corners" placeholder="client name" required/>
 
@@ -48,21 +48,21 @@
             <p class="section_heading" id="contact_personnel">Contact Personnel</p>
 
             <div class="cp" id="cp1_div">
-                <input tyle="text" name="cp1_names" id="cp1_names" class="round_corners" placeholder="full names"/>
-                <input tyle="number" name="cp1_contact" id="cp1_contact" class="round_corners" placeholder="contact"/>
-                <input tyle="email" name="cp1_email" id="cp1_email" class="round_corners" placeholder="email"/>
+                <input type="text" name="cp1_names" id="cp1_names" class="round_corners" placeholder="full names" required/>
+                <input type="number" name="cp1_contact" id="cp1_contact" class="round_corners" placeholder="contact" required/>
+                <input type="email" name="cp1_email" id="cp1_email" class="round_corners" placeholder="email"/>
             </div>    
 
             <div class="cp" id="cp2_div">
-                <input tyle="text" name="cp2_names" id="cp2_names" class="round_corners" placeholder="full names"/>
-                <input tyle="number" name="cp2_contact" id="cp2_contact" class="round_corners" placeholder="contact"/>
-                <input tyle="email" name="cp2_email" id="cp2_email" class="round_corners" placeholder="email"/>
+                <input type="text" name="cp2_names" id="cp2_names" class="round_corners" placeholder="full names"/>
+                <input type="number" name="cp2_contact" id="cp2_contact" class="round_corners" placeholder="contact"/>
+                <input type="email" name="cp2_email" id="cp2_email" class="round_corners" placeholder="email"/>
             </div>    
 
             <p class="section_heading" id="orders_section">Orders</p>
-                <input tyle="number" name="og" id="og" class="round_corners" placeholder="Order Generated"/>
-                <input tyle="number" name="or" id="or" class="round_corners" placeholder="Order Received"/>
-                <input tyle="number" name="dc" id="dc" class="round_corners" placeholder="Debt Collected"/>
+                <input type="number" name="og" id="og" class="round_corners" placeholder="Order Generated" required/>
+                <input type="number" name="or" id="or" class="round_corners" placeholder="Order Received" required/>
+                <input type="number" name="dc" id="dc" class="round_corners" placeholder="Debt Collected" required/>
 
             <p class="section_heading" id="items_promoted_section">Items Promoted</p>
 
@@ -87,7 +87,7 @@
                 <input type="button" id="remove_promotional_item" class="promotional_items_buttons" />
                 <input type="button" id="add_promotional_item" class="promotional_items_buttons" />
 
-            <textarea placeholder="remark(s)" name="remark" id="remark"/></textarea>
+            <textarea placeholder="remark(s)" name="remark" id="remark" required/></textarea>
 
             <p class="bars" id="bottom_bar">
                 <input type="button" value="My Reports" id="my_reports" class="buttons"/>

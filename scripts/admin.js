@@ -68,7 +68,7 @@ function add_item_handler()
             swal({
                 title: "Data Update",
                 text: "sucessfully updated "+this.title,
-                type: "info",
+                type: "success",
                 confirmButtonText: "Ok"
               });
         }
@@ -101,31 +101,6 @@ function delete_item_handler()
           });
     }
 
-}
-
-function change_date(date)
-// change date from DD/MM/YYYY to YYYYMMDD
-{
-    var dmy = date.split("/");
-    var changed_date = dmy[2];
-    
-    if (dmy[1].length==1){changed_date += "0"+dmy[1];}
-    else {changed_date += dmy[1];}
-
-    if (dmy[0].length==1){changed_date += "0"+dmy[0];}
-    else {changed_date += dmy[0];}
-
-    return changed_date;
-}
-
-function change_figure(figure)
-// change money from xx,xxx,xxx,.... to xxxxxxxxxxx...
-{
-    var figures = figure.split(",");
-    var changed_figure = "";
-    for (var i=0; i<figures.length; i++) {changed_figure += figures[i];}
-    
-    return changed_figure;
 }
 
 function update_data()

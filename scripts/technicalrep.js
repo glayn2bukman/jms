@@ -1,37 +1,48 @@
-function locate() 
-{
-    if (navigator.geolocation) 
-    {
-        navigator.geolocation.getCurrentPosition(on_locate);
-    } else 
-    {
-        on_fail_to_locate();
-    }
-}
+
 function on_locate(position) {
-    msg = "Latitude: " + position.coords.latitude +
-    "\nLongitude: " + position.coords.longitude;
+    var lat = ""+position.coords.latitude, lon = ""+position.coords.longitude;
+    swal.close();
 
-    swal({
-        title: "gps info!",
-        text: msg,
-        type: "info",//"error",
-        confirmButtonText: "sawa..."
-    });
+    var user = new USER(window.name); //uname -> user.uname
+
+    var now = new Date();
+    var date = now.getDate()+"/"+(now.getMonth()+1)+"/"+now.getFullYear(); 
+    date = change_date(date);
+    
+    var t = now.getHours()+":"+now.getMinutes();
+    t = change_time(t);
+    
+    var form = new FormData();
+    form.append("uname", user.uname);
+    form.append("CMEs", parseInt(document.getElementById("CMEs").value));
+    form.append("facility", document.getElementById("facility").value);
+    form.append("date", date);
+    form.append("time", t);
+    form.append("lat", lat);
+    form.append("lon", lon);
+    form.append("area_trained", document.getElementById("area_trained").value);
+    form.append("remark", document.getElementById("remark").value);
+
+    var req = new XMLHttpRequest();
+    
+    req.open("POST", URL+"technical_report", true);
+
+    req.home_link = "technicalrep.html";
+    req.onload = report_handler;
+
+    req.send(form);
+
+    // clear widgets
+    document.getElementById("facility").value = "";
+    document.getElementById("remark").value = "";
 }
 
-function on_fail_to_locate()
-{
-    swal({
-        title: "gps info!",
-        text: "Failed to get gps location...",
-        type: "error",
-        confirmButtonText: "easy..."
-    });
-}
+function submit_report(){locate();}
 
-window.onload = function()
-{
-    locate();
+window.onload = function(){}
 
-}
+
+
+
+
+
