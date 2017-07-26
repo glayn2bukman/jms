@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Users</title>
+
+        <script>
+            screen.orientation.lock('landscape');
+        </script>
+
+        <link href="scripts/users.css" rel="stylesheet"/>
+        <script src="scripts/globals.js"></script>
+
+        <!-- sweet alert -->
+        <script src="scripts/sweetalert/sweetalert.min.js"></script>
+        <link rel="stylesheet" href="scripts/sweetalert/sweetalert.css">
+
+        <script src="scripts/users.js"></script>
+
+    </head>
+
+    <body>
+
+        <div class="section_heading" id="user_acounts">User Accounts</div>
+
+        <div id="results_div"></div>
+
+        <input type="button" value="Add User" class="round_corners green" id="add_user" onclick="javascript:add_user();"/>
+        <input type="button" value="Done" class="round_corners black" id="done" onclick="javascript:done();"/>
+
+    </body>
+
+</html>

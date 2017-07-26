@@ -15,20 +15,32 @@
         <script src="scripts/sweetalert/sweetalert.min.js"></script>
         <link rel="stylesheet" href="scripts/sweetalert/sweetalert.css">
 
-        <script src="scripts/admin.js"></script>
+
+        <link rel="stylesheet" href="scripts/calendar/calendar.css">
+        <script src="scripts/calendar/pikaday.js">
+            /*
+                to use the calendar;
+                <input class="auto-kal [other classes...]" readonly/>
+            */
+        </script>
+
+        <script src="scripts/admin.js">
+            // our admin.js sript uses calendar.js for datepicker so we call it after calling calendar.js
+        </script>
+        
 
     </head>
 
     <body>
-        <p class="bars" id="menu">
-            <p class="menu_item" id="quit" onclick="javascript:quit();"><b>Q</b>uit</p>
-            <p class="menu_item" id="accounts"><b>A</b>ccounts</p>
-            <select class="menu_item round_corners" id="edit_options" required>
+        <p class="bars underneath" id="menu">
+            <p class="menu_item underneath" id="quit" onclick="javascript:quit();"><b>Q</b>uit</p>
+            <p class="menu_item underneath" id="accounts" onclick="javascript:accounts();"><b>A</b>ccounts</p>
+            <select class="menu_item round_corners underneath" id="edit_options" required>
             </select>
-            <p class="menu_item" id="logout" onclick="javascript:logout();"><b>L</b>ogout</p>
+            <p class="menu_item underneath" id="logout" onclick="javascript:logout();"><b>L</b>ogout</p>
         </p>
         
-        <form id="main_form">
+        <form id="main_form" class="underneath">
             <p class="section_heading" id="search_label">Search</p>
             <p id="search_fields">
                 <input type="text" id="target" class="round_corners grey" placeholder="search entry"/>
@@ -38,10 +50,12 @@
             </p>
         </form>
 
-        <div id="results_div"></div>
+        <div id="results_div" class="underneath"></div>
 
-        <input type="button" value="Save Results" class="round_corners black" id="save_results"/>
-        <input type="button" value="Email Results" class="round_corners black" id="email_results"/>
+        <input type="button" value="Save Results" class="round_corners black  underneath" id="save_results"/>
+        <input type="button" value="Email Results" class="round_corners black  underneath" id="email_results"/>
+
+        <div id="edit_div" class="top"></div>
 
     </body>
 

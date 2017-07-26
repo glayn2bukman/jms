@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Add User</title>
+
+        <script>
+            screen.orientation.lock('landscape');
+        </script>
+
+        <link href="scripts/add_user.css" rel="stylesheet"/>
+        <script src="scripts/globals.js"></script>
+
+        <!-- sweet alert -->
+        <script src="scripts/sweetalert/sweetalert.min.js"></script>
+        <link rel="stylesheet" href="scripts/sweetalert/sweetalert.css">
+
+        <script src="scripts/add_user.js"></script>
+
+    </head>
+
+    <body>
+
+        <div id="new_user_div">
+            <form id="entries">
+                <input type="text" id="uname" class="round_corners" placeholder="Username" required/>
+                <input type="text" id="pswd" class="round_corners" placeholder="Password" required/>
+                <select id="account_type" class="round_corners"> </select>
+            </form>
+        </div>
+
+        <input type="button" value="Add User" class="round_corners green" id="add_user" onclick="javascript:add_user();"/>
+        <input type="button" value="Cancel" class="round_corners red" id="cancel" onclick="javascript:cancel();"/>
+
+    </body>
+
+</html>
