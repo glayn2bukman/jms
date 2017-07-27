@@ -8,6 +8,8 @@ var _ROW_HEIGHT = 13; // row height in the items_div inside edit_div
 var ITEMS_ADDED = 0; /* when updating items(emails, training topics, etc) they are added sequentially
                         rather than all at once*/
 
+var RESULTS_ROW_HEIGHT = 8; // height of each row in "results_div"->"results_data"
+
 function leave_edit()
 {
     swal.close(); // close any open sweetalerts
@@ -460,27 +462,27 @@ function set_date()
     // ["Search Duration","Today", "Past Week", "Past Month", "Other"]
     if (this.value=="Search Duration"){return 0;}
     
-        // make dates in American style ie: MM/DD/YYYY
+        // make dates in DD/MM/YYYY style
         // i did this because the datepicker i used has this as default...
     if (this.value=="Today")
     {
         var today = new Date();
-        SEARCH_DURATION[0] = today.getMonth()+1+"/"+today.getDate()+"/"+today.getFullYear(); 
-        SEARCH_DURATION[1] = today.getMonth()+1+"/"+today.getDate()+"/"+today.getFullYear(); 
+        SEARCH_DURATION[0] = today.getDate()+"/"+(today.getMonth()+1)+"/"+today.getFullYear(); 
+        SEARCH_DURATION[1] = today.getDate()+"/"+(today.getMonth()+1)+"/"+today.getFullYear(); 
     }
     else if (this.value=="Past Week")
     {
         var today = new Date(), pastweek = new Date();
         pastweek.setDate(pastweek.getDate()-7);
-        SEARCH_DURATION[0] = pastweek.getMonth()+1+"/"+pastweek.getDate()+"/"+pastweek.getFullYear(); 
-        SEARCH_DURATION[1] = today.getMonth()+1+"/"+today.getDate()+"/"+today.getFullYear(); 
+        SEARCH_DURATION[0] = pastweek.getDate()+"/"+(pastweek.getMonth()+1)+"/"+pastweek.getFullYear(); 
+        SEARCH_DURATION[1] = today.getDate()+"/"+(today.getMonth()+1)+"/"+today.getFullYear(); 
     }
     else if (this.value=="Past Month")
     {
         var today = new Date(), pastmonth = new Date();
         pastmonth.setDate(pastmonth.getDate()-30);
-        SEARCH_DURATION[0] = pastmonth.getMonth()+1+"/"+pastmonth.getDate()+"/"+pastmonth.getFullYear(); 
-        SEARCH_DURATION[1] = today.getMonth()+1+"/"+today.getDate()+"/"+today.getFullYear(); 
+        SEARCH_DURATION[0] = pastmonth.getDate()+"/"+(pastmonth.getMonth()+1)+"/"+pastmonth.getFullYear(); 
+        SEARCH_DURATION[1] = today.getDate()+"/"+(today.getMonth()+1)+"/"+today.getFullYear(); 
     }
     else {SEARCH_DURATION=[];}
 
@@ -614,6 +616,271 @@ function edit_field()
     req.send(null);
 }
 
+function search_db_handler()
+{
+    if (this.status===200)
+    {    
+        results = JSON.parse(this.responseText);
+        
+        if (results.length==0)
+        {
+            swal({
+                title: "Server Reply",
+                text: "no results found",
+                type: "info",
+                confirmButtonText: "Ok"
+            });
+            
+            return 0;
+        }
+
+        stop_connecting();
+        // clear "results_cols" and "results_data" then populate data...
+        clear("results_cols");
+        clear("results_data");
+        
+        // do some primary processingon the data...
+        if (this.search_category=="Products Promoted")
+        {
+            var _results = [];
+            for (var row=0; row<results.length; row++)
+            {
+                var _row = [];
+                for (var col=0; col<results[row].length-1; col++){_row[col]=results[row][col];}
+                var items = (results[row][results[row].length-1]).split(";");
+                for (var i=0; i<items.length; i++)
+                {
+                    var item = items[i].split(":");
+                    var __row = [];
+                    __row[0] = item[0];
+                    __row[1] = parseInt(item[1]);
+                    __row[2] = parseInt(item[2]);
+                    
+                    _results[row] = _row.concat(__row);
+                }
+            }
+            
+            results = _results;
+        }
+        
+        var results_cols = document.getElementById("results_cols");
+        var results_data = document.getElementById("results_data");
+
+        // draw respective column titles...
+        for (var col=0, xpos=0; col<this.cols.length; col++)
+        {
+            var div = document.createElement("div");
+            div.innerHTML = this.cols[col][0];
+            div.style.position = "absolute";
+            div.style.left = xpos+"%";
+            div.style.width = this.cols[col][1]+"%";
+            xpos += this.cols[col][1];
+            
+            results_cols.appendChild(div);
+        }
+
+        // now populate data...
+        for (var row=0; row<results.length; row++)
+        {
+            for (var col=0, xpos=0; col<this.cols.length; col++)
+            {
+                var div = document.createElement("div");
+
+                if (col==0)
+                {
+                    var date = results[row][col];
+                    div.innerHTML = date.slice(6,8)+"-"+date.slice(4,6)+"-"+date.slice(0,4);
+                }
+                else {div.innerHTML = results[row][col];}
+                
+                div.style.position = "absolute";
+                div.style.top = (row*RESULTS_ROW_HEIGHT)+"%";
+                div.style.left = xpos+"%";
+                div.style.width = this.cols[col][1]+"%";
+                xpos += this.cols[col][1];
+                
+                results_data.appendChild(div);
+            }
+        }
+        
+    }
+    else
+    {
+        swal({
+            title: "Server Error",
+            text: "error: "+this.status+"; "+this.responseText,
+            type: "error",
+            confirmButtonText: "Ok"
+          });
+    }
+
+}
+
+function search_db()
+{
+    if (SEARCH_DURATION.length==0)
+    {
+        swal({
+        title: "Search Error",
+        text: "please select search duration",
+        type: "info",
+        confirmButtonText: "Ok"
+      });
+        return 0;
+    }
+
+    if (document.getElementById("search_category").value=="Search Category")
+    {
+        swal({
+        title: "Search Error",
+        text: "please select a search category",
+        type: "info",
+        confirmButtonText: "Ok"
+      });
+        return 0;
+    }
+
+    // create request and send it...
+    var req = new XMLHttpRequest();
+    var url = "";
+    
+    var search_category = document.getElementById("search_category").value;
+
+    req.search_category = search_category;
+
+    if (search_category=="Clients Visited")
+    {
+        req.cols = [
+            // [col_title, %width]
+            ["Date", 16],
+            ["Time", 16],
+            ["Agent", 20],
+            ["Client",48]
+        ];
+                
+        url = "clients_visited_report";
+    }
+    else if (search_category=="Debts Collected")
+    {
+        req.cols = [
+            // [col_title, %width]
+            ["Date", 16],
+            ["Time", 12],
+            ["Agent", 18],
+            ["Client",42],
+            ["D.C", 12]
+        ];
+        
+        url = "debts_collected_report";
+    }
+    else if (search_category=="Products Promoted")
+    {
+        req.cols = [
+            // [col_title, %width]
+            ["Date", 16],
+            ["Time", 12],
+            ["Agent", 18],
+            ["Item",32],
+            ["Qty", 10],
+            ["Amount", 12]
+        ];
+        
+        url = "products_promoted_report";
+    }
+    else if (search_category=="Client Segments")
+    {
+        req.cols = [
+            // [col_title, %width]
+            ["Date", 16],
+            ["Time", 12],
+            ["Agent", 18],
+            ["Client",42],
+            ["Segmnt", 12]
+        ];
+        
+        url = "clients_segments_report";
+    }
+    else if (search_category=="New Clients")
+    {
+        req.cols = [
+            // [col_title, %width]
+            ["Date", 16],
+            ["Time", 16],
+            ["Agent", 20],
+            ["Client",48],
+        ];
+        
+        url = "new_clients_report";
+    }
+    else if (search_category=="Orders")
+    {
+        req.cols = [
+            // [col_title, %width]
+            ["Date", 16],
+            ["Time", 12],
+            ["Agent", 18],
+            ["Client",30],
+            ["O.G",12],
+            ["O.R", 12]
+            
+        ];
+        
+        url = "orders_report";
+    }
+    else if (search_category=="Topics Taught")
+    {
+        req.cols = [
+            // [col_title, %width]
+            ["Date", 16],
+            ["Time", 12],
+            ["Agent", 18],
+            ["Facility",38],
+            ["Topic",16]            
+        ];
+        
+        url = "topics_taughed_report";
+    }
+    else if (search_category=="Field Agents")
+    {
+        req.cols = [
+            // [col_title, %width]
+            ["Date", 20],
+            ["Time", 20],
+            ["Agent", 60]
+        ];
+        
+        url = "agents_report";
+    }
+    else if (search_category=="Reports")
+    {
+        req.cols = [
+            // [col_title, %width]
+            ["Date", 16],
+            ["Time", 16],
+            ["Agent", 20],
+            ["Client", 48]
+        ];
+        
+        url = "clients_visited_report";
+    }
+    
+
+    req.onload = search_db_handler;
+
+    req.open("POST", URL+url, true);
+
+    var form = new FormData();
+    var search_from = change_date(SEARCH_DURATION[0]), search_to = change_date(SEARCH_DURATION[1]);
+    form.append("target", document.getElementById("target").value);
+    form.append("from", search_from);
+    form.append("to", search_to)
+
+    req.send(form);
+
+    start_connecting("searching...");
+
+}
+
 window.onload = function() 
 {
     // hide edit_div
@@ -666,7 +933,9 @@ window.onload = function()
 
     // deactivate "results" buttons ...
     deactivate_results_buttons();
-    
+
+    // bind "search" button
+    document.getElementById("search_btn").onclick = search_db;
 }
 
 

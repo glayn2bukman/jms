@@ -179,8 +179,6 @@ body {
     border-color:#009494;
     border-radius:20px;
 
-    overflow:auto;
-
     text-indent:2px;
     
     font-size:.9em;
@@ -245,7 +243,33 @@ body {
     height:100%;
 }
 
+#results_cols {
+    position:absolute;
+    top:0%;
+    left:1%;
+    width:98%;
+    height:10%;
+    
+/*    border:1px solid;
+*/    
+    font-size:1.3em;
+    color:#111111;
+}
 
+#results_data {
+    position:absolute;
+    top:10%;
+    left:1%;
+    width:98%;
+    height:90%;
+    
+/*    border:1px solid;
+*/    
+    overflow:auto;
+    
+    font-size:1.1em;
+    color:#003355;
+}
 
 
 
