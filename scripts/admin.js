@@ -691,7 +691,11 @@ function search_db_handler()
                     var date = results[row][col];
                     div.innerHTML = date.slice(6,8)+"-"+date.slice(4,6)+"-"+date.slice(0,4);
                 }
-                else {div.innerHTML = results[row][col];}
+                else 
+                {
+                    if (!isNaN(results[row][col])) {div.innerHTML = convert_figure_to_human_readable(results[row][col]);}
+                    else {div.innerHTML = results[row][col];}
+                }
                 
                 div.style.position = "absolute";
                 div.style.top = (row*RESULTS_ROW_HEIGHT)+"%";
@@ -702,6 +706,8 @@ function search_db_handler()
                 results_data.appendChild(div);
             }
         }
+        
+        document.getElementById("n_results_found").innerHTML = "<b>"+results.length+"</b> result(s) found";
         
     }
     else
@@ -739,6 +745,8 @@ function search_db()
       });
         return 0;
     }
+
+    clear("n_results_found");
 
     // create request and send it...
     var req = new XMLHttpRequest();
@@ -936,6 +944,7 @@ window.onload = function()
 
     // bind "search" button
     document.getElementById("search_btn").onclick = search_db;
+
 }
 
 

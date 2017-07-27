@@ -9,6 +9,34 @@ function clear(mom)
     }
 }
 
+function convert_figure_to_human_readable(figure)
+// this is my initial conception of this function. am sure it can be made more efficient(not that it isnt!)
+{
+    var fig = (""+figure).split("");
+    fig.reverse();
+    
+    var _fig = [];
+    
+    while (fig.length>0)
+    {
+        if (fig.length>3)
+        {
+            _fig = _fig.concat(  (fig.slice(0,3)).concat([","])   );
+            fig = fig.slice(3, fig.length);
+        }
+        else
+        {
+            _fig = _fig.concat(fig);
+            fig = []; // force termination of loop
+        }
+    }
+    
+    _fig.reverse();
+    var human_readable = "";
+    for (var i=0; i<_fig.length; i++) {human_readable += _fig[i];}
+    return human_readable;
+}
+
 function logout()
 {
 /*    if(confirm("Logout?")) {window.location.href="index.html";}
