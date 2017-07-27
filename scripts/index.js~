@@ -31,6 +31,7 @@ function login_handler(){
         if ( this.responseText.indexOf(";Admin")>=0 )
         {
             // load admin page...        
+            window.location.href = "admin.html";
         }
 
         else if ( this.responseText.indexOf(";SalesRep")>=0 )

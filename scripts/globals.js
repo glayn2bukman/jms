@@ -66,7 +66,7 @@ function edit_account_handler()
 {
     if (this.status===200)
     {    
-        //stop_connecting(); // not needed as slat(...) will close any exixsting sweetalert first...
+        //stop_connecting(); // not needed as slat(...) will close any exixsting sweetalert first..
     
         swal({
             title: "Password reset info",

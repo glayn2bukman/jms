@@ -10,6 +10,8 @@ var ITEMS_ADDED = 0; /* when updating items(emails, training topics, etc) they a
 
 function leave_edit()
 {
+    swal.close(); // close any open sweetalerts
+    
     document.getElementById("edit_div").style.visibility = "hidden";
     // ******************************************************************
     var underneath = document.getElementsByClassName("underneath");
@@ -57,12 +59,16 @@ function add_item_handler()
         ITEMS_ADDED += 1;
         if (ITEMS_ADDED==this.total_items_to_send)
         {
+            // stop_connecting(); called automaticaly when new swal is called...            
             swal({
                 title: "Data Update",
                 text: "sucessfully updated "+this.title,
                 type: "success",
-                confirmButtonText: "Ok"
-              });
+                confirmButtonText: "Ok",
+                closeOnConfirm: false
+                },
+                leave_edit
+                );
         }
     }
     else
@@ -146,11 +152,18 @@ function update_data()
     }
 
     // first delete all items ...(consumes data i admit, look at it when upgrading the JMS HTML app!)
+    start_connecting("reaching server...");
     for (var i=0; i<this.field.data.length; i++)
     {
         var req = new XMLHttpRequest();
         
-        req.open("POST", URL+delete_url[0], true);
+        req.open("POST", URL+delete_url[0], false); /* request is blocking...
+             this will ensure that we leave this for-block
+             only when all items have been deleted from db...
+             if we dont make it blocking, an item might be deleted while also 
+             being added at the same time in the db as both deleting $ adding 
+             would be async. you dont want this, trust me!
+                                                     */
 
         req.total_items_to_send = children.length/L;
         req.title = this.field.data[i][0];
@@ -161,6 +174,8 @@ function update_data()
         req.send(form);
     }
 
+    stop_connecting();
+    
     // add items...
     var form = new FormData();
     var L = this.field.cols.length+1; // we add one coz there is an excess col(delete-row btn)
@@ -195,7 +210,7 @@ function update_data()
             form.append(add_url[item_index%L], children[item_index].value);
         }
 
-        if ((item_index%L)==(children.length/L -1))
+        if ( (item_index+1)%L== 0) // row-completion logic...
         // submit the generated form to the add_url
         {
             var req = new XMLHttpRequest();
@@ -207,6 +222,8 @@ function update_data()
             req.onload = add_item_handler;
 
             req.send(form);
+
+            start_connecting("updating database...");
 
             form = new FormData();
         }
