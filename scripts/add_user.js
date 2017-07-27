@@ -50,6 +50,8 @@ function add_user()
     form.append("pswd", pswd);
     form.append("account_type", account_type);
     req.send(form);
+    
+    start_connecting("adding user...");
 
 }
 
