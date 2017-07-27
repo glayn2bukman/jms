@@ -1,7 +1,7 @@
 
 function on_locate(position) {
     var lat = ""+position.coords.latitude, lon = ""+position.coords.longitude;
-    swal.close();
+    stop_connecting(); //close the "getting gps location..." swal
 
     var user = new USER(window.name); //uname -> user.uname
 
@@ -9,7 +9,7 @@ function on_locate(position) {
     var date = now.getDate()+"/"+(now.getMonth()+1)+"/"+now.getFullYear(); 
     date = change_date(date);
     
-    var t = now.getHours()+":"+now.getMinutes();
+    var t = now.getHours()+":"+now.getMinutes()+":"+now.getSeconds();
     t = change_time(t);
     
     var form = new FormData();

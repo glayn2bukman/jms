@@ -80,7 +80,7 @@
                             <td class="promotional_item">25</td>
                             <td class="promotional_item">126,600,000</td>
                         </tr>
-                    -->
+                     -->
                 </table>
             </div>
 
@@ -94,9 +94,21 @@
                 <input type="submit" value="Send Report" id="send_report" class="buttons"/>
             </p>
         </form>
+
+        <div id="my_reports_div">
+            <div id="my_reports_heading">My Reports</div>
+            <select id="report_date" class="round_corners green">
+                <option value="date" style="visibility:hidden; text-indent:5px;">Report Date</option>
+                <option value="todays">Today's Reports</option>
+                <option value="yesterdays">Yesterday's Reports</option>
+            </select>
+            <div id="time_col">Time</div>
+            <div id="client_col">Client/Facility</div>
+
+            <div id="loaded_reports_div"></div>
+        </div>
     
-    <script src="scripts/salesrep.js"></script>
-        
+        <script src="scripts/salesrep.js"></script>
     </body>
     
     </html>

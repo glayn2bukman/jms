@@ -1,3 +1,5 @@
+var REPORT_ROW_HEIGHT = 8; // used when salesrep wants to edit their existing report
+var EDITING = []; // empty if not editing report, otherwise [uname,date,time,lat,lon]
 
 function check_known_client(){
     document.getElementById("known_client").checked = true;
@@ -8,16 +10,24 @@ function check_new_client(){
 
 function on_locate(position) {
     var lat = ""+position.coords.latitude, lon = ""+position.coords.longitude;
-    swal.close();
+    
+    stop_connecting(); //close the "getting gps location..." swal
 
     var user = new USER(window.name); //uname -> user.uname
 
-    var now = new Date();
-    var date = now.getDate()+"/"+(now.getMonth()+1)+"/"+now.getFullYear(); 
-    date = change_date(date);
-    
-    var t = now.getHours()+":"+now.getMinutes();
-    t = change_time(t);
+    if (EDITING.length>0)
+    {
+        var date = EDITING[1], t = EDITING[2];
+    }
+    else
+    {
+        var now = new Date();
+        var date = now.getDate()+"/"+(now.getMonth()+1)+"/"+now.getFullYear(); 
+        date = change_date(date);
+        
+        var t = now.getHours()+":"+now.getMinutes()+":"+now.getSeconds();
+        t = change_time(t);
+    }
     
     // known-client ...
     var known_client = "";
@@ -50,9 +60,9 @@ function on_locate(position) {
 
     var req = new XMLHttpRequest();
     
-    req.open("POST", URL+"report", true);
+    if (EDITING.length>0) {req.open("POST", URL+"edit_report", true);}
+    else {req.open("POST", URL+"report", true);}
 
-    req.home_link = "technicalrep.html";
     req.onload = report_handler;
 
     req.send(form);
@@ -71,13 +81,227 @@ function on_locate(position) {
     document.getElementById("dc").value = "";
     document.getElementById("remark").value = "";
     // clear the "items-promoted section too" here
-}
+    
+    document.getElementById("send_report").value = "Send Report";
 
+    EDITING = [];
+}
 
 function submit_report(){locate();}
 
+function fetch_specific_report_handler()
+{
+    if (this.status===200)
+    {
+        stop_connecting();
+        report = JSON.parse(this.responseText);
+
+/* report::
+      0   uname varchar(30),
+      1   date varchar(8),
+      2   time varchar(8),
+      3   client varchar(50),
+      4   lat varchar(12),
+      5   lon varchar(12),
+      6   client_category varchar(15),
+      7   client_old varchar(3),
+      8   contact_people varchar(120),
+      9   order_generated int,
+      10  order_received int,
+      11  debt_collected int,
+      12  products_promoted varchar(500),
+      13  remark varchar(300)
+*/
+
+        EDITING = [report[0], report[1], report[2],report[4], report[5]];
+
+        // populate fields...
+        document.getElementById("client").value = report[3];
+        document.getElementById("client_category").value = report[6];
+        if (report[7]=="yes") 
+        {
+            document.getElementById("known_client").checked = true;
+            document.getElementById("new_client").checked = false;
+        }
+        else 
+        {
+            document.getElementById("known_client").checked = false;
+            document.getElementById("new_client").checked = true;
+        }
+        document.getElementById("og").value = report[9];
+        document.getElementById("or").value = report[10];
+        document.getElementById("dc").value = report[11];
+        document.getElementById("remark").value = report[13];
+
+        var cp1="::", cp2="::";
+        if (report[8].indexOf(";")>=0)
+        // we got two contact people...
+        {
+          var cps = report[8].split(";");
+          cp1 = cps[0]; 
+          cp2 = cps[1];  
+        }
+        else 
+        // one contact person...
+        {cp1 = report[8];}
+        
+        var cp1_details = cp1.split(":"), cp2_details = cp2.split(":");
+        
+        document.getElementById("cp1_names").value = cp1_details[0];
+        document.getElementById("cp1_contact").value = cp1_details[1];
+        document.getElementById("cp1_email").value = cp1_details[2];
+        document.getElementById("cp2_names").value = cp2_details[0];
+        document.getElementById("cp2_contact").value = cp2_details[1];
+        document.getElementById("cp2_email").value = cp2_details[2];
+
+        // load "items-promoted" too
+
+        document.getElementById("my_reports_div").style.visibility = "hidden";
+
+        document.getElementById("send_report").value = "Update Report";
+    }
+    else
+    {
+        swal({
+            title: "Server Error",
+            text: "error: "+this.status+"; "+this.responseText,
+            type: "error",
+            confirmButtonText: "Ok"
+          });
+    }
+
+}
+
+function fetch_specific_report()
+{
+    var user = new USER(window.name);
+    
+    // generate and send request to fetch the report...
+    var req = new XMLHttpRequest();
+    
+    req.open("POST", URL+"agent_specific_report", true);
+
+    req.onload = fetch_specific_report_handler;
+
+    var form = new FormData();
+    form.append("time", this.time_stamp);
+    form.append("agent", user.uname);
+
+    req.send(form);
+    start_connecting("fetching report...");
+}
+
+function load_reports_handler()
+{
+    if (this.status===200)
+    {
+        stop_connecting();
+        reports = JSON.parse(this.responseText);
+
+        clear("loaded_reports_div");
+
+        for (var i=0; i<reports.length; i++)
+        {
+            var time_value = document.createElement("div");
+            time_value.setAttribute("class", "time_value");
+            time_value.innerHTML = reports[i][0];
+            time_value.style.top = (i*REPORT_ROW_HEIGHT)+"%";
+
+            var client_value = document.createElement("div");
+            client_value.setAttribute("class", "client_value");
+            client_value.innerHTML = reports[i][1];
+            client_value.style.top = (i*REPORT_ROW_HEIGHT)+"%";
+            
+            client_value.time_stamp = reports[i][0]; //used when fetching this report...
+            client_value.onclick = fetch_specific_report;
+
+            document.getElementById("loaded_reports_div").appendChild(time_value);
+            document.getElementById("loaded_reports_div").appendChild(client_value);
+
+        }
+    }
+    else
+    {
+        swal({
+            title: "Server Error",
+            text: "error: "+this.status+"; "+this.responseText,
+            type: "error",
+            confirmButtonText: "Ok"
+          });
+    }
+
+}
+
+function load_reports()
+{
+    var date = this.value;
+    if (date=="todays")
+    {
+        var today = new Date();
+        date = today.getDate()+"/"+(today.getMonth()+1)+"/"+today.getFullYear();
+    }
+    else if (date=="yesterdays")
+    {
+        var today = new Date();
+        today.setDate(today.getDate()-1);
+        date = today.getDate()+"/"+(today.getMonth()+1)+"/"+today.getFullYear();
+    }
+
+    date = change_date(date);
+    var user = new USER(window.name);
+
+    // generate and send request
+    var req = new XMLHttpRequest();
+    
+    req.open("POST", URL+"agent_reports", true);
+
+    req.onload = load_reports_handler;
+
+    var form = new FormData();
+    form.append("agent", user.uname);
+    form.append("date", date);
+
+    req.send(form);
+    start_connecting();
+
+}
+
 window.onload = function()
-                {
-                    document.getElementById("known_client_label").onclick = check_known_client;
-                    document.getElementById("new_client_label").onclick = check_new_client;
-                };
+{
+    document.getElementById("known_client_label").onclick = check_known_client;
+    document.getElementById("new_client_label").onclick = check_new_client;
+
+    // fill in other report date (upto 7 days)
+    var mom = document.getElementById("report_date");
+    var today = new Date();
+    today.setDate(today.getDate()-1);
+
+    for (var i=0; i<5; i++)
+    {
+        today.setDate(today.getDate()-1);
+        var date = today.getDate()+"/"+(today.getMonth()+1)+"/"+today.getFullYear();
+        var option = document.createElement("option");
+        option.setAttribute("value", date);
+        option.innerHTML=date;
+        
+        mom.appendChild(option);
+    }
+        
+    mom.onchange = load_reports;
+
+    // bind the "My Reports" btn...
+    document.getElementById("my_reports").onclick = function (){
+        clear("loaded_reports_div"); // clear any previously fetched reports..
+        document.getElementById("my_reports_div").style.visibility = "visible";
+    };
+
+    // hide "my_reports_div" by default...
+    document.getElementById("my_reports_div").style.visibility = "hidden";
+
+};
+                
+                
+                
+                
+                
+                

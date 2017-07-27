@@ -1,6 +1,14 @@
 // this file contains variables that are global to all html files of this project
 URL = "http://139.162.235.29:8123/"
 
+function clear(mom)
+{
+    var element = document.getElementById(mom);
+    while (element.firstChild) {
+        element.removeChild(element.firstChild);
+    }
+}
+
 function logout()
 {
     if(confirm("Logout?")) {window.location.href="index.html"}
@@ -111,6 +119,9 @@ function change_time(time)
     if (hm[1].length==1){changed_time += ":0"+hm[1];}
     else {changed_time += ":"+hm[1];}
 
+    if (hm[2].length==1){changed_time += ":0"+hm[2];}
+    else {changed_time += ":"+hm[2];}
+
     return changed_time;
 }
 
@@ -124,19 +135,35 @@ function change_figure(figure)
     return changed_figure;
 }
 
+function start_connecting(info)
+{
+    if (info==null) {info="connecting...";}
+    swal({
+        title: "",
+        text: info,
+        type: "info",
+        showConfirmButton: false
+    });
+}
+
+function stop_connecting(){swal.close();}
+
 function locate() 
 {
+    if (EDITING.length>0)
+    // if salesrep is editing an existing report, EDITING=[uname,date,time,lat,lon]
+    {
+        on_locate({ // simulate a sucess in fetching gps location ...
+            coords:{latitude:EDITING[3], longitude:EDITING[4]}
+            });
+        return;
+    }
     if (navigator.geolocation) 
     {
         // function <on_locate> is defined wherever locate will be called (salesrep.js and technicalrep.js for our case)
         navigator.geolocation.getCurrentPosition(on_locate);
 
-        swal({
-            title: "",
-            text: "getting gps location...",
-            type: "info",
-            showConfirmButton: false
-        });
+        start_connecting("getting gps location...");
                 
     } else 
     {
@@ -161,7 +188,7 @@ function report_handler()
         swal({
             title: "Report Status",
             text: "report sent sucessfully",
-            type: "info",
+            type: "success",
             confirmButtonText: "Ok"
           });
     }

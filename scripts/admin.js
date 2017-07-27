@@ -8,14 +8,6 @@ var _ROW_HEIGHT = 13; // row height in the items_div inside edit_div
 var ITEMS_ADDED = 0; /* when updating items(emails, training topics, etc) they are added sequentially
                         rather than all at once*/
 
-function clear(mom)
-{
-    var element = document.getElementById(mom);
-    while (element.firstChild) {
-        element.removeChild(element.firstChild);
-    }
-}
-
 function leave_edit()
 {
     document.getElementById("edit_div").style.visibility = "hidden";
