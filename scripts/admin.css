@@ -223,10 +223,12 @@ body {
     height:9%;
     
     width:25%;
+    
+    visibility:hidden;
 }
 #email_results {
     top:91%;
-    left:55%;
+    left:74%;
     height:9%;
     
     width:25%;

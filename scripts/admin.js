@@ -708,7 +708,10 @@ function search_db_handler()
         }
         
         document.getElementById("n_results_found").innerHTML = "<b>"+results.length+"</b> result(s) found";
+        activate_results_buttons();
         
+        document.getElementById("email_results").cols = this.cols;
+        document.getElementById("email_results").data = results;
     }
     else
     {
@@ -724,6 +727,8 @@ function search_db_handler()
 
 function search_db()
 {
+    deactivate_results_buttons();
+    
     if (SEARCH_DURATION.length==0)
     {
         swal({
@@ -872,6 +877,7 @@ function search_db()
         url = "clients_visited_report";
     }
     
+    document.getElementById("email_results").search_category = search_category;
 
     req.onload = search_db_handler;
 
@@ -887,6 +893,130 @@ function search_db()
 
     start_connecting("searching...");
 
+}
+
+function send_mail_handler()
+{
+    if (this.status===200)
+    {
+        swal({
+            title: "Email Status",
+            text: "email sent sucessfully",
+            type: "success",
+            confirmButtonText: "Ok"
+          });
+    }
+    else
+    {
+        swal({
+            title: "Server Error",
+            text: "error: "+this.status+"; "+this.responseText,
+            type: "error",
+            confirmButtonText: "Ok"
+          });
+    }
+
+}
+
+function mail_results()
+{
+    var mail_data = this.data;
+    for (var i=0; i<mail_data.length; i++)
+    {
+        var date = mail_data[i][0];
+        mail_data[i][0]=date.slice(6,8)+"/"+date.slice(4,6)+"/"+date.slice(0,4);
+    }
+    
+    var mail_cols = [];
+    for (var i=0; i<this.cols.length; i++)
+    {
+        mail_cols[i] = this.cols[i][0];
+    }
+    var mail_field = this.search_category;
+    
+    swal({
+          title: "Email Address",
+          text: "enter email address",
+          type: "input",
+          showCancelButton: true,
+          closeOnConfirm: false,
+          animation: "slide-from-top",
+          inputPlaceholder: "email@example.com"
+        },
+        
+        function(email){
+            if (email === false) {return false;} // clicked "cancel"
+
+            if (email === "") 
+            {
+                swal.showInputError("email address cant be empty!");
+                return false
+            }
+            else if (email.indexOf("@")==-1)
+            {
+                swal.showInputError("invalid email address!");
+                return false
+            }
+
+            swal({
+                  title: "Subject",
+                  text: "type the email subject please",
+                  type: "input",
+                  showCancelButton: true,
+                  closeOnConfirm: false,
+                  animation: "slide-from-top",
+                  inputPlaceholder: "my subject"
+                },
+                
+                function(subject){
+                    if (subject === false) {return false;} // clicked "cancel"
+
+                    if (subject === "") 
+                    {
+                        swal.showInputError("subject cant be empty!");
+                        return false
+                    }
+
+                    swal({
+                          title: "Message",
+                          text: "type a short message please",
+                          type: "input",
+                          showCancelButton: true,
+                          closeOnConfirm: false,
+                          animation: "slide-from-top",
+                          inputPlaceholder: "message"
+                        },
+                        
+                        function(message){
+                            if (message === false) {return false;} // clicked "cancel"
+
+                            if (message === "") 
+                            {
+                                swal.showInputError("provide a short message please");
+                                return false
+                            }
+
+                            var data = ["JMS-Report("+mail_field+")", mail_cols, mail_data, mail_field,email, subject, message];
+                            
+                            // generate request and send it...
+                            var req = new XMLHttpRequest();
+
+                            req.open("POST", URL+"send_mail", true);
+
+                            req.onload = send_mail_handler;
+
+                            var form = new FormData();
+                            form.append("data", JSON.stringify(data));
+
+                            req.send(form);
+                            start_connecting("sending email...");
+
+                        }
+                        );
+                }
+                );
+        }
+        );
 }
 
 window.onload = function() 
@@ -941,6 +1071,7 @@ window.onload = function()
 
     // deactivate "results" buttons ...
     deactivate_results_buttons();
+    document.getElementById("email_results").onclick = mail_results;
 
     // bind "search" button
     document.getElementById("search_btn").onclick = search_db;
