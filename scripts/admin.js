@@ -996,7 +996,7 @@ function mail_results()
                                 return false
                             }
 
-                            var data = ["JMS-Report("+mail_field+")", mail_cols, mail_data, mail_field,email, subject, message];
+                            var data = ["JMS-Report("+mail_field+")", mail_cols, mail_data, mail_field, subject,email, message];
                             
                             // generate request and send it...
                             var req = new XMLHttpRequest();
