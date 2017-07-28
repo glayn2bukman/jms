@@ -73,6 +73,83 @@
             </form>
         </div>
 
+        <div id="loaded_salesrep_report_div" class="loaded_report_div">
+            <div class="report_section">
+                <div class="report_item" id="client_name_label">Client</div>
+                <div class="report_value" id="client_name_value"></div>
+
+                <div class="report_item" id="client_segment_label">Client Segment</div>
+                <div class="report_value" id="client_segment"></div>
+
+                <div class="report_item" id="new_client_label">Known Client</div>
+                <div class="report_value" id="new_client"></div>
+
+                <div class="report_item" id="cp_1_label">Contact Person 1</div>
+
+                <div class="report_item" id="cp_1_names_label">Names</div>
+                <div class="report_value" id="cp_1_names"></div>
+
+                <div class="report_item" id="cp_1_contact_label">Contact</div>
+                <div class="report_value" id="cp_1_contact"></div>
+
+                <div class="report_item" id="cp_1_email_label">Email</div>
+                <div class="report_value" id="cp_1_email"></div>
+
+                <div class="report_item" id="cp_2_label">Contact Person 2</div>
+
+                <div class="report_item" id="cp_2_names_label">Names</div>
+                <div class="report_value" id="cp_2_names"></div>
+
+                <div class="report_item" id="cp_2_contact_label">Contact</div>
+                <div class="report_value" id="cp_2_contact"></div>
+
+                <div class="report_item" id="cp_2_email_label">Email</div>
+                <div class="report_value" id="cp_2_email"></div>
+
+                <div class="report_item" id="orders_label">Orders</div>
+
+                <div class="report_item" id="og_label">O.G</div>
+                <div class="report_value" id="og_value"></div>
+
+                <div class="report_item" id="or_label">O.R</div>
+                <div class="report_value" id="or_value"></div>
+
+                <div class="report_item" id="dc_label">D.C</div>
+                <div class="report_value" id="dc_value"></div>
+
+                <div class="report_item" id="items_promoted_label">Items Promoted</div>
+                <div class="remark_area" id="items_promoted_value">
+                    <!-- each item is addd as "item (qty) -> amount<br>" -->
+                </div>
+
+                <div class="report_item" id="remark_label">Remark</div>
+                <div class="remark_area" id="remark_value"></div>
+
+            </div>
+            <iframe class="map_div" id="salesrep_map"> </iframe>
+            <input type="button" id="done_viewing_salesrep_report" class="round_corners black close_report" value="Done"/>
+        </div>
+
+        <div id="loaded_technicalrep_report_div" class="loaded_report_div">
+            <div class="report_section" id="technicalrep_report_section">
+                <div class="report_item" id="CMEs_label">CMEs Conducted</div>
+                <div class="report_value" id="CMEs_value">2</div>
+
+                <div class="report_item" id="facility_label">Facility</div>
+                <div class="report_value" id="facility_value"></div>
+
+                <div class="report_item" id="topic_trained_label">Topic Trained</div>
+                <div class="report_value" id="topic_trained_value"></div>
+
+                <div class="report_item" id="technical_remark_label">Remark</div>
+                <div class="remark_area" id="technical_remark_value"></div>
+            </div>
+            
+            <iframe class="map_div" id="technicalrep_map"> </iframe>
+            <input type="button" id="done_viewing_technicalrep_report" class="round_corners black close_report" value="Done"/>
+        </div>
+
+
     </body>
 
 </html>

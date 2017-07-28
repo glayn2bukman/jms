@@ -653,6 +653,128 @@ function edit_field()
     req.send(null);
 }
 
+function load_full_report_handler()
+{
+    if (this.status===200)
+    {
+        stop_connecting();
+        report = JSON.parse(this.responseText);
+
+        if (report.length==14)
+        // salesrep
+        {
+/*
+         0    uname varchar(30),
+         1    date varchar(8),
+         2    time varchar(8),
+         3    client varchar(50),
+         4    lat varchar(12),
+         5    lon varchar(12),
+         6    client_category varchar(15),
+         7    client_old varchar(3),
+         8    contact_people varchar(120),
+         9    order_generated int,
+         10   order_received int,
+         11   debt_collected int,
+         12   products_promoted varchar(500),
+         13   remark varchar(300)
+*/
+
+            document.getElementById("client_name_value").innerHTML = report[3];
+            document.getElementById("client_segment").innerHTML = report[6];         
+            document.getElementById("new_client").innerHTML = report[7];
+            document.getElementById("remark_value").innerHTML = report[13];        
+            document.getElementById("og_value").innerHTML = convert_figure_to_human_readable(report[9]);        
+            document.getElementById("or_value").innerHTML = convert_figure_to_human_readable(report[10]);        
+            document.getElementById("dc_value").innerHTML = convert_figure_to_human_readable(report[11]);        
+
+            // contact personnel...
+            var cp1 = "::", cp2 = "::";
+            var cps = (report[8]).split(";");
+            if (cps.length>1){cp1 = cps[0]; cps2 = cps[1];}
+            
+            var _cp1 = cp1.split(":");
+            document.getElementById("cp_1_names").innerHTML = _cp1[0];
+            document.getElementById("cp_1_contact").innerHTML = _cp1[1];         
+            document.getElementById("cp_1_email").innerHTML = _cp1[2];        
+
+            var _cp2 = cp2.split(":");
+            document.getElementById("cp_2_names").innerHTML = _cp2[0];
+            document.getElementById("cp_2_contact").innerHTML = _cp2[1];         
+            document.getElementById("cp_2_email").innerHTML = _cp2[2];        
+            
+            // items promoted...
+            if (report[12].length>0)
+            {
+                var items = (report[12]).split(";");
+                var item = [];
+                for (var i=0; i<items.length; i++)
+                {
+                    item = (items[i]).split(":");
+                    document.getElementById("items_promoted_value").innerHTML += item[0]+" ("+convert_figure_to_human_readable(item[1])+") -> "+convert_figure_to_human_readable(item[2])+"<br>";                    
+                }
+            }
+            
+            document.getElementById("salesrep_map").src = URL+"map/"+report[4]+"/"+report[5];
+            document.getElementById("loaded_salesrep_report_div").style.visibility="visible";
+
+        }
+        else if (report.length==9)
+        // technica lrep
+        {
+/*
+       0     uname varchar(30),
+       1     CMEs int,
+       2     facility varchar(50),
+       3     date varchar(8),
+       4     time varchar(8),
+       5     lat varchar(12),
+       6     lon varchar(12),
+       7     area_trained varchar(30),
+       8     remark varchar(300)
+
+*/
+            document.getElementById("CMEs_value").innerHTML = report[1]+"";
+            document.getElementById("facility_value").innerHTML = report[2];
+            document.getElementById("topic_trained_value").innerHTML = report[7]+"";
+            document.getElementById("technical_remark_value").innerHTML = report[8]+"";
+
+            document.getElementById("technicalrep_map").src = URL+"map/"+report[5]+"/"+report[6];
+            document.getElementById("loaded_technicalrep_report_div").style.visibility="visible";
+
+        }
+
+    }
+    else
+    {
+        swal({
+            title: "Server Error",
+            text: "error: "+this.status+"; "+this.responseText,
+            type: "error",
+            confirmButtonText: "Ok"
+          });
+    }
+
+}
+
+function load_full_report()
+{
+    var req = new XMLHttpRequest();
+    
+    req.open("POST", URL+"full_report", true);
+
+    req.onload = load_full_report_handler;
+
+    var form = new FormData();
+    form.append("date", this.report_data[0]);
+    form.append("time", this.report_data[1]);
+    form.append("target", this.report_data[2]);
+    
+    req.send(form);
+    start_connecting("fetching report...");
+
+}
+
 function search_db_handler()
 {
     if (this.status===200)
@@ -672,9 +794,6 @@ function search_db_handler()
         }
 
         stop_connecting();
-        // clear "results_cols" and "results_data" then populate data...
-        clear("results_cols");
-        clear("results_data");
         
         // do some primary processingon the data...
         if (this.search_category=="Products Promoted")
@@ -740,6 +859,13 @@ function search_db_handler()
                 div.style.width = this.cols[col][1]+"%";
                 xpos += this.cols[col][1];
                 
+                if (this.search_category=="Reports" && col==(this.cols.length-1))
+                {
+                    div.style.color = "#ffffff";
+                    div.report_data = (results[row]).slice(0,results[row].length-1);
+                    div.onclick = load_full_report;
+                }
+                
                 results_data.appendChild(div);
             }
         }
@@ -788,6 +914,9 @@ function search_db()
         return 0;
     }
 
+    // clear "n_results_found", "results_cols" and "results_data" then populate data...
+    clear("results_cols");
+    clear("results_data");
     clear("n_results_found");
 
     // create request and send it...
@@ -1113,11 +1242,23 @@ window.onload = function()
     // bind "search" button
     document.getElementById("search_btn").onclick = search_db;
     
-    // hide custon search_duration div..
+    // hide custon search_duration div...
     document.getElementById("custom_search_duration").style.visibility="hidden";
     document.getElementById("cancel_custom_duration").onclick=cancel_set_custon_search_duration;
     document.getElementById("confirm_custom_duration").onclick=confirm_set_custon_search_duration;
 
+    // bind "done_veiwing_report" btn...
+    document.getElementById("done_viewing_salesrep_report").onclick = function ()
+    {
+        document.getElementById("loaded_salesrep_report_div").style.visibility="hidden";
+    };
+    document.getElementById("loaded_salesrep_report_div").style.visibility="hidden";
+
+    document.getElementById("done_viewing_technicalrep_report").onclick = function ()
+    {
+        document.getElementById("loaded_technicalrep_report_div").style.visibility="hidden";
+    };
+    document.getElementById("loaded_technicalrep_report_div").style.visibility="hidden";
 
 }
 

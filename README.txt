@@ -2,7 +2,7 @@ Licence: This project is licenced under Jerm Technology (www.jermtechnology.com)
 Serving: Either compile the projct with phonegap to create Windows,Android and IOS mobile apps or serve with twisted;
          $ twistd -n web --path [PATH-TO]/JMS-Phonegap -p [PORT]
          NB: 
-            - if served with twisted, please edit the URL variable in scripts/globals.js accordingly
+            - if served with twisted, please edit the redirection-url in JMS-Remote/index.html accordingly
             - to install twisted; 
                 $ sudo apt-get install python-twisted-core
 
