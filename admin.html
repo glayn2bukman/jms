@@ -17,7 +17,7 @@
 
 
         <link rel="stylesheet" href="scripts/calendar/calendar.css">
-        <script src="scripts/calendar/pikaday.js">
+        <script src="scripts/calendar/calendar.js">
             /*
                 to use the calendar;
                 <input class="auto-kal [other classes...]" readonly/>
@@ -61,6 +61,17 @@
         <div id="n_results_found"></div>
 
         <div id="edit_div" class="top"></div>
+        
+        <div id="custom_search_duration">
+            <form>
+                <div id="date_from_label">From</div>
+                <input type="text" id="date_from" placeholder="MM/DD/YYYY" class="round_corners auto-kal" readonly required/>
+                <div id="date_to_label">To</div>
+                <input type="text" id="date_to" placeholder="MM/DD/YYYY" class="round_corners auto-kal" readonly required/>
+                <input type="button" id="cancel_custom_duration" class="round_corners red" value="Cancel"/>
+                <input type="button" id="confirm_custom_duration" class="round_corners green" value="Done"/>
+            </form>
+        </div>
 
     </body>
 

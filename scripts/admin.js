@@ -321,7 +321,7 @@ function populate_edit_div(field)
             else if (field.cols[col][2]=="num") {entry.type="number";}
             else if (field.cols[col][2]=="date") 
             {
-                entry.type="text";
+                entry.setAttribute("type","text");
                 entry.setAttribute("placeholder", "DD/MM/YYYY");
                 //entry.setAttribute("readonly",true);
                 entry.setAttribute("class","round_corners auto-kal");
@@ -440,6 +440,7 @@ function populate_edit_div(field)
             {
                 entry.type="text";
                 //entry.setAttribute("readonly",true);
+                entry.setAttribute("placeholder","DD/MM/YYYY");
                 entry.setAttribute("class","round_corners auto-kal");
             }
 
@@ -484,9 +485,45 @@ function set_date()
         SEARCH_DURATION[0] = pastmonth.getDate()+"/"+(pastmonth.getMonth()+1)+"/"+pastmonth.getFullYear(); 
         SEARCH_DURATION[1] = today.getDate()+"/"+(today.getMonth()+1)+"/"+today.getFullYear(); 
     }
-    else {SEARCH_DURATION=[];}
-
+    else 
+    // other ...
+    {
+        document.getElementById("date_from").value="";
+        document.getElementById("date_to").value="";
+        document.getElementById("custom_search_duration").style.visibility="visible";
+    }
 }
+
+function cancel_set_custon_search_duration()
+{
+    document.getElementById("custom_search_duration").style.visibility="hidden";
+}
+function confirm_set_custon_search_duration()
+{
+    var _from = document.getElementById("date_from").value;
+    var _to = document.getElementById("date_to").value;
+
+    if (_from=="" || _to=="")
+    {
+        swal({
+            title: "Date Error",
+            text: "please select both dates!",
+            type: "error",
+            confirmButtonText: "Ok"
+          });
+        return 0; 
+    }
+
+    // convert dates from MM/DD/YYYY to DD/MM/YYYY
+    _from = _from.split("/");
+    _to = _to.split("/");
+
+    SEARCH_DURATION[0] = _from[1]+"/"+_from[0]+"/"+_from[2];
+    SEARCH_DURATION[1] = _to[1]+"/"+_to[0]+"/"+_to[2];
+
+    document.getElementById("custom_search_duration").style.visibility="hidden";
+}
+
 
 function accounts()
 {
@@ -1075,6 +1112,12 @@ window.onload = function()
 
     // bind "search" button
     document.getElementById("search_btn").onclick = search_db;
+    
+    // hide custon search_duration div..
+    document.getElementById("custom_search_duration").style.visibility="hidden";
+    document.getElementById("cancel_custom_duration").onclick=cancel_set_custon_search_duration;
+    document.getElementById("confirm_custom_duration").onclick=confirm_set_custon_search_duration;
+
 
 }
 

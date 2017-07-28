@@ -283,7 +283,74 @@ body {
     color:#003355;
 }
 
+#custom_search_duration {
+    position:absolute;
+    top:35%;
+    left:35%;
+    
+    width:30%;
+    height:30%;
+    
+/*    border:1px solid;
+*/}
 
+#date_from_label {
+    position:absolute;
+    top:12%;
+    left:0%;
+    
+    width:30%;
+    height:10%;
+    
+    font-size:1.2em;
+    text-align:center;
+}
+#date_from {
+    position:absolute;
+    top:0%;
+    left:30%;
+    
+    width:70%;
+    height:33%;
+    
+}
+#date_to_label {
+    position:absolute;
+    top:44%;
+    left:0%;
+    
+    width:30%;
+    height:8%;
+    
+    font-size:1.2em;
+    text-align:center;
+}
+#date_to {
+    position:absolute;
+    top:34%;
+    left:30%;
+    
+    width:70%;
+    height:33%;    
+}
 
+#cancel_custom_duration {
+    position:absolute;
+    bottom:0%;
+    left:0%;
+    
+    width:48%;
+    height:25%;
+    text-indent:0px;
+}
 
+#confirm_custom_duration {
+    position:absolute;
+    bottom:0%;
+    left:51%;
+    
+    width:48%;
+    height:25%;
+    text-indent:0px;
+}
 
