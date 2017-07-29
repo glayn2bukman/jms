@@ -112,5 +112,5 @@ window.onload = function ()
     document.getElementById("body").style.height = window.innerHeight+"px";
     document.getElementById("body").style.width = window.innerWidth+"px";
 
-    get_users;
+    get_users();
 }
