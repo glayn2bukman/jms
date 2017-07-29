@@ -554,6 +554,7 @@ function edit_field_handler()
 {
     if (this.status===200)
     {    
+        stop_connecting();
         var results = JSON.parse(this.responseText);
 
         // show edit_div $ hide all else
@@ -651,6 +652,7 @@ function edit_field()
     req.onload = edit_field_handler;
 
     req.send(null);
+    start_connecting("fetching data...");
 }
 
 function load_full_report_handler()
@@ -700,8 +702,10 @@ function load_full_report_handler()
 
             var _cp2 = cp2.split(":");
             document.getElementById("cp_2_names").innerHTML = _cp2[0];
-            document.getElementById("cp_2_contact").innerHTML = _cp2[1];         
+            document.getElementById("cp_2_contact").innerHTML = _cp2[1];
             document.getElementById("cp_2_email").innerHTML = _cp2[2];        
+
+            document.getElementById("salesrep_report_time").innerHTML = "("+(report[1]).slice(6,8)+"-"+(report[1]).slice(4,6)+"-"+(report[1]).slice(0,4)+", "+report[2]+")";        
             
             // items promoted...
             if (report[12].length>0)
@@ -738,6 +742,8 @@ function load_full_report_handler()
             document.getElementById("facility_value").innerHTML = report[2];
             document.getElementById("topic_trained_value").innerHTML = report[7]+"";
             document.getElementById("technical_remark_value").innerHTML = report[8]+"";
+
+            document.getElementById("technicalrep_report_time").innerHTML = "("+(report[3]).slice(6,8)+"-"+(report[3]).slice(4,6)+"-"+(report[3]).slice(0,4)+", "+report[4]+")";        
 
             document.getElementById("technicalrep_map").src = URL+"map/"+report[5]+"/"+report[6];
             document.getElementById("loaded_technicalrep_report_div").style.visibility="visible";

@@ -39,7 +39,64 @@ function on_locate(position) {
 
 function submit_report(){locate();}
 
-window.onload = function(){}
+function fetch_training_topics_handler()
+{
+    if (this.status===200)
+    {
+        topics = JSON.parse(this.responseText);
+        
+        if (topics.length==0)
+        {
+            swal({
+                title: "Data Error",
+                text: "no training topics found. please talk to the admin about this!",
+                type: "error",
+                confirmButtonText: "Logout",
+                closeOnConfirm:false
+              },
+              
+              function(){window.location.href="index.html";}
+              
+              );
+            return 0;
+        }
+
+        stop_connecting();
+        
+        for (var i=0; i<topics.length; i++)
+        {
+           //"area_trained"
+           var option = document.createElement("option");
+           option.value = topics[i][0];
+           option.innerHTML = topics[i][0];
+           document.getElementById("area_trained").appendChild(option);
+        }
+        
+    }
+    else
+    {
+        swal({
+            title: "Server Error",
+            text: "error: "+this.status+"; "+this.responseText,
+            type: "error",
+            confirmButtonText: "Ok"
+          });
+    }
+
+}
+
+window.onload = function(){
+    // fetch the latest training topics...
+    var req = new XMLHttpRequest();
+    
+    req.open("GET", URL+"training_topics_full", true);
+
+    req.onload = fetch_training_topics_handler;
+
+    req.send(null);
+    start_connecting("fetching training topics...");
+
+}
 
 
 

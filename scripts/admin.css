@@ -379,9 +379,24 @@ body {
     width:70%;
     height:90%;
 
-    border:1px solid;
+/*    border:1px solid;
     border-color:#ffff00;
-}
+*/}
+.report_time {
+    position: absolute;
+    top:92%;
+    left:31%;
+    
+    width:30%;
+    height:8%;
+    
+    font-size:1.2em;
+    color:#999;
+
+/*    border:1px solid;
+    border-color:#ffff00;
+*/}
+
 .close_report {
     position: absolute;
     top:91%;
@@ -398,9 +413,9 @@ body {
     width:30%;
     height:100%;
 
-    border:1px solid;
+/*    border:1px solid;
     border-color:#ffff00;
-    
+*/    
     overflow:auto;
 }
 

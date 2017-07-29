@@ -266,6 +266,53 @@ function load_reports()
 
 }
 
+function fetch_client_segments_handler()
+{
+    if (this.status===200)
+    {
+        segments = JSON.parse(this.responseText);
+        
+        if (segments.length==0)
+        {
+            swal({
+                title: "Data Error",
+                text: "no client segments found. please talk to the admin about this!",
+                type: "error",
+                confirmButtonText: "Logout",
+                closeOnConfirm:false
+              },
+              
+              function(){window.location.href="index.html";}
+              
+              );
+            return 0;
+        }
+
+        stop_connecting();
+        
+        for (var i=0; i<segments.length; i++)
+        {
+           //"area_trained"
+           var option = document.createElement("option");
+           option.value = segments[i][0];
+           option.innerHTML = segments[i][0];
+           document.getElementById("client_category").appendChild(option);
+        }
+        
+    }
+    else
+    {
+        swal({
+            title: "Server Error",
+            text: "error: "+this.status+"; "+this.responseText,
+            type: "error",
+            confirmButtonText: "Ok"
+          });
+    }
+
+}
+
+
 window.onload = function()
 {
     document.getElementById("known_client_label").onclick = check_known_client;
@@ -297,6 +344,16 @@ window.onload = function()
 
     // hide "my_reports_div" by default...
     document.getElementById("my_reports_div").style.visibility = "hidden";
+
+    // fetch the latest client segments...
+    var req = new XMLHttpRequest();
+    
+    req.open("GET", URL+"client_segments", true);
+
+    req.onload = fetch_client_segments_handler;
+
+    req.send(null);
+    start_connecting("fetching client segments...");
 
 };
                 
