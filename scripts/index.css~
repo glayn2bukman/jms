@@ -3,11 +3,12 @@ body {
       this way, we can specify any other font in the body relative to this ie using the "em" units
       eg 1.5em = 150% of the body font-size. Its easier and much better to control fonts this way
     */
-    font-size:100%
+    font-size:100%;
 
     position:absolute;
     top:0; left:0;right:0;bottom:0;
 
+    background-color:#1f1212;
 /*    border:1px solid;
     border-color:#ff0000;
 */}
@@ -16,6 +17,7 @@ body {
     /*create rounded corners*/
     border:1px solid;
     border-radius:20px;
+    text-indent:15px;
     
     /*create gradient bg*/
     background: #009494; /*just in case the browser daint support gradients*/
@@ -24,22 +26,27 @@ body {
     
     /*allow widget to occupy entire width of parent*/
     display:block;
-    width:30%;
+    width:35%;
     margin:auto; /*place element in middle of its parent*/
     
     font-size:1.1em;
+}
+
+#login {
+    /*create gradient bg*/
+    background: #00aa00; /*just in case the browser daint support gradients*/
+    background: linear-gradient(to left, #333333, #666666); /*attempt gradient bg*/
 }
 
 #uname, #pswd {
     /*reset some attrs of input elements*/
     color: #cccccc; 
     padding:5px;
-    width:60%;
+    width:65%;
 }
 
 #logo {
     color: #666666;
-    font-style:bold;
     font-size:1.6em;
     text-align:center;
 

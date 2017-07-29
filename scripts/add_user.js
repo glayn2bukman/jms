@@ -64,4 +64,9 @@ window.onload = function (){
         option.innerHTML = account_types[i];
         document.getElementById("account_type").appendChild(option)
     }
+
+    // set body size to a fixed value corresponding to the screen...
+    document.getElementById("body").style.height = window.innerHeight+"px";
+    document.getElementById("body").style.width = window.innerWidth+"px";
+
 };

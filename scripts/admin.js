@@ -1269,6 +1269,9 @@ window.onload = function()
     };
     document.getElementById("loaded_technicalrep_report_div").style.visibility="hidden";
 
+    // set body size to a fixed value corresponding to the screen...
+    document.getElementById("body").style.height = window.innerHeight+"px";
+    document.getElementById("body").style.width = window.innerWidth+"px";
 }
 
 
