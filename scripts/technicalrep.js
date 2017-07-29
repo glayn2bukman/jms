@@ -96,6 +96,10 @@ window.onload = function(){
     req.send(null);
     start_connecting("fetching training topics...");
 
+    // set body size to a fixed value corresponding to the screen...
+    document.getElementById("body").style.height = screen.height+"px";
+    document.getElementById("body").style.width = screen.width+"px";
+
 }
 
 

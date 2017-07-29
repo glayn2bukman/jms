@@ -106,4 +106,10 @@ function get_users(){
 }
 
 
-window.onload = get_users;
+window.onload = function ()
+{    // set body size to a fixed value corresponding to the screen...
+    document.getElementById("body").style.height = screen.height+"px";
+    document.getElementById("body").style.width = screen.width+"px";
+
+    get_users;
+}
