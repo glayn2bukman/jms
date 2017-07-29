@@ -1080,6 +1080,8 @@ function send_mail_handler()
             type: "success",
             confirmButtonText: "Ok"
           });
+        
+        window.location.href = "admin.html";
     }
     else
     {
@@ -1172,6 +1174,7 @@ function mail_results()
                             }
 
                             var data = ["JMS-Report("+mail_field+")", mail_cols, mail_data, mail_field, subject,email, message];
+                            console.log(data[1], data[2]);
                             
                             // generate request and send it...
                             var req = new XMLHttpRequest();
