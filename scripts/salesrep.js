@@ -524,10 +524,10 @@ window.onload = function()
     start_connecting("fetching client segments...");
 
     // set body size to a fixed value corresponding to the screen...
-    document.getElementById("body").style.height = window.innerHeight+"px";
-    document.getElementById("body").style.width = window.innerWidth+"px";
+    var dpi = window.devicePixelRatio;
+    document.getElementById("body").style.height = (window.innerHeight/dpi)+"px";
+    document.getElementById("body").style.width = (window.innerWidth/dpi)+"px";
     
-    alert(window.devicePixelRatio );
 
 };
                 
