@@ -35,7 +35,7 @@ body {
 /*menu*/
 #menu {
     /*keep menu fixed(dont scroll it when you scroll the page)*/
-    position:absolute;
+    position:fixed;
     top:0px; left:0px;
     background-color:#000000;
     
@@ -43,7 +43,7 @@ body {
 }
 
 .menu_item {
-    position:absolute;
+    position:fixed;
     top:0px;
     
     font-size:1.2em;
