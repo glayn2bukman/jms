@@ -524,9 +524,8 @@ window.onload = function()
     start_connecting("fetching client segments...");
 
     // set body size to a fixed value corresponding to the screen...
-    //document.getElementById("body").style.height = screen.height+"px";
-    //document.getElementById("body").style.width = screen.width+"px";
-    document.body.style.height = screen.height+"px";    
+    document.getElementById("body").style.height = screen.height+"px";
+    document.getElementById("body").style.width = screen.width+"px";
 
 };
                 
