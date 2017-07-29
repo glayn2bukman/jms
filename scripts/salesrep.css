@@ -5,7 +5,7 @@ body {
     */
     font-size:100%;
 
-    position:absolute;
+    position:fixed;
     top:0px; left:0px;
 
 /*    width:99%; height:100%;
