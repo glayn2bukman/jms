@@ -63,22 +63,13 @@
 
             <p class="section_heading" id="items_promoted_section">Items Promoted</p>
 
-            <div id="items_promoted_table">
-                <!-- table is placed inside the div to ensure it scrolls(in div, overflow:auto;) -->
-                
-                <table style="width:100%;">
-                    <th width="60%" class="table_heading">Item</th>
-                    <th width="15%" class="table_heading">Qty</th>
-                    <th width="25%" class="table_heading">Amount</th>
-
-                    <!-- add cols to rows here. the cols should be in class "promotional_item" eg
-                        <tr>
-                            <td class="promotional_item">Panadol</td>
-                            <td class="promotional_item">25</td>
-                            <td class="promotional_item">126,600,000</td>
-                        </tr>
-                     -->
-                </table>
+            <div id="items_promoted_table">                
+                <div id="items_promoted_cols">
+                    <div id="items_promoted_item">Item</div>
+                    <div id="items_promoted_qty">Qty</div>
+                    <div id="items_promoted_amount">Amount</div>
+                </div>
+                <div id="promoted_items_items"></div>
             </div>
 
                 <input type="button" id="remove_promotional_item" class="promotional_items_buttons" />

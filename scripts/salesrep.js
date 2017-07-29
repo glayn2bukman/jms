@@ -1,5 +1,7 @@
 var REPORT_ROW_HEIGHT = 8; // used when salesrep wants to edit their existing report
 var EDITING = []; // empty if not editing report, otherwise [uname,date,time,lat,lon]
+var PROMOTIONAL_ITEMS_HEIGHT = 40;
+var PROMOTIONAL_ITEMS_YPOS = 0;
 
 function check_known_client(){
     document.getElementById("known_client").checked = true;
@@ -55,8 +57,37 @@ function on_locate(position) {
     form.append("client_category", document.getElementById("client_category").value);
     form.append("client_old", known_client);
     form.append("contact_people", cp);
-    // for now, do without items promoted 
-    form.append("products_promoted", "");
+
+    // for now, do without items promoted
+    var mom  = document.getElementById("promoted_items_items");
+    var p_items = "";
+    if (mom.hasChildNodes) 
+    {
+        var divs = mom.childNodes;
+        var p_item, qty, amount;
+        for (var i=0; i<divs.length; i++)
+        {
+            p_item = divs[i].childNodes[0].value;
+            qty = divs[i].childNodes[1].value;
+            if (isNaN(qty))
+            {
+                swal({
+                    title: "Error",
+                    text: "invalid quantity (qty) given -> "+qty,
+                    type: "error",
+                    confirmButtonText: "Ok"
+                  });            
+            }
+            amount = document.getElementById(p_item).unit_price*parseInt(qty);
+            
+            if (p_items==""){p_items += p_item+":"+qty+":"+amount;}
+            else{p_items += ";"+p_item+":"+qty+":"+amount;}
+        }
+        
+    }
+
+    form.append("products_promoted", p_items);
+
 
     var req = new XMLHttpRequest();
     
@@ -66,6 +97,7 @@ function on_locate(position) {
     req.onload = report_handler;
 
     req.send(form);
+    start_connecting("sending report...");
 
     // clear widgets
     document.getElementById("client").value = "";
@@ -297,7 +329,7 @@ function fetch_client_segments_handler()
            option.value = segments[i][0];
            option.innerHTML = segments[i][0];
            document.getElementById("client_category").appendChild(option);
-        }
+        }        
         
     }
     else
@@ -312,6 +344,138 @@ function fetch_client_segments_handler()
 
 }
 
+function remove_promotional_item()
+{
+    // if no items, just chill...
+    var mom  = document.getElementById("promoted_items_items");
+    if (!mom.hasChildNodes) {return 0;}
+    
+    var divs = mom.childNodes;
+    mom.removeChild(divs[divs.length-1]);
+
+    PROMOTIONAL_ITEMS_YPOS -= PROMOTIONAL_ITEMS_HEIGHT;
+
+}
+
+function update_amount()
+{
+    if (isNaN(this.qty.value))
+    {
+        swal({
+            title: "Error",
+            text: "invalid quantity(qty) provided -> "+this.qty.value,
+            type: "info",
+            confirmButtonText: "Ok",
+          });    
+    }
+
+    this.amount.innerHTML = convert_figure_to_human_readable(document.getElementById(this.value).unit_price*this.qty.value);
+
+}
+
+function add_promotional_item_handler()
+{
+    if (this.status===200)
+    {
+        items = JSON.parse(this.responseText);
+        
+        if (items.length==0)
+        {
+            swal({
+                title: "Data Info",
+                text: "no promotional items found",
+                type: "info",
+                confirmButtonText: "Ok",
+              });
+            return 0;
+        }
+
+        stop_connecting();
+        
+        // create div t contain the item, qty n amount
+        var div = document.createElement("div");
+        div.style.position = "absolute";
+        div.style.left = "0%";
+        div.style.width = "100%";
+        div.style.height = PROMOTIONAL_ITEMS_HEIGHT+"%";
+        div.style.top = PROMOTIONAL_ITEMS_YPOS+"%";
+
+        //item...
+        var p_item = document.createElement("select");
+        p_item.className = "round_corners";
+        p_item.style.position = "absolute";
+        p_item.style.left = "0%";
+        p_item.style.width = "58%";
+
+        for (var i=0; i<items.length; i++)
+        {
+            var option = document.createElement("option");
+            option.setAttribute("id", items[i][0]);
+            option.value = items[i][0];
+            option.innerHTML = items[i][0];
+            option.style.textIndent = "5px";
+            option.unit_price = items[i][3];
+            p_item.appendChild(option);
+        }        
+
+
+        // qty...
+        var qty = document.createElement("input");
+        qty.className = "round_corners";        
+        qty.type = "number";
+        qty.setAttribute("min", "1");
+        qty.value = "1";
+        qty.style.position = "absolute";
+        qty.style.textIndent = "0px";
+        qty.style.textIndent = "5px";
+        qty.style.left = "60%";
+        qty.style.width = "13%";
+                                
+        // amount ...
+        var amount = document.createElement("div")
+        amount.style.position = "absolute";
+        amount.style.left = "75%";
+        amount.style.top = "5%";
+        amount.innerHTML = "";
+            
+        p_item.qty = qty;
+        p_item.amount = amount; 
+
+        div.appendChild(p_item);
+        div.appendChild(qty);
+        div.appendChild(amount);
+
+        document.getElementById("promoted_items_items").appendChild(div);
+        
+        p_item.onchange = update_amount;
+        
+        PROMOTIONAL_ITEMS_YPOS += PROMOTIONAL_ITEMS_HEIGHT;
+        
+    }
+    else
+    {
+        swal({
+            title: "Server Error",
+            text: "error: "+this.status+"; "+this.responseText,
+            type: "error",
+            confirmButtonText: "Ok"
+          });
+    }
+
+}
+
+function add_promotional_item()
+{
+    var req = new XMLHttpRequest();
+    
+    req.open("GET", URL+"promotional_items", true);
+
+    req.onload = add_promotional_item_handler;
+
+    req.send(null);
+    start_connecting("fetching promotional items...");
+    
+}
 
 window.onload = function()
 {
@@ -344,6 +508,10 @@ window.onload = function()
 
     // hide "my_reports_div" by default...
     document.getElementById("my_reports_div").style.visibility = "hidden";
+
+    // bind promotional-items btns...
+    document.getElementById("add_promotional_item").onclick = add_promotional_item;
+    document.getElementById("remove_promotional_item").onclick = remove_promotional_item;
 
     // fetch the latest client segments...
     var req = new XMLHttpRequest();
