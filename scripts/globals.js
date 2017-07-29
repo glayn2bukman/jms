@@ -216,14 +216,20 @@ function stop_connecting(){swal.close();}
 
 function locate() 
 {
-    if (EDITING.length>0)
-    // if salesrep is editing an existing report, EDITING=[uname,date,time,lat,lon]
+    try
+    //EDITING is not defined for technicalrep... 
     {
-        on_locate({ // simulate a sucess in fetching gps location ...
-            coords:{latitude:EDITING[3], longitude:EDITING[4]}
-            });
-        return;
+        if (EDITING.length>0)
+        // if salesrep is editing an existing report, EDITING=[uname,date,time,lat,lon]
+        {
+            on_locate({ // simulate a sucess in fetching gps location ...
+                coords:{latitude:EDITING[3], longitude:EDITING[4]}
+                });
+            return;
+        }
     }
+    catch (error){;}// do nara....simply proceed to normal gps location
+    
     if (navigator.geolocation) 
     {
         // function <on_locate> is defined wherever locate will be called (salesrep.js and technicalrep.js for our case)

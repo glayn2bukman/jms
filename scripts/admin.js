@@ -694,6 +694,9 @@ function load_full_report_handler()
             var cp1 = "::", cp2 = "::";
             var cps = (report[8]).split(";");
             if (cps.length>1){cp1 = cps[0]; cps2 = cps[1];}
+            else {cp1=cps[0]}
+            
+            console.log(cp1, report[8], cps);
             
             var _cp1 = cp1.split(":");
             document.getElementById("cp_1_names").innerHTML = _cp1[0];
