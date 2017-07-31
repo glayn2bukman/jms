@@ -527,6 +527,12 @@ window.onload = function()
     document.getElementById("body").style.height = window.innerHeight+"px";
     document.getElementById("body").style.width = window.innerWidth+"px";
     
+    // bind back-to-dashboard btn
+    document.getElementById("back_to_dashboard").onclick = function () {
+            document.getElementById("my_reports_div").style.visibility = "hidden";
+    };
+
+    
 };
                 
                 
