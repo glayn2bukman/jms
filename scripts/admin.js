@@ -832,18 +832,40 @@ function search_db_handler()
         var results_data = document.getElementById("results_data");
 
         // draw respective column titles...
-        for (var col=0, xpos=0; col<this.cols.length; col++)
+        if (this.search_category=="Sales Reps" || this.search_category=="Technical Reps")
+        // columns are too many and large so we shall need to scroll horizontally...
         {
-            var div = document.createElement("div");
-            div.innerHTML = this.cols[col][0];
-            div.style.position = "absolute";
-            div.style.left = xpos+"%";
-            div.style.width = this.cols[col][1]+"%";
-            xpos += this.cols[col][1];
-            
-            results_cols.appendChild(div);
-        }
+            for (var col=0, xpos=0; col<this.cols.length; col++)
+            {
+                var div = document.createElement("div");
 
+                div.innerHTML = this.cols[col][0];
+                
+                div.style.position = "absolute";
+                div.style.top = 0+"%";
+                div.style.left = xpos+"%";
+                div.style.width = this.cols[col][1]+"%";
+                div.style.color = "#111111";
+                div.style.fontSize = "1.2em";
+                xpos += this.cols[col][1];
+                
+                results_data.appendChild(div);
+            }        
+        }
+        else
+        {
+            for (var col=0, xpos=0; col<this.cols.length; col++)
+            {
+                var div = document.createElement("div");
+                div.innerHTML = this.cols[col][0];
+                div.style.position = "absolute";
+                div.style.left = xpos+"%";
+                div.style.width = this.cols[col][1]+"%";
+                xpos += this.cols[col][1];
+                
+                results_cols.appendChild(div);
+            }
+        }
         // now populate data...
         for (var row=0; row<results.length; row++)
         {
@@ -863,7 +885,7 @@ function search_db_handler()
                 }
                 
                 div.style.position = "absolute";
-                div.style.top = (row*RESULTS_ROW_HEIGHT)+"%";
+                div.style.top = ((row+1)*RESULTS_ROW_HEIGHT)+"%";
                 div.style.left = xpos+"%";
                 div.style.width = this.cols[col][1]+"%";
                 xpos += this.cols[col][1];
@@ -931,6 +953,7 @@ function search_db()
     // create request and send it...
     var req = new XMLHttpRequest();
     var url = "";
+    var form = new FormData();
     
     var search_category = document.getElementById("search_category").value;
 
@@ -1028,16 +1051,38 @@ function search_db()
         
         url = "topics_taughed_report";
     }
-    else if (search_category=="Field Agents")
+    else if (search_category=="Sales Reps")
     {
         req.cols = [
             // [col_title, %width]
             ["Date", 20],
-            ["Time", 20],
-            ["Agent", 60]
+            ["Time", 12],
+            ["Agent", 20],
+            ["Client", 30],
+            ["Category", 20],
+            ["Old Client", 20],
+            ["O.G", 20],
+            ["O.R", 20],
+            ["D.C", 20]
         ];
         
-        url = "agents_report";
+        url = "agents_report_all_data";
+        form.append("account_type", "salesrep");
+    }
+    else if (search_category=="Technical Reps")
+    {
+        req.cols = [
+            // [col_title, %width]
+            ["Date", 20],
+            ["Time", 12],
+            ["Agent", 20],
+            ["Facility", 30],
+            ["CMEs", 10],
+            ["Topic Trained", 30],
+        ];
+        
+        url = "agents_report_all_data";
+        form.append("account_type", "technicalrep");
     }
     else if (search_category=="Reports")
     {
@@ -1058,7 +1103,6 @@ function search_db()
 
     req.open("POST", URL+url, true);
 
-    var form = new FormData();
     var search_from = change_date(SEARCH_DURATION[0]), search_to = change_date(SEARCH_DURATION[1]);
     form.append("target", document.getElementById("target").value);
     form.append("from", search_from);
@@ -1081,7 +1125,7 @@ function send_mail_handler()
             confirmButtonText: "Ok"
           });
         
-        window.location.href = "admin.html";
+        //window.location.href = "admin.html";
     }
     else
     {
@@ -1098,9 +1142,11 @@ function send_mail_handler()
 function mail_results()
 {
     var mail_data = this.data;
+    var old_dates = [];
     for (var i=0; i<mail_data.length; i++)
     {
         var date = mail_data[i][0];
+        old_dates[i] = date;
         mail_data[i][0]=date.slice(6,8)+"/"+date.slice(4,6)+"/"+date.slice(0,4);
     }
     
@@ -1174,7 +1220,6 @@ function mail_results()
                             }
 
                             var data = ["JMS-Report("+mail_field+")", mail_cols, mail_data, mail_field, subject,email, message];
-                            console.log(data[1], data[2]);
                             
                             // generate request and send it...
                             var req = new XMLHttpRequest();
@@ -1188,7 +1233,14 @@ function mail_results()
 
                             req.send(form);
                             start_connecting("sending email...");
+                            
+                            // reconvert the dates into old format...just in case this email z gonna be sent twice
+                            for (var i=0; i<mail_data.length; i++)
+                            {
+                                mail_data[i][0] = old_dates[i];
+                            }
 
+                            
                         }
                         );
                 }
@@ -1220,7 +1272,7 @@ window.onload = function()
     var search_categories = ["Reports","Clients Visited", 
                             "New Clients","Products Promoted",
                             "Debts Collected","Topics Taught",
-                            "Field Agents","Client Segments","Orders"];
+                            "Sales Reps","Technical Reps", "Client Segments","Orders"];
     search_categories.sort();
     search_categories.splice(0,0,"Search Category"); // insert item
 

@@ -8,8 +8,8 @@ body {
     position:absolute;
     top:0px; left:0px;
 
-    width:99%; height:100%;
-
+/*    width:99%; height:100%;
+*/
     margin:auto;
 
     background-color:rgb(0,153,102);
@@ -358,7 +358,7 @@ body {
     text-indent:0px;
 }
 
-#loaded_salesrep_report_div {
+.loaded_report_div {
     position: absolute;
     top:0%;
     left:0%;
@@ -366,8 +366,9 @@ body {
     width:101%;
     height:101%;
 
-    border:1px solid;
-    background-color:#fff;
+/*    border:1px solid;
+*/
+    background-color:#ccc;
 }
 
 .map_div {
@@ -378,9 +379,24 @@ body {
     width:70%;
     height:90%;
 
-    border:1px solid;
+/*    border:1px solid;
     border-color:#ffff00;
-}
+*/}
+.report_time {
+    position: absolute;
+    top:92%;
+    left:31%;
+    
+    width:30%;
+    height:8%;
+    
+    font-size:1.2em;
+    color:#999;
+
+/*    border:1px solid;
+    border-color:#ffff00;
+*/}
+
 .close_report {
     position: absolute;
     top:91%;
@@ -397,9 +413,9 @@ body {
     width:30%;
     height:100%;
 
-    border:1px solid;
+/*    border:1px solid;
     border-color:#ffff00;
-    
+*/    
     overflow:auto;
 }
 
@@ -409,27 +425,40 @@ body {
     width:39%;
     
     font-size:1.2em;
-    text-indent:left;
     
     color:#009494;
     
-    border:1px solid;
-}
+/*    border:1px solid;
+*/}
 .report_value {
     position:absolute;
     left:41%;
     width:60%;
     
     font-size:1em;
-    text-indent:left;
     
     color:#555555;
     
+/*    border:1px solid;
+*/}
+.remark_area {
+    position:absolute;
+    left:1%;
+    width:100%;
+    height:20%;
+    
+    font-size:.9em;
+    
+    color:#555;
+    
     border:1px solid;
+
+    overflow:auto;
 }
 
+/*salesrep full report*/
 #client_name_label {top:0%;}
-#client_name_label {top:0%;}
+#client_name_value {top:0%;}
 
 #client_segment_label {top:5%;}
 #client_segment {top:5%;}
@@ -445,4 +474,49 @@ body {
 #cp_1_contact_label {top:27%;}
 #cp_1_contact {top:27%;}
 
+#cp_1_email_label {top:32%;}
+#cp_1_email {top:32%;}
+
+#cp_2_label {top:39%; color:#999;}
+
+#cp_2_names_label {top:44%;}
+#cp_2_names {top:44%;}
+
+#cp_2_contact_label {top:49%;}
+#cp_2_contact {top:49%;}
+
+#cp_2_email_label {top:54%;}
+#cp_2_email {top:54%;}
+
+#orders_label {top:61%; color:#999;}
+
+#og_label {top:66%;}
+#og_value {top:66%;}
+
+#or_label {top:71%;}
+#or_value {top:71%;}
+
+#dc_label {top:76%;}
+#dc_value {top:76%;}
+
+#items_promoted_label {top:83%; color:#999;}
+#items_promoted_value {top:88%;}
+
+#remark_label {top:110%; color:#999;}
+#remark_value {top:115%;}
+
+
+/* technical rep full report*/
+
+#CMEs_label {top:0%;}
+#CMEs_value {top:0%;}
+
+#facility_label {top:5%;}
+#facility_value {top:5%;}
+
+#topic_trained_label {top:10%;}
+#topic_trained_value {top:10%;}
+
+#technical_remark_label {top:17%; color:#999;}
+#technical_remark_value {top:22%;}
 
