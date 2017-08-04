@@ -1328,7 +1328,8 @@ window.onload = function()
     var user = new USER(window.name);
     if (user.uname!="admin")
     {
-        document.getElementById("accounts").onclick = function(){;};
+        document.getElementById("accounts").innerHTML = "My Account";
+        document.getElementById("accounts").onclick = edit_account;
         document.getElementById("edit_options").disabled = true;
     }
 

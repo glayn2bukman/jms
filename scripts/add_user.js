@@ -104,7 +104,7 @@ function add_user()
 }
 
 window.onload = function (){
-    var account_types = ["SalesRep", "TechnicalRep","Admin"];
+    var account_types = ["SalesRep", "TechnicalRep", "TechnicalRep-Core", "TechnicalRep-TP", "Admin"];
     for (var i=0; i<account_types.length;i++)
     {
         var option = document.createElement("option");
