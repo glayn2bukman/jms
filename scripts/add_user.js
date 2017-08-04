@@ -21,6 +21,50 @@ function add_user_handler()
 
 }
 
+function user_in_system_handler()
+{
+    if (this.status===200)
+    {   
+        if (this.responseText=="1")
+        {
+            swal({
+                title: "Account Error",
+                text: "account already in system!",
+                type: "error",
+                confirmButtonText: "Ok"
+              });
+        }
+     
+        var uname = document.getElementById("uname").value;
+        var pswd = document.getElementById("pswd").value;
+        var account_type = document.getElementById("account_type").value;
+
+        var req = new XMLHttpRequest();
+
+        req.open("POST", URL+"register", true);
+
+        req.onload = add_user_handler;
+
+        var form = new FormData();
+        form.append("uname", uname);
+        form.append("pswd", pswd);
+        form.append("account_type", account_type);
+        req.send(form);
+        
+        start_connecting("adding user...");
+    }
+    else
+    {
+        swal({
+            title: "Server Error",
+            text: "error: "+this.status+"; "+this.responseText,
+            type: "error",
+            confirmButtonText: "Ok"
+          });
+    }
+
+}
+
 function add_user()
 {
     if (document.getElementById("uname").value=="" || document.getElementById("pswd").value=="")
@@ -34,29 +78,33 @@ function add_user()
 
         return 0;
     }
+    if (document.getElementById("uname").value=="admin")
+    {
+        swal({
+        title: "Account Error",
+        text: "can't add an admin!",
+        type: "error",
+        confirmButtonText: "Ok"
+      });
 
-    var uname = document.getElementById("uname").value;
-    var pswd = document.getElementById("pswd").value;
-    var account_type = document.getElementById("account_type").value;
+        return 0;
+    }
+
 
     var req = new XMLHttpRequest();
-
-    req.open("POST", URL+"register", true);
-
-    req.onload = add_user_handler;
+    req.open("POST", URL+"user_in_system", true);
+    req.onload = user_in_system_handler;
 
     var form = new FormData();
-    form.append("uname", uname);
-    form.append("pswd", pswd);
-    form.append("account_type", account_type);
-    req.send(form);
+    form.append("target", document.getElementById("uname").value);
     
-    start_connecting("adding user...");
+    req.send(form);
+    start_connecting("validating user account against database...");
 
 }
 
 window.onload = function (){
-    var account_types = ["SalesRep", "TechnicalRep"];
+    var account_types = ["SalesRep", "TechnicalRep","Admin"];
     for (var i=0; i<account_types.length;i++)
     {
         var option = document.createElement("option");

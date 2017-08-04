@@ -58,7 +58,6 @@ function on_locate(position) {
     form.append("client_old", known_client);
     form.append("contact_people", cp);
 
-    // for now, do without items promoted
     var mom  = document.getElementById("promoted_items_items");
     var p_items = "";
     if (mom.hasChildNodes) 
@@ -378,6 +377,7 @@ function add_promotional_item_handler()
     if (this.status===200)
     {
         items = JSON.parse(this.responseText);
+        console.log(items);
         
         if (items.length==0)
         {

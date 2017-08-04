@@ -1324,6 +1324,15 @@ window.onload = function()
     };
     document.getElementById("loaded_technicalrep_report_div").style.visibility="hidden";
 
+    // deactivate "edit" and "accounts" section if not super-user
+    var user = new USER(window.name);
+    if (user.uname!="admin")
+    {
+        document.getElementById("accounts").onclick = function(){;};
+        document.getElementById("edit_options").disabled = true;
+    }
+
+
     // set body size to a fixed value corresponding to the screen...
     document.getElementById("body").style.height = window.innerHeight+"px";
     document.getElementById("body").style.width = window.innerWidth+"px";

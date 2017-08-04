@@ -72,5 +72,7 @@ function post(){
     form.append("uname", document.getElementById("uname").value);
     form.append("pswd", document.getElementById("pswd").value);
     req.send(form);
+    
+    start_connecting("signing in...");
 }
 
