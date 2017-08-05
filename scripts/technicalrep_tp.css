@@ -77,7 +77,7 @@ body {
     /*create rounded corners*/
     border:1px solid;
     border-radius:20px;
-    text-indent:10px;
+    text-indent:5px;
     
     /*create gradient bg*/
     background: #009494; /*just in case the browser daint support gradients*/
@@ -85,119 +85,59 @@ body {
     color:#ffffff;
         
     font-size:1em;
+
+    border:1px solid;
+}
+.black {
+    background: linear-gradient(to right, #000000, #333333); /*attempt gradient bg*/
+    text-indent:5px;
+    color:#ffffff;
 }
 
 .section_heading {
     font-size:1.3em;
     /*font-weight:bold;*/
-}
 
-#main_form {
-    position:absolute;
-    top:4.6%;
-    left:0px;
-    
-    width:100%;
-    height:80%;
-    
-/*    border:1px solid;
-    border-color:#000000;
-*/}
-
-#CMEs_label {
-    position: absolute;
-    left: 1%;
-    top:10%;
-    
-    width:60%;
-    height:6%;
-}
-
-#CMEs {
-    position: absolute;
-    left: 74%;
-    top:14%;
-    
-    width:25%;
-    height:6%;
+    border:1px solid;
 }
 
 #facility_label {
-    position: absolute;
-    left: 1%;
-    top:22%;
+    position:absolute;
+    top:6%;
+    left:1%;
     
-    width:25%;
-    height:6%;
+    width:30%;
+    height:5%;
 }
 
 #facility {
-    position: absolute;
-    left: 1%;
-    top:33%;
-    
-    width:98%;
-    height:6%;
-}
-
-#area_trained_label {
-    position: absolute;
-    left: 1%;
-    top:38%;
-    
-    width:70%;
-    height:6%;
-}
-
-#area_trained {
-    position: absolute;
-    left: 1%;
-    top:49%;
-    
-    width:50%;
-    height:6%;
-}
-
-#remark_label {
-    position: absolute;
-    left: 1%;
-    top:53%;
-    
-    width:70%;
-    height:6%;
-}
-
-#remark {
-    position: absolute;
-    left: 1%;
-    top:64%;
-    
-    width:98%;
-    height:18%;
-}
-
-.buttons {
-    /*create rounded corners*/
-    border:1px solid;
-    border-radius:20px;
-    text-indent:15px;
-    
-    /*create gradient bg*/
-    background: #009494; /*just in case the browser daint support gradients*/
-    background: linear-gradient(to right, #000000, #333333); /*attempt gradient bg*/
-    color:#ffffff;
-        
-    font-size:1em;
-}
-
-#send_report {
     position:absolute;
-
-    top:90%;
-    left:28%;
+    top:5%;
+    left:30%;
     
-    width:48%;
+    width:69%;
     height:6%;
 }
+
+#areas_supported_label {
+    position:absolute;
+    top:14%;
+    left:1%;
+    
+    width:40%;
+    height:5%;
+}
+
+#areas_supported{
+    position:absolute;
+    top:20%;
+    left:1%;
+    
+    width:98%;
+    height:12%;
+    
+    font-size:.7em;
+}
+
 
 

@@ -99,6 +99,10 @@ body {
     border-left-color:#666666;
 }
 
+#quit:hover,#logout:hover,#accounts:hover {
+    color:#fff;
+}
+
 #quit {
     border:0px;
     width:20%;
