@@ -749,7 +749,7 @@ function load_full_report_handler()
             document.getElementById("cp_2_contact").innerHTML = _cp2[1];
             document.getElementById("cp_2_email").innerHTML = _cp2[2];        
 
-            document.getElementById("salesrep_report_time").innerHTML = "("+(report[1]).slice(6,8)+"-"+(report[1]).slice(4,6)+"-"+(report[1]).slice(0,4)+", "+report[2]+")";        
+            document.getElementById("salesrep_report_time").innerHTML = report[0]+"("+(report[1]).slice(6,8)+"-"+(report[1]).slice(4,6)+"-"+(report[1]).slice(0,4)+", "+report[2]+")";        
             
             // items promoted...
             if (report[12].length>0)
@@ -768,7 +768,7 @@ function load_full_report_handler()
 
         }
         else if (report.length==9)
-        // technica lrep
+        // technical rep
         {
 /*
        0     uname varchar(30),
@@ -787,10 +787,78 @@ function load_full_report_handler()
             document.getElementById("topic_trained_value").innerHTML = report[7]+"";
             document.getElementById("technical_remark_value").innerHTML = report[8]+"";
 
-            document.getElementById("technicalrep_report_time").innerHTML = "("+(report[3]).slice(6,8)+"-"+(report[3]).slice(4,6)+"-"+(report[3]).slice(0,4)+", "+report[4]+")";        
+            document.getElementById("technicalrep_report_time").innerHTML = report[0]+" ("+(report[3]).slice(6,8)+"-"+(report[3]).slice(4,6)+"-"+(report[3]).slice(0,4)+", "+report[4]+")";        
 
             document.getElementById("technicalrep_map").src = URL+"map/"+report[5]+"/"+report[6];
             document.getElementById("loaded_technicalrep_report_div").style.visibility="visible";
+
+        }
+        else if (report.length==10)
+        // technical rep - tp
+        {
+/*
+       0     uname varchar(30),
+       1     facility varchar(50),
+       2     date varchar(8),
+       3     time varchar(8),
+       4     lat varchar(12),
+       5     lon varchar(12),
+       6     support_areas varchar(200),
+       7     incharge varchar(50),
+       8     trainees varchar(300),
+       9     remark varchar(300)
+*/
+            document.getElementById("facility_tp_value").innerHTML = report[1];
+            document.getElementById("support_areas_tp_value").innerHTML = report[6]+"";
+            document.getElementById("incharge_tp_value").innerHTML = report[7]+"";
+            document.getElementById("technical_tp_remark_value").innerHTML = report[9]+"";
+
+            document.getElementById("technicalrep_tp_report_time").innerHTML = report[0]+" ("+(report[2]).slice(6,8)+"-"+(report[2]).slice(4,6)+"-"+(report[2]).slice(0,4)+", "+report[3]+")";        
+
+            document.getElementById("technicalrep_tp_map").src = URL+"map/"+report[4]+"/"+report[5];
+            document.getElementById("loaded_technicalrep_tp_report_div").style.visibility="visible";
+
+            var trainees = (report[8]).split(";");
+            var _trainees = "";
+            for (var i=0; i<trainees.length; i++)
+            {
+                var trainee = trainees[i].split(":");
+                _trainees += trainee[0]+" ("+trainee[1]+")"+"\n"
+            }
+            document.getElementById("trainees_tp_value").innerHTML = _trainees;
+
+        }
+        else if (report.length==13)
+        // technical rep - tc
+        {
+/*
+       0     uname varchar(30),
+       1     facility varchar(50),
+       2     date varchar(8),
+       3     time varchar(8),
+       4     lat varchar(12),
+       5     lon varchar(12),
+       6     activities varchar(200),
+       7     personnels_engaged int,
+       8     issues_arising varchar(300),
+       9     time_spent varchar varchar(6),
+       10     status_of_engagement varchar(50),
+       11     perfomance_against_target varchar(200),
+       12     remark varchar(300)
+*/
+            document.getElementById("facility_core_value").innerHTML = report[1];
+            document.getElementById("activities_core_value").innerHTML = report[6]+"";
+            document.getElementById("personnel_engaged_core_value").innerHTML = report[7]+"";
+            document.getElementById("duration_core_value").innerHTML = report[9]+"";
+            document.getElementById("engagement_core_value").innerHTML = report[10]+"";
+            document.getElementById("issues_arising_core_remark_value").innerHTML = report[8]+"";
+            document.getElementById("performance_against_target_core_remark_value").innerHTML = report[11]+"";
+            document.getElementById("technical_core_remark_value").innerHTML = report[12]+"";
+
+            document.getElementById("technicalrep_core_report_time").innerHTML = report[0]+" ("+(report[2]).slice(6,8)+"-"+(report[2]).slice(4,6)+"-"+(report[2]).slice(0,4)+", "+report[3]+")";        
+
+            document.getElementById("technicalrep_core_map").src = URL+"map/"+report[4]+"/"+report[5];
+            document.getElementById("loaded_technicalrep_core_report_div").style.visibility="visible";
 
         }
 
@@ -1402,6 +1470,18 @@ window.onload = function()
         document.getElementById("loaded_technicalrep_report_div").style.visibility="hidden";
     };
     document.getElementById("loaded_technicalrep_report_div").style.visibility="hidden";
+
+    document.getElementById("done_viewing_technicalrep_tp_report").onclick = function ()
+    {
+        document.getElementById("loaded_technicalrep_tp_report_div").style.visibility="hidden";
+    };
+    document.getElementById("loaded_technicalrep_tp_report_div").style.visibility="hidden";
+
+    document.getElementById("done_viewing_technicalrep_core_report").onclick = function ()
+    {
+        document.getElementById("loaded_technicalrep_core_report_div").style.visibility="hidden";
+    };
+    document.getElementById("loaded_technicalrep_core_report_div").style.visibility="hidden";
 
     // deactivate "edit" and "accounts" section if not super-user
     var user = new USER(window.name);

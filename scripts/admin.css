@@ -524,3 +524,52 @@ body {
 #technical_remark_label {top:17%; color:#999;}
 #technical_remark_value {top:22%;}
 
+/* technical rep-tp full report*/
+#facility_tp_label {top:0%;}
+#facility_tp_value {top:0%;}
+
+#support_areas_tp_label {top:5%;}
+#support_areas_tp_value {top:5%;}
+
+#incharge_tp_label {top:10%;}
+#incharge_tp_value {top:10%;}
+
+#trainees_tp_label {top:17%;}
+#trainees_tp_value {top:22%;}
+
+#technical_tp_remark_label {top:44%;}
+#technical_tp_remark_value {top:49%;}
+
+/* tchnical rep-core full report*/
+#facility_core_label {top:0%;}
+#facility_core_value {top:0%;}
+
+#activities_core_label {top:5%;}
+#activities_core_value {top:5%;}
+
+#personnel_engaged_core_label {top:10%;}
+#personnel_engaged_core_value {top:10%;}
+
+#duration_core_label {top:15%;}
+#duration_core_value {top:15%;}
+
+#engagement_core_label {top:20%;}
+#engagement_core_value {top:20%;}
+
+#issues_arising_core_remark_label {top:27%;}
+#issues_arising_core_remark_value {top:32%;}
+
+#performance_against_target_core_remark_label {top:57%; width:90%;}
+#performance_against_target_core_remark_value {top:62%;}
+
+#technical_core_remark_label {top:89%;}
+#technical_core_remark_value {top:94%;}
+
+
+
+
+
+
+
+
+
