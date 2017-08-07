@@ -90,11 +90,6 @@ function send_report()
     locate();
 }
 
-function submit_report_handler_handler()
-{
-    
-}
-
 function on_locate(position)
 {
     if (document.getElementById("trainees_div").children.length==0)
@@ -144,7 +139,6 @@ function on_locate(position)
     var trainees = "";
     var trainees_mom = document.getElementById("trainees_div");
     var  _trainees = trainees_mom.children;
-    console.log(_trainees);
 
     for (var i=0; i<_trainees.length; i++)
     {
@@ -183,6 +177,13 @@ function on_locate(position)
     
     req.send(form);
     start_connecting("sending report...");
+
+    // reset values
+    document.getElementById("facility").value = "";
+    document.getElementById("remark").value = "";
+    clear("trainees_div");
+    document.getElementById("incharge_names").value = ""
+    document.getElementById("incharge_contact").value = "";
     
 }
 
@@ -207,6 +208,5 @@ window.onload = function () {
 
     req.send(null);
     start_connecting("fetching support areas...");
-
 
 };
