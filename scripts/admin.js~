@@ -152,6 +152,23 @@ function update_data()
         delete_url=["delete_mail_recepients","email"]; 
         add_url=["add_mail_recepients","email"];
     }
+    else if (this.field.title=="Support Areas(TRTP)")
+    {
+        delete_url=["delete_support_areas","name"]; 
+        add_url=["add_support_areas","name"];
+    }
+    else if (this.field.title=="Activities(TRC)")
+    {
+        delete_url=["delete_activities","name"]; 
+        add_url=["add_activities","name"];
+    }
+    else if (this.field.title=="Engagement Statuses(TRC)")
+    {
+        delete_url=["delete_statuses","name"]; 
+        add_url=["add_statuses","name"];
+        url="";
+    }
+
 
     // first delete all items ...(consumes data i admit, look at it when upgrading the JMS HTML app!)
     start_connecting("reaching server...");
@@ -619,6 +636,27 @@ function edit_field_handler()
             ];
         }
 
+        else if(field.title=="Support Areas(TRTP)")
+        {
+            field.cols = [
+                ["Support Area", 40-DELETE_ROW_WIDTH, "str"]
+            ];
+        }
+        
+        else if(field.title=="Activities(TRC)")
+        {
+            field.cols = [
+                ["Activity", 40-DELETE_ROW_WIDTH, "str"]
+            ];
+        }
+        
+        else if(field.title=="Engagement Statuses(TRC)")
+        {
+            field.cols = [
+                ["Status", 40-DELETE_ROW_WIDTH, "str"]
+            ];
+        }
+
         populate_edit_div(field);
     }
     else
@@ -645,6 +683,9 @@ function edit_field()
     else if (this.value=="Client Segments"){url="client_segments";}
     else if (this.value=="Training Topics"){url="training_topics_full";}
     else if (this.value=="Email Recepients"){url="mail_recepients";}
+    else if (this.value=="Support Areas(TRTP)"){url="support_areas";}
+    else if (this.value=="Activities(TRC)"){url="activities";}
+    else if (this.value=="Engagement Statuses(TRC)"){url="statuses";}
     
     req.open("GET", URL+url, true);
     req.target_field = this.value;
@@ -832,7 +873,7 @@ function search_db_handler()
         var results_data = document.getElementById("results_data");
 
         // draw respective column titles...
-        if (this.search_category=="Sales Reps" || this.search_category=="Technical Reps")
+        if ((this.search_category).indexOf("Reps")>=0)
         // columns are too many and large so we shall need to scroll horizontally...
         {
             for (var col=0, xpos=0; col<this.cols.length; col++)
@@ -1084,6 +1125,38 @@ function search_db()
         url = "agents_report_all_data";
         form.append("account_type", "technicalrep");
     }
+    else if (search_category=="Technical Reps(TRTP)")
+    {
+        // horizontally scrollable ...
+        req.cols = [
+            // [col_title, %width]
+            ["Date", 20],
+            ["Time", 12],
+            ["Agent", 20],
+            ["Facility", 30],
+            ["Support Areas", 40],
+        ];
+        
+        url = "agents_report_all_data";
+        form.append("account_type", "technicalrep_tp");
+    }
+    else if (search_category=="Technical Reps(TRC)")
+    {
+        // scrollable
+        req.cols = [
+            // [col_title, %width]
+            ["Date", 20],
+            ["Time", 12],
+            ["Agent", 20],
+            ["Facility", 30],
+            ["Duration", 12],
+            ["Status", 15],
+            ["Activities", 40]
+        ];
+        
+        url = "agents_report_all_data";
+        form.append("account_type", "technicalrep_core");
+    }
     else if (search_category=="Reports")
     {
         req.cols = [
@@ -1255,7 +1328,10 @@ window.onload = function()
     document.getElementById("edit_div").style.visibility = "hidden";
 
     // edit options ...
-    var edit_options = ["Edit","Promotional Items", "Client Segments", "Training Topics", "Email Recepients"];
+    var edit_options = ["Edit","Promotional Items", "Client Segments", 
+                        "Training Topics", "Email Recepients",
+                        "Support Areas(TRTP)", "Activities(TRC)", "Engagement Statuses(TRC)"
+                       ];
 
     for (var i=0; i<edit_options.length; i++)
     {
@@ -1272,7 +1348,9 @@ window.onload = function()
     var search_categories = ["Reports","Clients Visited", 
                             "New Clients","Products Promoted",
                             "Debts Collected","Topics Taught",
-                            "Sales Reps","Technical Reps", "Client Segments","Orders"];
+                            "Sales Reps","Technical Reps",
+                            "Technical Reps(TRTP)","Technical Reps(TRC)",
+                            "Client Segments","Orders"];
     search_categories.sort();
     search_categories.splice(0,0,"Search Category"); // insert item
 
@@ -1335,8 +1413,8 @@ window.onload = function()
 
 
     // set body size to a fixed value corresponding to the screen...
-    document.getElementById("body").style.height = window.innerHeight+"px";
-    document.getElementById("body").style.width = window.innerWidth+"px";
+    //document.getElementById("body").style.height = window.innerHeight+"px";
+    //document.getElementById("body").style.width = window.innerWidth+"px";
 }
 
 

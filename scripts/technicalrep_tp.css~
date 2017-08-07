@@ -20,6 +20,8 @@ body {
 
 /*bars(menubar, bottom(submit) bar)*/
 .bars {
+    position:absolute;
+    
     width:100%;
     height:6%;
     
@@ -91,28 +93,16 @@ body {
     text-indent:5px;
     color:#ffffff;
 }
-.red {
-    background: linear-gradient(to right, #660000, #dd0000); /*attempt gradient bg*/
-    text-indent:5px;
-    color:#ffffff;
-}
-.green {
-    background: linear-gradient(to right, #006600, #00dd00); /*attempt gradient bg*/
-    text-indent:5px;
-    color:#ffffff;
-}
 
 .section_heading {
     font-size:1.3em;
-    /*font-weight:bold;
+    /*font-weight:bold;*/
 
     border:1px solid;
-    */
 }
 
-.pabsolute {position:absolute;}
-
 #facility_label {
+    position:absolute;
     top:6%;
     left:1%;
     
@@ -121,6 +111,7 @@ body {
 }
 
 #facility {
+    position:absolute;
     top:5%;
     left:30%;
     
@@ -129,6 +120,7 @@ body {
 }
 
 #areas_supported_label {
+    position:absolute;
     top:14%;
     left:1%;
     
@@ -137,92 +129,14 @@ body {
 }
 
 #areas_supported{
+    position:absolute;
     top:20%;
     left:1%;
     
     width:98%;
     height:12%;
     
-    font-size:.8em;
-    border-radius:5px;
-}
-
-#incharge_label {
-    top:35%;
-    left:1%;
-    
-    width:70%;
-    height:5%;
-}
-
-#incharge_names {
-    top:40.5%;
-    left:1%;
-    
-    width:58%;
-    height:6%;
-}
-#incharge_contact {
-    top:40.5%;
-    left:61%;
-    
-    width:38%;
-    height:6%;
-}
-
-#trainees_label{
-    top:49%;
-    left:1%;
-    height:5%;
-    width:70%;
-}
-
-#trainees_div {
-    top:55%;
-    left:1%;
-    
-    width:98%;
-    height:25%;
-    
-    border:1px solid;
-    border-color:#444;
-    
-    overflow:auto;
-}
-
-.trainees_btns {
-    font-size: 1.5em;
-    text-indent:0px;
-    text-align:center;
-
-    width:8%;
-    height:4%;
-}
-
-#add_trainee{
-    top:81%;
-    left:92%;
-}
-#remove_trainee{
-    top:81%;
-    left:82%;
-}
-
-#remark {
-    top:87%;
-    left:1%;
-    width:98%;
-    height:12%;
-    
-    border-radius:5px;
-}
-
-#send_report {
-    top:102%;
-    left:25%;
-    
-    width:50%;
-    height:7%;
+    font-size:.7em;
 }
 
 

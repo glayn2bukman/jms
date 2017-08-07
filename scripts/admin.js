@@ -1134,6 +1134,7 @@ function search_db()
             ["Time", 12],
             ["Agent", 20],
             ["Facility", 30],
+            ["Incharge", 30],
             ["Support Areas", 40],
         ];
         
