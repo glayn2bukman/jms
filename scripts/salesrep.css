@@ -607,6 +607,8 @@ body {
     
     color:#555555;
     
+    overflow:auto;
+    
 /*    border:1px solid;
 */}
 .remark_area {
