@@ -1,5 +1,5 @@
 // this file contains variables that are global to all html files of this project
-URL = "http://139.162.235.29:8123/"
+URL = "http://139.162.235.29:8123/" /*uname:<root>, pswd:<jmsrt123#>*/
 //URL = "http://0.0.0.0:8123/"
 
 function clear(mom)

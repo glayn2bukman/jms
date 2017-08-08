@@ -141,14 +141,14 @@ body {
     left:40%;
     
     width:59%;
-    height:18%;
+    height:6%;
     
     font-size:.8em;
     border-radius:5px;
 }
 
 #incharge_label {
-    top:35%;
+    top:23%;
     left:1%;
     
     width:70%;
@@ -156,14 +156,14 @@ body {
 }
 
 #incharge_names {
-    top:40.5%;
+    top:28.5%;
     left:1%;
     
     width:58%;
     height:6%;
 }
 #incharge_contact {
-    top:40.5%;
+    top:28.5%;
     left:61%;
     
     width:38%;
@@ -171,14 +171,14 @@ body {
 }
 
 #trainees_label{
-    top:49%;
+    top:37%;
     left:1%;
     height:5%;
     width:70%;
 }
 
 #trainees_div {
-    top:55%;
+    top:43%;
     left:1%;
     
     width:98%;
@@ -200,16 +200,16 @@ body {
 }
 
 #add_trainee{
-    top:81%;
+    top:69%;
     left:92%;
 }
 #remove_trainee{
-    top:81%;
+    top:69%;
     left:82%;
 }
 
 #remark {
-    top:87%;
+    top:75%;
     left:1%;
     width:98%;
     height:12%;
@@ -218,7 +218,7 @@ body {
 }
 
 #send_report {
-    top:102%;
+    top:90%;
     left:25%;
     
     width:50%;

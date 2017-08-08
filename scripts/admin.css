@@ -534,10 +534,10 @@ body {
 #incharge_tp_label {top:10%;}
 #incharge_tp_value {top:10%;}
 
-#trainees_tp_label {top:17%;}
+#trainees_tp_label {top:17%; color:#999;}
 #trainees_tp_value {top:22%;}
 
-#technical_tp_remark_label {top:44%;}
+#technical_tp_remark_label {top:44%; color:#999;}
 #technical_tp_remark_value {top:49%;}
 
 /* tchnical rep-core full report*/
@@ -556,13 +556,13 @@ body {
 #engagement_core_label {top:20%;}
 #engagement_core_value {top:20%;}
 
-#issues_arising_core_remark_label {top:27%;}
+#issues_arising_core_remark_label {top:27%; color:#999;}
 #issues_arising_core_remark_value {top:32%;}
 
-#performance_against_target_core_remark_label {top:57%; width:90%;}
+#performance_against_target_core_remark_label {top:57%; width:90%; color:#999;}
 #performance_against_target_core_remark_value {top:62%;}
 
-#technical_core_remark_label {top:89%;}
+#technical_core_remark_label {top:89%; color:#999;}
 #technical_core_remark_value {top:94%;}
 
 

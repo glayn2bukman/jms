@@ -102,6 +102,12 @@ body {
     font-size:1em;
 }
 
+.black {
+    background: linear-gradient(to right, #000000, #333333); /*attempt gradient bg*/
+    text-indent:5px;
+    color:#ffffff;
+}
+
 /* client name*/
 #client_label {
     position: absolute;
@@ -565,5 +571,107 @@ body {
     color:#00aa77;
 }
 
+/*viewing section (reports from 1week to 1 month back)*/
+.report_section {
+    position: absolute;
+    top:0%;
+    left:0%;
+    
+    width:100%;
+    height:100%;
+
+/*    border:1px solid;
+    border-color:#ffff00;
+*/    
+    background-color:#ccc;
+    overflow:auto;
+}
+
+.report_item {
+    position:absolute;
+    left:1%;
+    width:39%;
+    
+    font-size:1.1em;
+    
+    color:#009494;
+    
+/*    border:1px solid;
+*/}
+.report_value {
+    position:absolute;
+    left:41%;
+    width:60%;
+    
+    font-size:1em;
+    
+    color:#555555;
+    
+/*    border:1px solid;
+*/}
+.remark_area {
+    position:absolute;
+    left:1%;
+    width:100%;
+    height:20%;
+    
+    font-size:.9em;
+    
+    color:#555;
+    
+    border:1px solid;
+
+    overflow:auto;
+}
+
+#client_name_label {top:0%;}
+#client_name_value {top:0%;}
+
+#client_segment_label {top:5%;}
+#client_segment {top:5%;}
+
+#new_client_label_r {top:10%;}
+#new_client_r {top:10%;}
+
+#cp_1_label {top:17%; color:#999;}
+
+#cp_1_names_label {top:22%;}
+#cp_1_names {top:22%;}
+
+#cp_1_contact_label {top:27%;}
+#cp_1_contact {top:27%;}
+
+#cp_1_email_label {top:32%;}
+#cp_1_email {top:32%;}
+
+#cp_2_label {top:39%; color:#999;}
+
+#cp_2_names_label {top:44%;}
+#cp_2_names {top:44%;}
+
+#cp_2_contact_label {top:49%;}
+#cp_2_contact {top:49%;}
+
+#cp_2_email_label {top:54%;}
+#cp_2_email {top:54%;}
+
+#orders_label {top:61%; color:#999;}
+
+#og_label {top:66%;}
+#og_value {top:66%;}
+
+#or_label {top:71%;}
+#or_value {top:71%;}
+
+#dc_label {top:76%;}
+#dc_value {top:76%;}
+
+#items_promoted_label {top:83%; color:#999;}
+#items_promoted_value {top:88%;}
+
+#remark_label {top:110%; color:#999;}
+#remark_value {top:115%;}
+
+#done_viewing {position:absolute; top:137%; left:25%; height:7%; width:50%;}
 
 

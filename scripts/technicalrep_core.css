@@ -140,14 +140,14 @@ body {
     left:40%;
     
     width:59%;
-    height:18%;
+    height:6%;
     
     font-size:.8em;
     border-radius:5px;
 }
 
 #engaged_personnel_label {
-    top:35%;
+    top:23%;
     left:1%;
     
     width:75%;
@@ -155,7 +155,7 @@ body {
 }
 
 #engaged_personnel {
-    top:34.5%;
+    top:22.5%;
     left:76%;
     
     width:21%;
@@ -165,7 +165,7 @@ body {
 }
 
 #duration_label {
-    top:43%;
+    top:31%;
     left:1%;
     
     width:30%;
@@ -173,7 +173,7 @@ body {
 }
 
 #hours {
-    top:43%;
+    top:31%;
     left:45%;
     
     width:26%;
@@ -181,7 +181,7 @@ body {
 }
 
 #mins {
-    top:43%;
+    top:31%;
     left:74%;
     
     width:25%;
@@ -189,7 +189,7 @@ body {
 }
 
 #engagement_status_label {
-    top:51%;
+    top:39%;
     left:1%;
     
     width:50%;
@@ -197,7 +197,7 @@ body {
 }
 
 #engagement_status {
-    top:51%;
+    top:39%;
     left:50%;
     
     width:50%;
@@ -205,7 +205,7 @@ body {
 }
 
 #issues_arising {
-    top:59%;
+    top:47%;
     left:1%;
     
     width:97%;
@@ -215,7 +215,7 @@ body {
 }
 
 #performance_against_target {
-    top:77%;
+    top:65%;
     left:1%;
     
     width:97%;
@@ -225,7 +225,7 @@ body {
 }
 
 #remark {
-    top:90%;
+    top:78%;
     left:1%;
     
     width:97%;
@@ -235,7 +235,7 @@ body {
 }
 
 #send_report {
-    top:108%;
+    top:96%;
     left:25%;
     
     width:50%;
