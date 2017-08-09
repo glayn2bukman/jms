@@ -823,7 +823,7 @@ function load_full_report_handler()
             for (var i=0; i<trainees.length; i++)
             {
                 var trainee = trainees[i].split(":");
-                _trainees += trainee[0]+" ("+trainee[1]+")"+"\n"
+                _trainees += (trainee[0]+" ("+trainee[1]+")"+"\n");
             }
             document.getElementById("trainees_tp_value").innerHTML = _trainees;
 
