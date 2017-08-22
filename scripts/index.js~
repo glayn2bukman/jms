@@ -54,6 +54,12 @@ function login_handler(){
             window.location.href = "technicalrep_tp.html";
         }
 
+        else if ( user.account_type=="TechnicalRep-Core" )
+        {
+            // load salesrep page...        
+            window.location.href = "technicalrep_core.html";
+        }
+
     }
     else
     {

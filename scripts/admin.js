@@ -1002,6 +1002,7 @@ function search_db_handler()
                 if (this.search_category=="Reports" && col==(this.cols.length-1))
                 {
                     div.style.color = "#ffffff";
+                    div.class += " clickable";
                     div.report_data = (results[row]).slice(0,results[row].length-1);
                     div.onclick = load_full_report;
                 }
@@ -1393,6 +1394,8 @@ function mail_results()
 
 window.onload = function() 
 {
+    if (window.name==""){window.location.href="index.html"; return 0;}
+    
     // hide edit_div
     document.getElementById("edit_div").style.visibility = "hidden";
 

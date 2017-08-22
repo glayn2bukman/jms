@@ -529,6 +529,8 @@ function add_promotional_item()
 
 window.onload = function()
 {
+    if (window.name==""){window.location.href="index.html"; return 0;}
+
     // bind "done_veiwing_report" btn...
     document.getElementById("done_viewing").onclick = function ()
     {

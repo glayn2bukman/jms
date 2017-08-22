@@ -1,4 +1,4 @@
-var TRAINEE_HEIGHT = 20;
+var TRAINEE_HEIGHT = 25;
 var TRAINEE_YPOS = 0;
 
 

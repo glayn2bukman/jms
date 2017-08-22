@@ -104,6 +104,8 @@ function add_user()
 }
 
 window.onload = function (){
+    if (window.name==""){window.location.href="index.html"; return 0;}
+
     var account_types = ["SalesRep", "TechnicalRep", "TechnicalRep-Core", "TechnicalRep-TP", "Admin"];
     for (var i=0; i<account_types.length;i++)
     {

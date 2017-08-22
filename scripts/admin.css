@@ -83,6 +83,9 @@ body {
 */
 }
 
+.clickable {}
+.clickable:hover {cursor:pointer;}
+
 /*menu*/
 #menu {
     /*keep menu fixed(dont scroll it when you scroll the page)*/
