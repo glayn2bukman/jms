@@ -1466,7 +1466,7 @@ window.onload = function()
     {
         document.getElementById("loaded_salesrep_report_div").style.visibility="hidden";
     };
-    //document.getElementById("loaded_salesrep_report_div").style.visibility="hidden";
+    document.getElementById("loaded_salesrep_report_div").style.visibility="hidden";
 
     document.getElementById("done_viewing_technicalrep_report").onclick = function ()
     {
