@@ -463,7 +463,7 @@ body {
 .remark_area {
     position:absolute;
     left:1%;
-    width:100%;
+    width:99%;
     height:20%;
     
     font-size:.9em;
@@ -528,8 +528,8 @@ body {
 
 /* technical rep full report*/
 
-#CMEs_label {top:0%;}
-#CMEs_value {top:0%;}
+#CMEs_label {top:0%; width:70%;}
+#CMEs_value {top:0%; width:30%; left:70%;}
 
 #facility_label {top:5%;}
 #facility_value {top:5%;}
@@ -563,25 +563,25 @@ body {
 #activities_core_label {top:5%;}
 #activities_core_value {top:5%;}
 
-#personnel_engaged_core_label {top:10%;}
-#personnel_engaged_core_value {top:10%;}
+#personnel_engaged_core_label {top:10%; width:70%;}
+#personnel_engaged_core_value {top:10%; width:30%; left:70%;}
 
 #duration_core_label {top:15%;}
 #duration_core_value {top:15%;}
 
-#engagement_core_label {top:20%;}
-#engagement_core_value {top:20%;}
+#engagement_core_label {top:20%; width:70%;}
+#engagement_core_value {top:20%;width:30%;left:70%;}
 
 #issues_arising_core_remark_label {top:27%; color:#999;}
 #issues_arising_core_remark_value {top:32%;}
 
-#performance_against_target_core_remark_label {top:57%; width:90%; color:#999;}
+#performance_against_target_core_remark_label {top:57%; color:#999;}
 #performance_against_target_core_remark_value {top:62%;}
 
 #technical_core_remark_label {top:89%; color:#999;}
 #technical_core_remark_value {top:94%;}
 
-
+.fullwidth {width:100%; border:1px solid;}
 
 
 

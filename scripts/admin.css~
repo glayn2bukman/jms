@@ -1,9 +1,15 @@
+/*define some custom fonts...*/
+@font-face {
+    font-family:DejaVuSans-ExtraLight;
+    src:url("../fonts/DejaVuSans-ExtraLight.ttf");
+}
+
 body {
     /*let font-size of all elements in body by 100% of the default
       this way, we can specify any other font in the body relative to this ie using the "em" units
       eg 1.5em = 150% of the body font-size. Its easier and much better to control fonts this way
     */
-    font-size:100%;
+    font-size:90%;
 
     position:absolute;
     top:0px; left:0px;
@@ -13,6 +19,8 @@ body {
     margin:auto;
 
     background-color:rgb(0,153,102);
+    
+    font-family:DejaVuSans-ExtraLight;
 
 /*    border:1px solid;
     border-color:#ff0000;
@@ -75,6 +83,9 @@ body {
 */
 }
 
+.clickable {}
+.clickable:hover {cursor:pointer;}
+
 /*menu*/
 #menu {
     /*keep menu fixed(dont scroll it when you scroll the page)*/
@@ -82,27 +93,28 @@ body {
     top:0px; left:0px;
     background-color:#000000;
     
-    height:7%;
+    height:30px;
 
 }
 
 .menu_item {
     position:fixed;
-    top:0px;
+    top:1%;
     
     font-size:1.2em;
     text-align:center;
 
     margin:auto;
+    vertical-align:middle;
     
-    border-left:1px solid;
+    /*border-left:1px solid;
     border-left-color:#666666;
+    */
 }
 
 #quit:hover,#logout:hover,#accounts:hover {
     color:#fff;
 }
-
 #quit {
     border:0px;
     width:20%;
@@ -115,12 +127,12 @@ body {
     color:#009400;
 }
 #edit_options {
-    top:-1px;
+    top:0px;
     width:35%;
     left:45%;
     color:#000000;
-    height:7.5%;
-    text-indent:0px;
+    /*height:7.5%;*/
+    text-indent:0px;    
 }
 #logout {
     width:20%;
