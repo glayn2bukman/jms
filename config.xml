@@ -11,7 +11,7 @@
     <preference name="android-minSdkVersion" value="14"/>
     
     <!-- use latest version of phonegap...this version is displayed in the phonegap web -->
-    <preference name="phonegap-version" value="cli-6.5.0" />
+    <!-- <preference name="phonegap-version" value="cli-6.5.0" /> -->
 
     <allow-navigation href="*" />
     <access origin="*" />
@@ -25,10 +25,12 @@
     <allow-intent href="market:*" />
 
 
-    <platform name="android">
+    <!-- <platform name="android">
       <icon src="data/JMS.png" width="48" height="48" />
       <splash src="data/JMS.png" width="180" height="180" />
-    </platform>
+    </platform> -->
+
+    <icon src="data/JMS.png" gap:role="default" />
 
     <plugin name="cordova-plugin-whitelist" />
 
