@@ -1,7 +1,8 @@
 <!doctype html>
 <html>
     <head>
-        <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="utf-8"/>
+        <metaname="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Admin</title>
 
         <script>
@@ -55,7 +56,7 @@
             <div id="results_data"></div>
         </div>
 
-        <input type="button" value="Save Results" class="round_corners black  underneath" id="save_results"/>
+        <input type="button" value="Save Results" class="round_corners black  underneath" id="save_results" style="display:none;"/>
         <input type="button" value="Email Results" class="round_corners black  underneath" id="email_results"/>
 
         <div id="n_results_found"></div>
@@ -84,7 +85,7 @@
                 <div class="report_item" id="new_client_label">Known Client</div>
                 <div class="report_value" id="new_client"></div>
 
-                <div class="report_item" id="cp_1_label">Contact Person 1</div>
+                <div class="report_item fullwidth" id="cp_1_label">Contact Person 1</div>
 
                 <div class="report_item" id="cp_1_names_label">Names</div>
                 <div class="report_value" id="cp_1_names"></div>
@@ -95,7 +96,7 @@
                 <div class="report_item" id="cp_1_email_label">Email</div>
                 <div class="report_value" id="cp_1_email"></div>
 
-                <div class="report_item" id="cp_2_label">Contact Person 2</div>
+                <div class="report_item fullwidth" id="cp_2_label">Contact Person 2</div>
 
                 <div class="report_item" id="cp_2_names_label">Names</div>
                 <div class="report_value" id="cp_2_names"></div>
@@ -106,7 +107,7 @@
                 <div class="report_item" id="cp_2_email_label">Email</div>
                 <div class="report_value" id="cp_2_email"></div>
 
-                <div class="report_item" id="orders_label">Orders</div>
+                <div class="report_item fullwidth" id="orders_label">Orders</div>
 
                 <div class="report_item" id="og_label">O.G</div>
                 <div class="report_value" id="og_value"></div>
@@ -117,12 +118,12 @@
                 <div class="report_item" id="dc_label">D.C</div>
                 <div class="report_value" id="dc_value"></div>
 
-                <div class="report_item" id="items_promoted_label">Items Promoted</div>
+                <div class="report_item fullwidth" id="items_promoted_label">Items Promoted</div>
                 <div class="remark_area" id="items_promoted_value">
                     <!-- each item is addd as "item (qty) -> amount<br>" -->
                 </div>
 
-                <div class="report_item" id="remark_label">Remark</div>
+                <div class="report_item fullwidth" id="remark_label">Remark</div>
                 <div class="remark_area" id="remark_value"></div>
 
             </div>
@@ -142,13 +143,69 @@
                 <div class="report_item" id="topic_trained_label">Topic Trained</div>
                 <div class="report_value" id="topic_trained_value"></div>
 
-                <div class="report_item" id="technical_remark_label">Remark</div>
+                <div class="report_item  fullwidth" id="technical_remark_label">Remark</div>
                 <div class="remark_area" id="technical_remark_value"></div>
             </div>
             
             <iframe class="map_div" id="technicalrep_map"> </iframe>
             <div class="report_time" id="technicalrep_report_time"></div>
             <input type="button" id="done_viewing_technicalrep_report" class="round_corners black close_report" value="Done"/>
+        </div>
+
+        <div id="loaded_technicalrep_tp_report_div" class="loaded_report_div">
+            <div class="report_section" id="technicalrep_tp_report_section">
+                <div class="report_item" id="facility_tp_label">Facility</div>
+                <div class="report_value" id="facility_tp_value"></div>
+
+                <div class="report_item" id="support_areas_tp_label">Support Areas</div>
+                <div class="report_value" id="support_areas_tp_value"></div>
+
+                <div class="report_item" id="incharge_tp_label">Incharge</div>
+                <div class="report_value" id="incharge_tp_value"></div>
+
+                <div class="report_item  fullwidth" id="trainees_tp_label">Trainees</div>
+                <div class="remark_area" id="trainees_tp_value"></div>
+
+                <div class="report_item  fullwidth" id="technical_tp_remark_label">Remark</div>
+                <div class="remark_area" id="technical_tp_remark_value"></div>
+            </div>
+            
+            <iframe class="map_div" id="technicalrep_tp_map"> </iframe>
+            <div class="report_time" id="technicalrep_tp_report_time"></div>
+            <input type="button" id="done_viewing_technicalrep_tp_report" class="round_corners black close_report" value="Done"/>
+        </div>
+
+        <div id="loaded_technicalrep_core_report_div" class="loaded_report_div">
+            <div class="report_section" id="technicalrep_core_report_section">
+                <div class="report_item" id="facility_core_label">Facility</div>
+                <div class="report_value" id="facility_core_value"></div>
+
+                <div class="report_item" id="activities_core_label">Actvities</div>
+                <div class="report_value" id="activities_core_value"></div>
+
+                <div class="report_item" id="personnel_engaged_core_label">Engaged Personnel</div>
+                <div class="report_value" id="personnel_engaged_core_value"></div>
+
+                <div class="report_item" id="duration_core_label">Duration</div>
+                <div class="report_value" id="duration_core_value"></div>
+
+                <div class="report_item" id="engagement_core_label">Engagement Status</div>
+                <div class="report_value" id="engagement_core_value"></div>
+
+                <div class="report_item  fullwidth" id="issues_arising_core_remark_label">Issues Arising</div>
+                <div class="remark_area" id="issues_arising_core_remark_value"></div>
+
+                <div class="report_item  fullwidth" id="performance_against_target_core_remark_label">Perfomance Against Target</div>
+                <div class="remark_area" id="performance_against_target_core_remark_value"></div>
+
+                <div class="report_item  fullwidth" id="technical_core_remark_label">Remark</div>
+                <div class="remark_area" id="technical_core_remark_value"></div>
+
+            </div>
+            
+            <iframe class="map_div" id="technicalrep_core_map"> </iframe>
+            <div class="report_time" id="technicalrep_core_report_time"></div>
+            <input type="button" id="done_viewing_technicalrep_core_report" class="round_corners black close_report" value="Done"/>
         </div>
 
 

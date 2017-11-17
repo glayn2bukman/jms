@@ -20,8 +20,6 @@ body {
 
 /*bars(menubar, bottom(submit) bar)*/
 .bars {
-    position:absolute;
-    
     width:100%;
     height:6%;
     
@@ -77,7 +75,7 @@ body {
     /*create rounded corners*/
     border:1px solid;
     border-radius:20px;
-    text-indent:10px;
+    text-indent:5px;
     
     /*create gradient bg*/
     background: #009494; /*just in case the browser daint support gradients*/
@@ -85,121 +83,164 @@ body {
     color:#ffffff;
         
     font-size:1em;
+
+    border:1px solid;
+}
+.black {
+    background: linear-gradient(to right, #000000, #333333); /*attempt gradient bg*/
+    text-indent:5px;
+    color:#ffffff;
+}
+.red {
+    background: linear-gradient(to right, #660000, #dd0000); /*attempt gradient bg*/
+    text-indent:5px;
+    color:#ffffff;
+}
+.green {
+    background: linear-gradient(to right, #006600, #00dd00); /*attempt gradient bg*/
+    text-indent:5px;
+    color:#ffffff;
 }
 
 .section_heading {
     font-size:1.3em;
-    /*font-weight:bold;*/
+    /*font-weight:bold;
+
+    border:1px solid;*/
 }
 
-#main_form {
-    position:absolute;
-    top:4.6%;
-    left:0px;
-    
-    width:100%;
-    height:80%;
-    
-/*    border:1px solid;
-    border-color:#000000;
-*/}
-
-#CMEs_label {
-    position: absolute;
-    left: 1%;
-    top:10%;
-    
-    width:60%;
-    height:6%;
-}
-
-#CMEs {
-    position: absolute;
-    left: 74%;
-    top:14%;
-    
-    width:25%;
-    height:6%;
-}
+.pabsolute {position:absolute;}
 
 #facility_label {
-    position: absolute;
-    left: 1%;
-    top:22%;
+    top:6%;
+    left:1%;
     
-    width:25%;
-    height:6%;
+    width:30%;
+    height:5%;
 }
 
 #facility {
-    position: absolute;
-    left: 1%;
-    top:33%;
+    top:5%;
+    left:30%;
     
-    width:98%;
+    width:68%;
     height:6%;
 }
 
-#area_trained_label {
-    position: absolute;
-    left: 1%;
-    top:38%;
+#activities_label {
+    top:14%;
+    left:1%;
     
-    width:70%;
+    width:40%;
+    height:5%;
+}
+
+#activities{
+    top:14%;
+    left:40%;
+    
+    width:59%;
+    height:6%;
+    
+    font-size:.8em;
+    border-radius:5px;
+}
+
+#engaged_personnel_label {
+    top:23%;
+    left:1%;
+    
+    width:75%;
+    height:5%;
+}
+
+#engaged_personnel {
+    top:22.5%;
+    left:76%;
+    
+    width:21%;
+    height:6%;
+    
+    font-size: .9em;
+}
+
+#duration_label {
+    top:31%;
+    left:1%;
+    
+    width:30%;
+    height:5%;
+}
+
+#hours {
+    top:31%;
+    left:45%;
+    
+    width:26%;
     height:6%;
 }
 
-#area_trained {
-    position: absolute;
-    left: 1%;
-    top:49%;
+#mins {
+    top:31%;
+    left:74%;
+    
+    width:25%;
+    height:6%;
+}
+
+#engagement_status_label {
+    top:39%;
+    left:1%;
+    
+    width:50%;
+    height:5%;
+}
+
+#engagement_status {
+    top:39%;
+    left:50%;
     
     width:50%;
     height:6%;
-    
-    text-indent:5px;
 }
 
-#remark_label {
-    position: absolute;
-    left: 1%;
-    top:53%;
+#issues_arising {
+    top:47%;
+    left:1%;
     
-    width:70%;
-    height:6%;
+    width:97%;
+    height:15%;
+    
+    border-radius:5px;
+}
+
+#performance_against_target {
+    top:65%;
+    left:1%;
+    
+    width:97%;
+    height:10%;
+    
+    border-radius:5px;
 }
 
 #remark {
-    position: absolute;
-    left: 1%;
-    top:64%;
+    top:78%;
+    left:1%;
     
-    width:98%;
-    height:18%;
-}
-
-.buttons {
-    /*create rounded corners*/
-    border:1px solid;
-    border-radius:20px;
-    text-indent:15px;
+    width:97%;
+    height:15%;
     
-    /*create gradient bg*/
-    background: #009494; /*just in case the browser daint support gradients*/
-    background: linear-gradient(to right, #000000, #333333); /*attempt gradient bg*/
-    color:#ffffff;
-        
-    font-size:1em;
+    border-radius:5px;
 }
 
 #send_report {
-    position:absolute;
-
-    top:90%;
-    left:28%;
+    top:96%;
+    left:25%;
     
-    width:48%;
-    height:6%;
+    width:50%;
+    height:7%;
 }
+
 
 

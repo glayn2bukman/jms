@@ -3,6 +3,9 @@ var EDITING = []; // empty if not editing report, otherwise [uname,date,time,lat
 var PROMOTIONAL_ITEMS_HEIGHT = 40;
 var PROMOTIONAL_ITEMS_YPOS = 0;
 
+var EDIT_REPORT_STOP_DATE = "";
+var CURRENT_REPORT_DATE = "";
+
 function check_known_client(){
     document.getElementById("known_client").checked = true;
 }
@@ -58,7 +61,6 @@ function on_locate(position) {
     form.append("client_old", known_client);
     form.append("contact_people", cp);
 
-    // for now, do without items promoted
     var mom  = document.getElementById("promoted_items_items");
     var p_items = "";
     if (mom.hasChildNodes) 
@@ -128,69 +130,113 @@ function fetch_specific_report_handler()
         stop_connecting();
         report = JSON.parse(this.responseText);
 
-/* report::
-      0   uname varchar(30),
-      1   date varchar(8),
-      2   time varchar(8),
-      3   client varchar(50),
-      4   lat varchar(12),
-      5   lon varchar(12),
-      6   client_category varchar(15),
-      7   client_old varchar(3),
-      8   contact_people varchar(120),
-      9   order_generated int,
-      10  order_received int,
-      11  debt_collected int,
-      12  products_promoted varchar(500),
-      13  remark varchar(300)
-*/
-
-        EDITING = [report[0], report[1], report[2],report[4], report[5]];
-
-        // populate fields...
-        document.getElementById("client").value = report[3];
-        document.getElementById("client_category").value = report[6];
-        if (report[7]=="yes") 
+        if (parseInt(CURRENT_REPORT_DATE)>parseInt(change_date(EDIT_REPORT_STOP_DATE)))
         {
-            document.getElementById("known_client").checked = true;
-            document.getElementById("new_client").checked = false;
-        }
-        else 
-        {
-            document.getElementById("known_client").checked = false;
-            document.getElementById("new_client").checked = true;
-        }
-        document.getElementById("og").value = report[9];
-        document.getElementById("or").value = report[10];
-        document.getElementById("dc").value = report[11];
-        document.getElementById("remark").value = report[13];
+        /* report::
+              0   uname varchar(30),
+              1   date varchar(8),
+              2   time varchar(8),
+              3   client varchar(50),
+              4   lat varchar(12),
+              5   lon varchar(12),
+              6   client_category varchar(15),
+              7   client_old varchar(3),
+              8   contact_people varchar(120),
+              9   order_generated int,
+              10  order_received int,
+              11  debt_collected int,
+              12  products_promoted varchar(500),
+              13  remark varchar(300)
+        */
 
-        var cp1="::", cp2="::";
-        if (report[8].indexOf(";")>=0)
-        // we got two contact people...
-        {
-          var cps = report[8].split(";");
-          cp1 = cps[0]; 
-          cp2 = cps[1];  
+            EDITING = [report[0], report[1], report[2],report[4], report[5]];
+
+            // populate fields...
+            document.getElementById("client").value = report[3];
+            document.getElementById("client_category").value = report[6];
+            if (report[7]=="yes") 
+            {
+                document.getElementById("known_client").checked = true;
+                document.getElementById("new_client").checked = false;
+            }
+            else 
+            {
+                document.getElementById("known_client").checked = false;
+                document.getElementById("new_client").checked = true;
+            }
+            document.getElementById("og").value = report[9];
+            document.getElementById("or").value = report[10];
+            document.getElementById("dc").value = report[11];
+            document.getElementById("remark").value = report[13];
+
+            var cp1="::", cp2="::";
+            if (report[8].indexOf(";")>=0)
+            // we got two contact people...
+            {
+              var cps = report[8].split(";");
+              cp1 = cps[0]; 
+              cp2 = cps[1];  
+            }
+            else 
+            // one contact person...
+            {cp1 = report[8];}
+            
+            var cp1_details = cp1.split(":"), cp2_details = cp2.split(":");
+            
+            document.getElementById("cp1_names").value = cp1_details[0];
+            document.getElementById("cp1_contact").value = cp1_details[1];
+            document.getElementById("cp1_email").value = cp1_details[2];
+            document.getElementById("cp2_names").value = cp2_details[0];
+            document.getElementById("cp2_contact").value = cp2_details[1];
+            document.getElementById("cp2_email").value = cp2_details[2];
+
+            // load "items-promoted" too
+
+            document.getElementById("my_reports_div").style.visibility = "hidden";
+
+            document.getElementById("send_report").value = "Update Report";
         }
-        else 
-        // one contact person...
-        {cp1 = report[8];}
+        else
+        {
+            document.getElementById("client_name_value").innerHTML = report[3];
+            document.getElementById("client_segment").innerHTML = report[6];         
+            document.getElementById("new_client_r").innerHTML = report[7];
+            document.getElementById("remark_value").innerHTML = report[13];        
+            document.getElementById("og_value").innerHTML = convert_figure_to_human_readable(report[9]);        
+            document.getElementById("or_value").innerHTML = convert_figure_to_human_readable(report[10]);        
+            document.getElementById("dc_value").innerHTML = convert_figure_to_human_readable(report[11]);        
+
+            // contact personnel...
+            var cp1 = "::", cp2 = "::";
+            var cps = (report[8]).split(";");
+            if (cps.length>1){cp1 = cps[0]; cps2 = cps[1];}
+            else {cp1=cps[0]}
+            
+            var _cp1 = cp1.split(":");
+            document.getElementById("cp_1_names").innerHTML = _cp1[0];
+            document.getElementById("cp_1_contact").innerHTML = _cp1[1];         
+            document.getElementById("cp_1_email").innerHTML = _cp1[2];        
+
+            var _cp2 = cp2.split(":");
+            document.getElementById("cp_2_names").innerHTML = _cp2[0];
+            document.getElementById("cp_2_contact").innerHTML = _cp2[1];
+            document.getElementById("cp_2_email").innerHTML = _cp2[2];        
+
+            // items promoted...
+            if (report[12].length>0)
+            {
+                var items = (report[12]).split(";");
+                var item = [];
+                for (var i=0; i<items.length; i++)
+                {
+                    item = (items[i]).split(":");
+                    document.getElementById("items_promoted_value").innerHTML += item[0]+" ("+convert_figure_to_human_readable(item[1])+") -> "+convert_figure_to_human_readable(item[2])+"<br>";                    
+                }
+            }
+            
+            document.getElementById("view_old_reports_div").style.visibility="visible";
         
-        var cp1_details = cp1.split(":"), cp2_details = cp2.split(":");
-        
-        document.getElementById("cp1_names").value = cp1_details[0];
-        document.getElementById("cp1_contact").value = cp1_details[1];
-        document.getElementById("cp1_email").value = cp1_details[2];
-        document.getElementById("cp2_names").value = cp2_details[0];
-        document.getElementById("cp2_contact").value = cp2_details[1];
-        document.getElementById("cp2_email").value = cp2_details[2];
-
-        // load "items-promoted" too
-
-        document.getElementById("my_reports_div").style.visibility = "hidden";
-
-        document.getElementById("send_report").value = "Update Report";
+        }
     }
     else
     {
@@ -280,6 +326,9 @@ function load_reports()
     }
 
     date = change_date(date);
+    
+    CURRENT_REPORT_DATE = date;
+    
     var user = new USER(window.name);
 
     // generate and send request
@@ -378,6 +427,7 @@ function add_promotional_item_handler()
     if (this.status===200)
     {
         items = JSON.parse(this.responseText);
+        console.log(items);
         
         if (items.length==0)
         {
@@ -479,6 +529,16 @@ function add_promotional_item()
 
 window.onload = function()
 {
+    if (window.name==""){window.location.href="index.html"; return 0;}
+
+    // bind "done_veiwing_report" btn...
+    document.getElementById("done_viewing").onclick = function ()
+    {
+        document.getElementById("view_old_reports_div").style.visibility="hidden";
+    };
+    document.getElementById("view_old_reports_div").style.visibility="hidden";
+
+    // bind new/old-client radiobuttons labels
     document.getElementById("known_client_label").onclick = check_known_client;
     document.getElementById("new_client_label").onclick = check_new_client;
 
@@ -487,7 +547,8 @@ window.onload = function()
     var today = new Date();
     today.setDate(today.getDate()-1);
 
-    for (var i=0; i<5; i++)
+    for (var i=0; i<28; i++)
+    // view reports upto a month back!
     {
         today.setDate(today.getDate()-1);
         var date = today.getDate()+"/"+(today.getMonth()+1)+"/"+today.getFullYear();
@@ -496,6 +557,11 @@ window.onload = function()
         option.innerHTML=date;
         
         mom.appendChild(option);
+        
+        if (i==4) // mark the end of the editable reports... 
+        {
+            EDIT_REPORT_STOP_DATE = date;
+        }
     }
         
     mom.onchange = load_reports;

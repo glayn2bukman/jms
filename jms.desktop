@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=JMS-RT
+GenericName=JMS-RT
+Comment=Joint Medical Stores
+Exec=/home/bukman/Documents/nwjs-v0.26.6-linux-x64/nw /home/bukman/Documents/Html5/JMS-Phonegap
+Icon=/home/bukman/Documents/Html5/JMS-Phonegap/data/JMS.png
+Terminal=false
+Categories=Development;
+Keywords=jms;reporting;
+

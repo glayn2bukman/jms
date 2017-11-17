@@ -152,6 +152,23 @@ function update_data()
         delete_url=["delete_mail_recepients","email"]; 
         add_url=["add_mail_recepients","email"];
     }
+    else if (this.field.title=="Support Areas(TRTP)")
+    {
+        delete_url=["delete_support_areas","name"]; 
+        add_url=["add_support_areas","name"];
+    }
+    else if (this.field.title=="Activities(TRC)")
+    {
+        delete_url=["delete_activities","name"]; 
+        add_url=["add_activities","name"];
+    }
+    else if (this.field.title=="Engagement Statuses(TRC)")
+    {
+        delete_url=["delete_statuses","name"]; 
+        add_url=["add_statuses","name"];
+        url="";
+    }
+
 
     // first delete all items ...(consumes data i admit, look at it when upgrading the JMS HTML app!)
     start_connecting("reaching server...");
@@ -619,6 +636,27 @@ function edit_field_handler()
             ];
         }
 
+        else if(field.title=="Support Areas(TRTP)")
+        {
+            field.cols = [
+                ["Support Area", 40-DELETE_ROW_WIDTH, "str"]
+            ];
+        }
+        
+        else if(field.title=="Activities(TRC)")
+        {
+            field.cols = [
+                ["Activity", 40-DELETE_ROW_WIDTH, "str"]
+            ];
+        }
+        
+        else if(field.title=="Engagement Statuses(TRC)")
+        {
+            field.cols = [
+                ["Status", 40-DELETE_ROW_WIDTH, "str"]
+            ];
+        }
+
         populate_edit_div(field);
     }
     else
@@ -645,6 +683,9 @@ function edit_field()
     else if (this.value=="Client Segments"){url="client_segments";}
     else if (this.value=="Training Topics"){url="training_topics_full";}
     else if (this.value=="Email Recepients"){url="mail_recepients";}
+    else if (this.value=="Support Areas(TRTP)"){url="support_areas";}
+    else if (this.value=="Activities(TRC)"){url="activities";}
+    else if (this.value=="Engagement Statuses(TRC)"){url="statuses";}
     
     req.open("GET", URL+url, true);
     req.target_field = this.value;
@@ -708,7 +749,7 @@ function load_full_report_handler()
             document.getElementById("cp_2_contact").innerHTML = _cp2[1];
             document.getElementById("cp_2_email").innerHTML = _cp2[2];        
 
-            document.getElementById("salesrep_report_time").innerHTML = "("+(report[1]).slice(6,8)+"-"+(report[1]).slice(4,6)+"-"+(report[1]).slice(0,4)+", "+report[2]+")";        
+            document.getElementById("salesrep_report_time").innerHTML = report[0]+"("+(report[1]).slice(6,8)+"-"+(report[1]).slice(4,6)+"-"+(report[1]).slice(0,4)+", "+report[2]+")";        
             
             // items promoted...
             if (report[12].length>0)
@@ -727,7 +768,7 @@ function load_full_report_handler()
 
         }
         else if (report.length==9)
-        // technica lrep
+        // technical rep
         {
 /*
        0     uname varchar(30),
@@ -746,10 +787,78 @@ function load_full_report_handler()
             document.getElementById("topic_trained_value").innerHTML = report[7]+"";
             document.getElementById("technical_remark_value").innerHTML = report[8]+"";
 
-            document.getElementById("technicalrep_report_time").innerHTML = "("+(report[3]).slice(6,8)+"-"+(report[3]).slice(4,6)+"-"+(report[3]).slice(0,4)+", "+report[4]+")";        
+            document.getElementById("technicalrep_report_time").innerHTML = report[0]+" ("+(report[3]).slice(6,8)+"-"+(report[3]).slice(4,6)+"-"+(report[3]).slice(0,4)+", "+report[4]+")";        
 
             document.getElementById("technicalrep_map").src = URL+"map/"+report[5]+"/"+report[6];
             document.getElementById("loaded_technicalrep_report_div").style.visibility="visible";
+
+        }
+        else if (report.length==10)
+        // technical rep - tp
+        {
+/*
+       0     uname varchar(30),
+       1     facility varchar(50),
+       2     date varchar(8),
+       3     time varchar(8),
+       4     lat varchar(12),
+       5     lon varchar(12),
+       6     support_areas varchar(200),
+       7     incharge varchar(50),
+       8     trainees varchar(300),
+       9     remark varchar(300)
+*/
+            document.getElementById("facility_tp_value").innerHTML = report[1];
+            document.getElementById("support_areas_tp_value").innerHTML = report[6]+"";
+            document.getElementById("incharge_tp_value").innerHTML = report[7]+"";
+            document.getElementById("technical_tp_remark_value").innerHTML = report[9]+"";
+
+            document.getElementById("technicalrep_tp_report_time").innerHTML = report[0]+" ("+(report[2]).slice(6,8)+"-"+(report[2]).slice(4,6)+"-"+(report[2]).slice(0,4)+", "+report[3]+")";        
+
+            document.getElementById("technicalrep_tp_map").src = URL+"map/"+report[4]+"/"+report[5];
+            document.getElementById("loaded_technicalrep_tp_report_div").style.visibility="visible";
+
+            var trainees = (report[8]).split(";");
+            var _trainees = "";
+            for (var i=0; i<trainees.length; i++)
+            {
+                var trainee = trainees[i].split(":");
+                _trainees += (trainee[0]+" ("+trainee[1]+")"+"\n");
+            }
+            document.getElementById("trainees_tp_value").innerHTML = _trainees;
+
+        }
+        else if (report.length==13)
+        // technical rep - tc
+        {
+/*
+       0     uname varchar(30),
+       1     facility varchar(50),
+       2     date varchar(8),
+       3     time varchar(8),
+       4     lat varchar(12),
+       5     lon varchar(12),
+       6     activities varchar(200),
+       7     personnels_engaged int,
+       8     issues_arising varchar(300),
+       9     time_spent varchar varchar(6),
+       10     status_of_engagement varchar(50),
+       11     perfomance_against_target varchar(200),
+       12     remark varchar(300)
+*/
+            document.getElementById("facility_core_value").innerHTML = report[1];
+            document.getElementById("activities_core_value").innerHTML = report[6]+"";
+            document.getElementById("personnel_engaged_core_value").innerHTML = report[7]+"";
+            document.getElementById("duration_core_value").innerHTML = report[9]+"";
+            document.getElementById("engagement_core_value").innerHTML = report[10]+"";
+            document.getElementById("issues_arising_core_remark_value").innerHTML = report[8]+"";
+            document.getElementById("performance_against_target_core_remark_value").innerHTML = report[11]+"";
+            document.getElementById("technical_core_remark_value").innerHTML = report[12]+"";
+
+            document.getElementById("technicalrep_core_report_time").innerHTML = report[0]+" ("+(report[2]).slice(6,8)+"-"+(report[2]).slice(4,6)+"-"+(report[2]).slice(0,4)+", "+report[3]+")";        
+
+            document.getElementById("technicalrep_core_map").src = URL+"map/"+report[4]+"/"+report[5];
+            document.getElementById("loaded_technicalrep_core_report_div").style.visibility="visible";
 
         }
 
@@ -832,7 +941,7 @@ function search_db_handler()
         var results_data = document.getElementById("results_data");
 
         // draw respective column titles...
-        if (this.search_category=="Sales Reps" || this.search_category=="Technical Reps")
+        if ((this.search_category).indexOf("Reps")>=0)
         // columns are too many and large so we shall need to scroll horizontally...
         {
             for (var col=0, xpos=0; col<this.cols.length; col++)
@@ -893,6 +1002,7 @@ function search_db_handler()
                 if (this.search_category=="Reports" && col==(this.cols.length-1))
                 {
                     div.style.color = "#ffffff";
+                    div.class += " clickable";
                     div.report_data = (results[row]).slice(0,results[row].length-1);
                     div.onclick = load_full_report;
                 }
@@ -1084,6 +1194,39 @@ function search_db()
         url = "agents_report_all_data";
         form.append("account_type", "technicalrep");
     }
+    else if (search_category=="Technical Reps(TRTP)")
+    {
+        // horizontally scrollable ...
+        req.cols = [
+            // [col_title, %width]
+            ["Date", 20],
+            ["Time", 12],
+            ["Agent", 20],
+            ["Facility", 30],
+            ["Incharge", 30],
+            ["Support Areas", 40],
+        ];
+        
+        url = "agents_report_all_data";
+        form.append("account_type", "technicalrep_tp");
+    }
+    else if (search_category=="Technical Reps(TRC)")
+    {
+        // scrollable
+        req.cols = [
+            // [col_title, %width]
+            ["Date", 20],
+            ["Time", 12],
+            ["Agent", 20],
+            ["Facility", 30],
+            ["Duration", 12],
+            ["Status", 15],
+            ["Activities", 40]
+        ];
+        
+        url = "agents_report_all_data";
+        form.append("account_type", "technicalrep_core");
+    }
     else if (search_category=="Reports")
     {
         req.cols = [
@@ -1251,11 +1394,16 @@ function mail_results()
 
 window.onload = function() 
 {
+    if (window.name==""){window.location.href="index.html"; return 0;}
+    
     // hide edit_div
     document.getElementById("edit_div").style.visibility = "hidden";
 
     // edit options ...
-    var edit_options = ["Edit","Promotional Items", "Client Segments", "Training Topics", "Email Recepients"];
+    var edit_options = ["Edit","Promotional Items", "Client Segments", 
+                        "Training Topics", "Email Recepients",
+                        "Support Areas(TRTP)", "Activities(TRC)", "Engagement Statuses(TRC)"
+                       ];
 
     for (var i=0; i<edit_options.length; i++)
     {
@@ -1272,7 +1420,9 @@ window.onload = function()
     var search_categories = ["Reports","Clients Visited", 
                             "New Clients","Products Promoted",
                             "Debts Collected","Topics Taught",
-                            "Sales Reps","Technical Reps", "Client Segments","Orders"];
+                            "Sales Reps","Technical Reps",
+                            "Technical Reps(TRTP)","Technical Reps(TRC)",
+                            "Client Segments","Orders"];
     search_categories.sort();
     search_categories.splice(0,0,"Search Category"); // insert item
 
@@ -1324,9 +1474,31 @@ window.onload = function()
     };
     document.getElementById("loaded_technicalrep_report_div").style.visibility="hidden";
 
+    document.getElementById("done_viewing_technicalrep_tp_report").onclick = function ()
+    {
+        document.getElementById("loaded_technicalrep_tp_report_div").style.visibility="hidden";
+    };
+    document.getElementById("loaded_technicalrep_tp_report_div").style.visibility="hidden";
+
+    document.getElementById("done_viewing_technicalrep_core_report").onclick = function ()
+    {
+        document.getElementById("loaded_technicalrep_core_report_div").style.visibility="hidden";
+    };
+    document.getElementById("loaded_technicalrep_core_report_div").style.visibility="hidden";
+
+    // deactivate "edit" and "accounts" section if not super-user
+    var user = new USER(window.name);
+    if (user.uname!="admin")
+    {
+        document.getElementById("accounts").innerHTML = "My Account";
+        document.getElementById("accounts").onclick = edit_account;
+        document.getElementById("edit_options").disabled = true;
+    }
+
+
     // set body size to a fixed value corresponding to the screen...
-    document.getElementById("body").style.height = window.innerHeight+"px";
-    document.getElementById("body").style.width = window.innerWidth+"px";
+    //document.getElementById("body").style.height = window.innerHeight+"px";
+    //document.getElementById("body").style.width = window.innerWidth+"px";
 }
 
 

@@ -17,3 +17,5 @@ NOTE: 1) start both flask and twisted servers to be on safe side.
                         by the remote twisted server. Its slower as all pages are loaded remotely but
                         it only needs to be installed once as all updates made to the project are
                         effected emmediately the user accesses the remote files!
+
+**** the program deamons are in /etc/init.d/jms-deamon.sh

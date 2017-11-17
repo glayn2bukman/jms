@@ -1,0 +1,15 @@
+/* this file enables us to run this script from the desktop environment using nwjs
+   my nwjs installation is in path "/home/bukman/Documents/nwjs-v0.26.6-linux-x64/nw"
+*/
+{
+  "name": "JMS-Linux",
+  /*"version": "1.0.1",*/
+  "main": "index.html",
+  "icon":"data/JMS.png",
+
+    "window": {
+        "toolbar": false,
+        "width": 1200,
+        "height": 760
+      }
+}

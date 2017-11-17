@@ -86,6 +86,8 @@ function fetch_training_topics_handler()
 }
 
 window.onload = function(){
+    if (window.name==""){window.location.href="index.html"; return 0;}
+
     // fetch the latest training topics...
     var req = new XMLHttpRequest();
     

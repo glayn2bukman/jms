@@ -28,22 +28,36 @@ function login_handler(){
               });
         }
 
-        if ( this.responseText.indexOf(";Admin")>=0 )
+        var user = new USER(window.name);
+
+        if ( user.account_type=="Admin" )
         {
             // load admin page...        
             window.location.href = "admin.html";
         }
 
-        else if ( this.responseText.indexOf(";SalesRep")>=0 )
+        else if ( user.account_type=="SalesRep" )
         {
             // load salesrep page...        
             window.location.href = "salesrep.html";
         }
 
-        else if ( this.responseText.indexOf(";TechnicalRep")>=0 )
+        else if ( user.account_type=="TechnicalRep" )
         {
             // load salesrep page...        
             window.location.href = "technicalrep.html";
+        }
+
+        else if ( user.account_type=="TechnicalRep-TP" )
+        {
+            // load salesrep page...        
+            window.location.href = "technicalrep_tp.html";
+        }
+
+        else if ( user.account_type=="TechnicalRep-Core" )
+        {
+            // load salesrep page...        
+            window.location.href = "technicalrep_core.html";
         }
 
     }

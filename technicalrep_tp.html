@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>TechnicalRep (TRTP)</title>
+
+        <script>
+            screen.orientation.lock('portrait');
+        </script>
+
+        <link href="scripts/technicalrep_tp.css" rel="stylesheet"/>
+        
+        <!-- sweet alert -->
+        <script src="scripts/sweetalert/sweetalert.min.js"></script>
+        <link rel="stylesheet" href="scripts/sweetalert/sweetalert.css">
+
+        <script src="scripts/globals.js"></script>
+    </head>
+
+    <body id="body">
+        <p class="bars pabsolute" id="menu">
+            <p class="menu_item" id="quit" onclick="javascript:quit();"><b>Q</b>uit</p>
+            <p class="menu_item" id="logout" onclick="javascript:logout();"><b>L</b>ogout</p>
+            <p class="menu_item" id="my_account" onclick="javascript:edit_account();"><b>M</b>y Account</p>
+        </p>
+
+        <form action="javascript:send_report();">
+            <div class="section_heading pabsolute" id="facility_label">Facility</div>
+                <input type="text" class="round_corners pabsolute" id="facility" placeholder="facility" required/>
+
+            <div class="section_heading pabsolute" id="areas_supported_label">Support Areas</div>
+                <select class="round_corners pabsolute" id="areas_supported" multiple required></select>
+
+            <div class="section_heading pabsolute" id="incharge_label">Incharge/Admin</div>
+                <input type="text" class="round_corners pabsolute" id="incharge_names" placeholder="full names" required/>
+                <input type="number" class="round_corners pabsolute" id="incharge_contact" placeholder="contact" required/>
+
+            <div class="section_heading pabsolute" id="trainees_label">Trainees</div>
+                <div class="pabsolute" id="trainees_div"></div>
+
+            <input type="button" class="round_corners pabsolute green trainnes_btns" id="add_trainee" />
+            <input type="button" class="round_corners pabsolute red trainnes_btns" id="remove_trainee" />
+
+            <textarea class="round_corners pabsolute" id="remark" placeholder="Remark" required></textarea>
+
+            <input type="submit" class="round_corners black pabsolute" value="Submit Report" id="send_report">
+        </form>
+        
+        <script src="scripts/technicalrep_tp.js"></script>
+    </body>
+
+</html>
