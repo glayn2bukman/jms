@@ -1003,6 +1003,7 @@ function search_db_handler()
                 {
                     div.style.color = "#ffffff";
                     div.class += " clickable";
+                    div.style.cursor = "pointer";
                     div.report_data = (results[row]).slice(0,results[row].length-1);
                     div.onclick = load_full_report;
                 }
