@@ -408,17 +408,40 @@ function remove_promotional_item()
 
 function update_amount()
 {
-    if (isNaN(this.qty.value))
+    if (this.qty)
     {
-        swal({
-            title: "Error",
-            text: "invalid quantity(qty) provided -> "+this.qty.value,
-            type: "info",
-            confirmButtonText: "Ok",
-          });    
-    }
+        if (isNaN(this.qty.value))
+        {
+            swal({
+                title: "Error",
+                text: "invalid quantity(qty) provided -> "+this.qty.value,
+                type: "info",
+                confirmButtonText: "Ok",
+              }); 
+              
+              return;  
+        }
 
-    this.amount.innerHTML = convert_figure_to_human_readable(document.getElementById(this.value).unit_price*this.qty.value);
+        this.amount.innerHTML = convert_figure_to_human_readable(document.getElementById(this.value).unit_price*this.qty.value);
+    }
+    else
+    // qty istelf has triggered the event
+    {
+        if (isNaN(this.value))
+        {
+            swal({
+                title: "Error",
+                text: "invalid quantity(qty) provided -> "+this.qty.value,
+                type: "info",
+                confirmButtonText: "Ok",
+              });    
+            
+            return;
+        }
+
+        this.amount.innerHTML = convert_figure_to_human_readable(document.getElementById(this.p_item.value).unit_price*this.value);
+
+    }
 
 }
 
@@ -427,9 +450,8 @@ function add_promotional_item_handler()
     if (this.status===200)
     {
         items = JSON.parse(this.responseText);
-        console.log(items);
         
-        if (items.length==0)
+        if (!items.length)
         {
             swal({
                 title: "Data Info",
@@ -490,6 +512,8 @@ function add_promotional_item_handler()
             
         p_item.qty = qty;
         p_item.amount = amount; 
+        qty.p_item = p_item;
+        qty.amount = amount;
 
         div.appendChild(p_item);
         div.appendChild(qty);
@@ -498,6 +522,10 @@ function add_promotional_item_handler()
         document.getElementById("promoted_items_items").appendChild(div);
         
         p_item.onchange = update_amount;
+        qty.onchange = update_amount;
+        qty.onkeyup = update_amount;
+        
+        console.log("....");
         
         PROMOTIONAL_ITEMS_YPOS += PROMOTIONAL_ITEMS_HEIGHT;
         
