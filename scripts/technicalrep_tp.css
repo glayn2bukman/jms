@@ -1,229 +1,25 @@
-body {
-    /*let font-size of all elements in body by 100% of the default
-      this way, we can specify any other font in the body relative to this ie using the "em" units
-      eg 1.5em = 150% of the body font-size. Its easier and much better to control fonts this way
-    */
-    font-size:100%;
+.trainee_btn{
+    position:relative;
+    left: 85%;
+    width: 15%;
 
-    position:absolute;
-    top:0px; left:0px;
-
-/*    width:99%; height:100%;
+/*    
+    min-width: 30px;
+    max-width: 40px;
 */
-    margin:auto;
 
-    background-color:rgb(0,153,102);
+    font-size: 1.2em;
+}
 
-/*    border:1px solid;
-    border-color:#ff0000;
-*/}
-
-/*bars(menubar, bottom(submit) bar)*/
-.bars {
-    width:100%;
-    height:6%;
+.delete_trainee{
+    height: 25px;
+    border: 0px;
+    line-height: 25px;
+    color: red;
+    text-align : center;
+    border-radius : 5px;
+    text-indent: -2px;
     
-    margin:auto;
-    
-/*    border:1px solid;
-    border-color:#ffff00;
-*/
+    font-weight: bold;
+
 }
-
-/*menu*/
-#menu {
-    /*keep menu fixed(dont scroll it when you scroll the page)*/
-    position:fixed;
-    top:0px; left:0px;
-    background-color:#000000;
-    
-    height:4.5%;
-}
-
-.menu_item {
-    position:fixed;
-    top:0px;
-    
-    font-size:1.2em;
-    text-align:center;
-
-    margin:auto;
-    
-    border-left:1px solid;
-    border-left-color:#666666;
-}
-
-#quit {
-    border:0px;
-    width:30%;
-    left:0px;
-    color:#bb0000;
-}
-#logout {
-    width:30%;
-    left:30%;
-    color:#009494;
-}
-#my_account {
-    width:40%;
-    left:60%;
-    color:#00bb00;
-}
-
-
-.round_corners {
-    /*create rounded corners*/
-    border:1px solid;
-    border-radius:20px;
-    text-indent:5px;
-    
-    /*create gradient bg*/
-    background: #009494; /*just in case the browser daint support gradients*/
-    background: linear-gradient(to right, #333333, #009494); /*attempt gradient bg*/
-    color:#ffffff;
-        
-    font-size:1em;
-
-    border:1px solid;
-}
-.black {
-    background: linear-gradient(to right, #000000, #333333); /*attempt gradient bg*/
-    text-indent:5px;
-    color:#ffffff;
-}
-.red {
-    background: linear-gradient(to right, #660000, #dd0000); /*attempt gradient bg*/
-    text-indent:5px;
-    color:#ffffff;
-}
-.green {
-    background: linear-gradient(to right, #006600, #00dd00); /*attempt gradient bg*/
-    text-indent:5px;
-    color:#ffffff;
-}
-
-.section_heading {
-    font-size:1.3em;
-    /*font-weight:bold;
-
-    border:1px solid;
-    */
-}
-
-.pabsolute {position:absolute;}
-
-#facility_label {
-    top:6%;
-    left:1%;
-    
-    width:30%;
-    height:5%;
-}
-
-#facility {
-    top:5%;
-    left:30%;
-    
-    width:69%;
-    height:6%;
-}
-
-#areas_supported_label {
-    top:14%;
-    left:1%;
-    
-    width:40%;
-    height:5%;
-}
-
-#areas_supported{
-    top:14%;
-    left:40%;
-    
-    width:59%;
-    height:6%;
-    
-    font-size:.8em;
-    border-radius:5px;
-}
-
-#incharge_label {
-    top:23%;
-    left:1%;
-    
-    width:70%;
-    height:5%;
-}
-
-#incharge_names {
-    top:28.5%;
-    left:1%;
-    
-    width:58%;
-    height:6%;
-}
-#incharge_contact {
-    top:28.5%;
-    left:61%;
-    
-    width:38%;
-    height:6%;
-}
-
-#trainees_label{
-    top:37%;
-    left:1%;
-    height:5%;
-    width:70%;
-}
-
-#trainees_div {
-    top:43%;
-    left:1%;
-    
-    width:98%;
-    height:25%;
-    
-    border:1px solid;
-    border-color:#444;
-    
-    overflow:auto;
-}
-
-.trainees_btns {
-    font-size: 1.5em;
-    text-indent:0px;
-    text-align:center;
-
-    width:8%;
-    height:4%;
-}
-
-#add_trainee{
-    top:69%;
-    left:92%;
-}
-#remove_trainee{
-    top:69%;
-    left:82%;
-}
-
-#remark {
-    top:75%;
-    left:1%;
-    width:98%;
-    height:12%;
-    
-    border-radius:5px;
-}
-
-#send_report {
-    top:90%;
-    left:25%;
-    
-    width:50%;
-    height:7%;
-}
-
-
-

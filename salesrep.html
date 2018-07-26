@@ -1,158 +1,325 @@
 <!doctype html>
 <html>
     <head>
-        <meta charset="utf-8">
-        <title>SalesRep</title>
+        <meta charset="utf-8">        
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
 
-        <script>
-            screen.orientation.lock('portrait');
-        </script>
 
-        <link href="scripts/salesrep.css" rel="stylesheet"/>
-        <script src="scripts/globals.js"></script>
+        <title>JMS RT</title>
+    
+        <link rel="stylesheet" href="scripts/bootstrap-3.3.7/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="scripts/salesrep.css">
+
+        <!-- jQuery library -->
+        <script src="scripts/jquery-3.3.1.min.js"></script>
+
+        <!-- Latest compiled JavaScript -->
+        <script src="scripts/bootstrap-3.3.7/dist/js/bootstrap.min.js"></script>
+        <script src="scripts/salesrep.js"></script>    
+        <script src="scripts/salesrep2.js"></script>    
+
+        <link rel="stylesheet" href="scripts/rotate.css">
+        <script src="scripts/globals.js"></script>    
 
         <!-- sweet alert -->
         <script src="scripts/sweetalert/sweetalert.min.js"></script>
         <link rel="stylesheet" href="scripts/sweetalert/sweetalert.css">
 
+        <script>
+            $(document).ready(function () {
+              $(".navbar-nav li div").click(function(event) {
+                $(".navbar-collapse").collapse('hide');
+              });
+            });
+
+        </script>
+        
+        <style>
+            body { 
+                padding-top: 70px;
+                /*background-color: #273;*/ 
+            } /*otherwise, nav-bar will block content bhynd it*/
+            .menu-item { font-size: 1.2em;}
+            .panel {background-color:#fff;}
+        </style>
+        
     </head>
 
-    <body id="body">
-        <p class="bars" id="menu">
-            <p class="menu_item" id="quit" onclick="javascript:quit();"><b>Q</b>uit</p>
-            <p class="menu_item" id="logout" onclick="javascript:logout();"><b>L</b>ogout</p>
-            <p class="menu_item" id="my_account" onclick="javascript:edit_account();"><b>M</b>y Account</p>
-        </p>
-
-        <form id="main_form" action="javascript:submit_report();">
-            <p id="client_label">Client's Name<p>
-            <input type="text" id="client" name="client" class="round_corners" placeholder="client name" required/>
-
-            <p id="segment_label">Segment<p>
-                <!--
-                <input type="text" name="client_category" id="client_category" class="round_corners" placeholder="client segment" required/>
-                -->
-            <select name="client_category" id="client_category" class="round_corners" required/>
-            </select>
-
-            <!-- select "known client" by default -->
-            <p id="known_client_label">Known Client</p>
-            <input type="radio" name="client_known" id="known_client" value="Known Client" checked/>
-
-            <p id="new_client_label">New Client</p>
-            <input type="radio" name="client_known" id="new_client" value="New Client"/>
-    
-            <p class="section_heading" id="contact_personnel">Contact Personnel</p>
-
-            <div class="cp" id="cp1_div">
-                <input type="text" name="cp1_names" id="cp1_names" class="round_corners" placeholder="full names" required/>
-                <input type="number" name="cp1_contact" id="cp1_contact" class="round_corners" placeholder="contact" required/>
-                <input type="email" name="cp1_email" id="cp1_email" class="round_corners" placeholder="email"/>
-            </div>    
-
-            <div class="cp" id="cp2_div">
-                <input type="text" name="cp2_names" id="cp2_names" class="round_corners" placeholder="full names"/>
-                <input type="number" name="cp2_contact" id="cp2_contact" class="round_corners" placeholder="contact"/>
-                <input type="email" name="cp2_email" id="cp2_email" class="round_corners" placeholder="email"/>
-            </div>    
-
-            <p class="section_heading" id="orders_section">Orders</p>
-                <input type="number" name="og" id="og" class="round_corners" placeholder="Order Generated" required/>
-                <input type="number" name="or" id="or" class="round_corners" placeholder="Order Received" required/>
-                <input type="number" name="dc" id="dc" class="round_corners" placeholder="Debt Collected" required/>
-
-            <p class="section_heading" id="items_promoted_section">Items Promoted</p>
-
-            <div id="items_promoted_table">                
-                <div id="items_promoted_cols">
-                    <div id="items_promoted_item">Item</div>
-                    <div id="items_promoted_qty">Qty</div>
-                    <div id="items_promoted_amount">Amount</div>
-                </div>
-                <div id="promoted_items_items"></div>
-            </div>
-
-                <input type="button" id="remove_promotional_item" class="promotional_items_buttons" />
-                <input type="button" id="add_promotional_item" class="promotional_items_buttons" />
-
-            <textarea placeholder="remark(s)" name="remark" id="remark" required/></textarea>
-
-            <p class="bars" id="bottom_bar">
-                <input type="button" value="My Reports" id="my_reports" class="buttons"/>
-                <input type="submit" value="Send Report" id="send_report" class="buttons"/>
-            </p>
-        </form>
-
-        <div id="my_reports_div">
-            <div id="my_reports_heading">My Reports</div>
-            <select id="report_date" class="round_corners green">
-                <option value="date" style="visibility:hidden; text-indent:5px;">Report Date</option>
-                <option value="todays">Today's Reports</option>
-                <option value="yesterdays">Yesterday's Reports</option>
-            </select>
-            <div id="time_col">Time</div>
-            <div id="client_col">Client/Facility</div>
-
-            <div id="loaded_reports_div"></div>
-            <input type="button" id="back_to_dashboard" class="round_corners black" value="Back"/>
+    <body>
+        <div class="rotate" id="loading_div"
+            style="
+                position:fixed; 
+                left:45%; 
+                top:45%; 
+                z-index:5; 
+                font-size:2em;
+                color:green;
+                display: none;
+                ">
+            <strong>......</strong>
         </div>
 
-            <div class="report_section" id="view_old_reports_div">
-                <div class="report_item" id="client_name_label">Client</div>
-                <div class="report_value" id="client_name_value"></div>
+        <div class="modal fade" id="edit-account-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Edit Account</h4>
+              </div>
+              <div class="modal-body">
+                    <label>Password</label>
+                    <input id="account_pswd" type="text" class="form-control" placeholder="if empty, wont be updated">
+                    <br>
+                    <label>Email</label>
+                    <input id="account_email" type="text" class="form-control" placeholder="if empty, wont be updated">
+                    <br>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Back</button>
+                <button type="button" class="btn btn-success" onclick="_edit_account()">Update</button>
+              </div>
+            </div>
+          </div>
+        </div>
 
-                <div class="report_item" id="client_segment_label">Client Segment</div>
-                <div class="report_value" id="client_segment"></div>
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+          <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>                        
+              </button>
+              <a class="navbar-brand" href="#">JMS RT (SalesRep)</a>
+            </div>
+            <div>
+              <div class="collapse navbar-collapse" id="myNavbar">
+                <ul class="nav navbar-nav">
+                  <li class="menu-item"><div><strong style="color: #ab2;" 
+                  onclick="document.getElementById('chatroom').style.display = 'block';">Support</strong></div></li><br>
+                  <li class="menu-item"><div><strong style="color: #3b2;" onclick="edit_account()">My Account</strong></div></li><br>
+                  <li class="menu-item"><div><strong style="color: #369;" onclick="logout()">Logout</strong></div></li><br>
+                  <li class="menu-item"><div><strong style="color: #b32;" onclick="quit()">Quit Application</strong></div></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </nav>
 
-                <div class="report_item" id="new_client_label_r">Known Client</div>
-                <div class="report_value" id="new_client_r"></div>
+        <div class="modal fade" id="my-reports-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">My Reports</h4>
+              </div>
+              <div class="modal-body">
+                    <div class="input-group">
+                        <span class="input-group-addon">Date</span>
+                        <select id="report_date" class="form-control" onchange="fetch_my_reports(this)">
+                            <option>-- select date --</option>
+                            <option>Today's Reports</option>
+                            <option>Yesterday's Reports</option>
+                        </select>
+                    </div><br>
+                    
+                    <table class="table table-responsive table-striped table-bordered">
+                        <thead style="background-color: #444; color:white;">
+                            <tr>
+                                <th>Time</th>
+                                <th>Client/Facility</th>
+                            </tr>
+                        </thead>
+                        
+                        <tbody id="my_reports_tbody"></tbody>
+                    </table>
 
-                <div class="report_item" id="cp_1_label">Contact Person 1</div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Back</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="container">
+            <form>
+                <div id="clinet_details_panel" class="panel panel-success">
+                    <div class="panel-heading"><strong>Client Details</strong></div>
 
-                <div class="report_item" id="cp_1_names_label">Names</div>
-                <div class="report_value" id="cp_1_names"></div>
+                    <br>
+                    <div class="input-group">
+                        <span class="input-group-addon">Name</span>
+                        <input type="text" class="form-control" placeholder="client name" required>
+                    </div><br>
 
-                <div class="report_item" id="cp_1_contact_label">Contact</div>
-                <div class="report_value" id="cp_1_contact"></div>
+                    <div class="input-group">
+                        <span class="input-group-addon">Segment</span>
+                        <select id="client_category" class="form-control"></select>
+                    </div><br>
 
-                <div class="report_item" id="cp_1_email_label">Email</div>
-                <div class="report_value" id="cp_1_email"></div>
-
-                <div class="report_item" id="cp_2_label">Contact Person 2</div>
-
-                <div class="report_item" id="cp_2_names_label">Names</div>
-                <div class="report_value" id="cp_2_names"></div>
-
-                <div class="report_item" id="cp_2_contact_label">Contact</div>
-                <div class="report_value" id="cp_2_contact"></div>
-
-                <div class="report_item" id="cp_2_email_label">Email</div>
-                <div class="report_value" id="cp_2_email"></div>
-
-                <div class="report_item" id="orders_label">Orders</div>
-
-                <div class="report_item" id="og_label">O.G</div>
-                <div class="report_value" id="og_value"></div>
-
-                <div class="report_item" id="or_label">O.R</div>
-                <div class="report_value" id="or_value"></div>
-
-                <div class="report_item" id="dc_label">D.C</div>
-                <div class="report_value" id="dc_value"></div>
-
-                <div class="report_item" id="items_promoted_label">Items Promoted</div>
-                <div class="remark_area" id="items_promoted_value">
-                    <!-- each item is addd as "item (qty) -> amount<br>" -->
+                    <label class="radio-inline">
+                        <input id="client_known" type="radio" name="client_new" checked>Known Client
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="client_new">New Client
+                    </label>
+                    <p></p>
                 </div>
 
-                <div class="report_item" id="remark_label">Remark</div>
-                <div class="remark_area" id="remark_value"></div>
+                <p></p>
+                <div id="contact_personnel_panel" class="panel panel-success">
+                    <div class="panel-heading"><strong>Contact Personnel</strong></div>
 
-                <input type="button" id="done_viewing" class="round_corners black" value="Done"/>
-            </div>
+                        <br>
+                        <div class="input-group">
+                            <span class="input-group-addon">Name</span>
+                            <input type="text" class="form-control" placeholder="full names">
+                        </div><br>
 
-    
-        <script src="scripts/salesrep.js"></script>
+                        <div class="input-group">
+                            <span class="input-group-addon">contact</span>
+                            <input type="text" class="form-control" placeholder="07--------">
+                        </div><br>
+
+                        <div class="input-group">
+                            <span class="input-group-addon">Email</span>
+                            <input type="text" class="form-control" placeholder="dummy@email.com">
+                        </div><br>
+
+                    <h5 style="padding-left: 10px;">Second Contact Personnel</h5>
+                        <div class="input-group">
+                            <span class="input-group-addon">Name</span>
+                            <input type="text" class="form-control" placeholder="full names">
+                        </div><br>
+
+                        <div class="input-group">
+                            <span class="input-group-addon">contact</span>
+                            <input type="text" class="form-control" placeholder="07--------">
+                        </div><br>
+
+                        <div class="input-group">
+                            <span class="input-group-addon">Email</span>
+                            <input type="text" class="form-control" placeholder="dummy@email.com">
+                        </div><br>
+
+                </div>
+
+                <p></p>
+                <div id="orders_panel" class="panel panel-success">
+                    <div class="panel-heading"><strong>Orders</strong></div>
+
+                    <br>
+                    <div class="input-group">
+                        <span class="input-group-addon">Order Generated</span>
+                        <input type="number" class="form-control" placeholder="10,000">
+                    </div><br>
+
+                    <div class="input-group">
+                        <span class="input-group-addon">Order Received</span>
+                        <input type="number" class="form-control" placeholder="10,000">
+                    </div><br>
+
+                    <div class="input-group">
+                        <span class="input-group-addon">Debt Collected</span>
+                        <input type="number" class="form-control" placeholder="10,000">
+                    </div><br>
+
+                </div>
+
+                <p></p>
+                <div class="panel panel-success">
+                    <div class="panel-heading"><strong>Promoted Items</strong></div>
+
+                    <div class="row" style="color:#999;">
+                            <div class="col-xs-1"></div>
+                            <div class="col-xs-8"><strong>Item</strong></div>
+                            <div class="col-xs-2"><strong>Qty</strong></div>
+                    </div>
+
+                    <div class="container" id="promoted_items_div"></div>
+                    
+                    <p></p>
+                    <div>
+                        <!--
+                            <button type="button" class="btn btn-danger promoted_items_btn">-</button>
+                        -->
+                        <button 
+                            type="button" 
+                            class="btn btn-success promoted_items_btn"
+                            onclick="new_promotional_item()"
+                            >+</button>
+                    </div>
+                </div>
+                
+                <p></p>
+                <div class="form-group">
+                    <label for="comment">Remark</label>
+                    <textarea id="remark" class="form-control" rows="5" placeholder="type here"></textarea>
+                </div>                 
+
+                <p></p>
+                <div>
+                    <button type="button" class="btn btn-info" style="width:48%;" 
+                        onclick="
+                        document.getElementById('report_date').value = '-- select date --';
+                        show_modal('my-reports-modal');">My Reports</button>
+                    <button id="send" type="button" class="btn btn-success" style="width:48%; left:50%;" onclick="submit_report()">Submit</button>
+                </div>
+                <p></p>
+
+            </form>
+        </div>
+
+        <div id="chatroom" style="
+            position:fixed;
+            left: 0%;
+            top:0%;
+            
+            width: 100%;
+            height: 100%;
+            
+            background: #111;
+            opacity: 0.99;
+
+            z-index:1000000;
+            
+            display: none;
+            
+            overflow: auto;
+        ">
+            <object data="" 
+                style="
+                    position:fixed; 
+                    left:0%; 
+                    width:100%; 
+                    height:90%;
+                    top: 2%;
+                    
+                    
+                    border-radius: 5px;
+                "
+            ></object>
+            
+            <button style="
+                position:fixed;
+
+                width: 30%;
+                left: 35%;
+                
+                top: 94%;
+                height: 5%;
+                
+                background: red;
+                color: white;
+                
+                border: 2px;
+                border-radius: 5px;
+                "
+                
+                onclick="document.getElementById('chatroom').style.display = 'none';"
+            >Back</button>      
+        </div>    
+
     </body>
-    
-    </html>
+</html>

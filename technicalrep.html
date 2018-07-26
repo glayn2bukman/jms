@@ -1,52 +1,238 @@
 <!doctype html>
 <html>
     <head>
-        <meta charset="utf-8">
-        <title>TechnicalRep</title>
+        <meta charset="utf-8">        
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
 
-        <script>
-            screen.orientation.lock('portrait');
-        </script>
 
-        <link href="scripts/technicalrep.css" rel="stylesheet"/>
-        
+        <title>JMS RT</title>
+    
+        <link rel="stylesheet" href="scripts/bootstrap-3.3.7/dist/css/bootstrap.min.css">
+
+        <!-- jQuery library -->
+        <script src="scripts/jquery-3.3.1.min.js"></script>
+
+        <!-- Latest compiled JavaScript -->
+        <script src="scripts/bootstrap-3.3.7/dist/js/bootstrap.min.js"></script>    
+
+        <link rel="stylesheet" href="scripts/rotate.css">
+        <script src="scripts/globals.js"></script>    
+        <script src="scripts/technicalrep.js"></script>    
+
         <!-- sweet alert -->
         <script src="scripts/sweetalert/sweetalert.min.js"></script>
         <link rel="stylesheet" href="scripts/sweetalert/sweetalert.css">
 
-        <script src="scripts/globals.js"></script>
+        <script>
+            $(document).ready(function () {
+              $(".navbar-nav li div").click(function(event) {
+                $(".navbar-collapse").collapse('hide');
+              });
+            });
+        </script>
+        
+        <style>
+            body { 
+                padding-top: 70px;
+                /*background-color: #273;*/ 
+            } /*otherwise, nav-bar will block content bhynd it*/
+            .menu-item { font-size: 1.2em;}
+            .panel {background-color:#fff;}
+        </style>
+        
     </head>
 
-    <body id="body">
-        <p class="bars" id="menu">
-            <p class="menu_item" id="quit" onclick="javascript:quit();"><b>Q</b>uit</p>
-            <p class="menu_item" id="logout" onclick="javascript:logout();"><b>L</b>ogout</p>
-            <p class="menu_item" id="my_account" onclick="javascript:edit_account();"><b>M</b>y Account</p>
-        </p>
+    <body>
+        <div class="rotate" id="loading_div"
+            style="
+                position:fixed; 
+                left:45%; 
+                top:45%; 
+                z-index:5; 
+                font-size:2em;
+                color:green;
+                display: none;
+                ">
+            <strong>......</strong>
+        </div>
 
-        <form id="main_form" action="javascript:submit_report()">
+        <div class="modal fade" id="edit-account-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Edit Account</h4>
+              </div>
+              <div class="modal-body">
+                    <label>Password</label>
+                    <input id="account_pswd" type="text" class="form-control" placeholder="if empty, wont be updated">
+                    <br>
+                    <label>Email</label>
+                    <input id="account_email" type="text" class="form-control" placeholder="if empty, wont be updated">
+                    <br>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Back</button>
+                <button type="button" class="btn btn-success" onclick="_edit_account()">Update</button>
+              </div>
+            </div>
+          </div>
+        </div>
 
-            <p class="section_heading" id="CMEs_label">CMEs Conducted &ensp; </p>
-                <select name="CMEs" id="CMEs" class="round_corners" required>
-                    <option value="1" selected>1</option>
-                    <option value="1">2</option>
-                </select>
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+          <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>                        
+              </button>
+              <a class="navbar-brand" href="#">JMS RT (TechnicalRep)</a>
+            </div>
+            <div>
+              <div class="collapse navbar-collapse" id="myNavbar">
+                <ul class="nav navbar-nav">
+                  <li class="menu-item"><div><strong style="color: #ab2;" 
+                  onclick="document.getElementById('chatroom').style.display = 'block';">Support</strong></div></li><br>
+                  <li class="menu-item"><div><strong style="color: #3b2;">My Account</strong></div></li><br>
+                  <li class="menu-item"><div><strong style="color: #369;" onclick="logout()">Logout</strong></div></li><br>
+                  <li class="menu-item"><div><strong style="color: #b32;">Quit Application</strong></div></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </nav>
 
-            <p  class="section_heading" id="facility_label"> Facility</p>
-                <input type="text" class="round_corners" name="facility" id="facility" placeholder="Facility" required/>
+        <div class="modal fade" id="my-reports-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">My Reports</h4>
+              </div>
+              <div class="modal-body">
+                    <div class="input-group">
+                        <span class="input-group-addon">Date</span>
+                        <select id="report_date" class="form-control" onchange="fetch_my_reports(this)">
+                            <option>-- select date --</option>
+                            <option>Today's Reports</option>
+                            <option>Yesterday's Reports</option>
+                        </select>
+                    </div><br>
+                    
+                    <table class="table table-responsive table-striped table-bordered">
+                        <thead style="background-color: #444; color:white;">
+                            <tr>
+                                <th>Time</th>
+                                <th>Client/Facility</th>
+                            </tr>
+                        </thead>
+                        
+                        <tbody id="my_reports_tbody"></tbody>
+                    </table>
 
-            <p  class="section_heading" id="area_trained_label"> Topic Trained</p>
-                <select name="area_trained" id="area_trained" class="round_corners" required>
-                </select>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Back</button>
+              </div>
+            </div>
+          </div>
+        </div>
 
-            <p  class="section_heading" id="remark_label"> Remark</p>
-                <textarea type="text" class="round_corners" name="remark" id="remark" placeholder="Remark(s)" required/></textarea>
+        <div class="container">
+            <form>
+                <div class="input-group">
+                    <span class="input-group-addon">Facility</span>
+                    <input id="facility" type="text" class="form-control" placeholder="facility name">
+                </div><br>
 
-            <input type="submit" value="Send Report" id="send_report" class="buttons"/>
+                <div class="input-group">
+                    <span class="input-group-addon">CMEs conducted</span>
+                    <select id="CMEs" type="select" class="form-control">
+                        <option>1</option>
+                        <option>2</option>
+                    </select>
+                </div><br>
 
-        </form>
+                <div class="input-group">
+                    <span class="input-group-addon">Topics Trained</span>
+                    <select id="topics" type="select" class="form-control" multiple>
+                        <option>General Sanitation</option>
+                        <option>Health</option>
+                    </select>
+                </div><br>
 
-        <script src="scripts/technicalrep.js"></script>
+
+                <p></p>
+                <div class="form-group">
+                    <label>Remark</label>
+                    <textarea id="remark" class="form-control" rows="5" placeholder="type here..."></textarea>
+                </div>                 
+
+
+
+                <p></p>
+                <div>
+                    <button type="button" class="btn btn-info" style="width:48%;" 
+                        onclick="
+                        document.getElementById('report_date').value = '-- select date --';
+                        show_modal('my-reports-modal');">My Reports</button>
+                    <button id="send" type="button" class="btn btn-success" style="width:48%; left:50%;" onclick="submit_report()">Submit</button>
+                </div>
+                <p></p>
+
+            </form>
+        </div>
+
+        <div id="chatroom" style="
+            position:fixed;
+            left: 0%;
+            top:0%;
+            
+            width: 100%;
+            height: 100%;
+            
+            background: #111;
+            opacity: 0.99;
+
+            z-index:1000000;
+            
+            display: none;
+            
+            overflow: auto;
+        ">
+            <object data="" 
+                style="
+                    position:fixed; 
+                    left:0%; 
+                    width:100%; 
+                    height:90%;
+                    top: 2%;
+                    
+                    
+                    border-radius: 5px;
+                "
+            ></object>
+            
+            <button style="
+                position:fixed;
+
+                width: 30%;
+                left: 35%;
+                
+                top: 94%;
+                height: 5%;
+                
+                background: red;
+                color: white;
+                
+                border: 2px;
+                border-radius: 5px;
+                "
+                
+                onclick="document.getElementById('chatroom').style.display = 'none';"
+            >Back</button>      
+        </div>    
+
     </body>
-
 </html>

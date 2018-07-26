@@ -1,60 +1,276 @@
 <!doctype html>
 <html>
     <head>
-        <meta charset="utf-8">
-        <title>TechnicalRep (TRC)</title>
+        <meta charset="utf-8">        
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
 
-        <script>
-            screen.orientation.lock('portrait');
-        </script>
 
-        <link href="scripts/technicalrep_core.css" rel="stylesheet"/>
-        
+        <title>JMS RT</title>
+    
+        <link rel="stylesheet" href="scripts/bootstrap-3.3.7/dist/css/bootstrap.min.css">
+
+        <!-- jQuery library -->
+        <script src="scripts/jquery-3.3.1.min.js"></script>
+
+        <!-- Latest compiled JavaScript -->
+        <script src="scripts/bootstrap-3.3.7/dist/js/bootstrap.min.js"></script>    
+
+        <link rel="stylesheet" href="scripts/rotate.css">
+        <script src="scripts/globals.js"></script>    
+        <script src="scripts/technicalrep_core.js"></script>    
+
         <!-- sweet alert -->
         <script src="scripts/sweetalert/sweetalert.min.js"></script>
         <link rel="stylesheet" href="scripts/sweetalert/sweetalert.css">
 
-        <script src="scripts/globals.js"></script>
+        <script>
+            $(document).ready(function () {
+              $(".navbar-nav li div").click(function(event) {
+                $(".navbar-collapse").collapse('hide');
+              });
+            });
+        </script>
+        
+        <style>
+            body { 
+                padding-top: 70px;
+                /*background-color: #273;*/ 
+            } /*otherwise, nav-bar will block content bhynd it*/
+            .menu-item { font-size: 1.2em;}
+            .panel {background-color:#fff;}
+        </style>
+        
     </head>
 
-    <body id="body">
-        <p class="bars pabsolute" id="menu">
-            <p class="menu_item" id="quit" onclick="javascript:quit();"><b>Q</b>uit</p>
-            <p class="menu_item" id="logout" onclick="javascript:logout();"><b>L</b>ogout</p>
-            <p class="menu_item" id="my_account" onclick="javascript:edit_account();"><b>M</b>y Account</p>
-        </p>
+    <body>
+        <div class="rotate" id="loading_div"
+            style="
+                position:fixed; 
+                left:45%; 
+                top:45%; 
+                z-index:5; 
+                font-size:2em;
+                color:green;
+                display: none;
+                ">
+            <strong>......</strong>
+        </div>
 
-        <form action="javascript:send_report();">
-            <div class="section_heading pabsolute" id="facility_label">Facility</div>
-                <input type="text" class="round_corners pabsolute" id="facility" placeholder="facility" required/>
+        <div class="modal fade" id="edit-account-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Edit Account</h4>
+              </div>
+              <div class="modal-body">
+                    <label>Password</label>
+                    <input id="account_pswd" type="text" class="form-control" placeholder="if empty, wont be updated">
+                    <br>
+                    <label>Email</label>
+                    <input id="account_email" type="text" class="form-control" placeholder="if empty, wont be updated">
+                    <br>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Back</button>
+                <button type="button" class="btn btn-success" onclick="_edit_account()">Update</button>
+              </div>
+            </div>
+          </div>
+        </div>
 
-            <div class="section_heading pabsolute" id="activities_label">Activities</div>
-                <select class="round_corners pabsolute" id="activities" multiple required></select>
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+          <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>                        
+              </button>
+              <a class="navbar-brand" href="#">JMS RT (TechRep-Core)</a>
+            </div>
+            <div>
+              <div class="collapse navbar-collapse" id="myNavbar">
+                <ul class="nav navbar-nav">
+                  <li class="menu-item"><div><strong style="color: #ab2;" 
+                  onclick="document.getElementById('chatroom').style.display = 'block';">Support</strong></div></li><br>
+                  <li class="menu-item"><div><strong style="color: #3b2;" onclick="edit_account()">My Account</strong></div></li><br>
+                  <li class="menu-item"><div><strong style="color: #369;" onclick="logout()">Logout</strong></div></li><br>
+                  <li class="menu-item"><div><strong style="color: #b32;" onclick="quit()">Quit Application</strong></div></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </nav>
 
-            <div class="section_heading pabsolute" id="engaged_personnel_label">No of Engaged Personnel</div>
-                <input type="number" class="round_corners pabsolute" id="engaged_personnel" required/>
+        <div class="modal fade" id="my-reports-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">My Reports</h4>
+              </div>
+              <div class="modal-body">
+                    <div class="input-group">
+                        <span class="input-group-addon">Date</span>
+                        <select id="report_date" class="form-control" onchange="fetch_my_reports(this)">
+                            <option>-- select date --</option>
+                            <option>Today's Reports</option>
+                            <option>Yesterday's Reports</option>
+                        </select>
+                    </div><br>
+                    
+                    <table class="table table-responsive table-striped table-bordered">
+                        <thead style="background-color: #444; color:white;">
+                            <tr>
+                                <th>Time</th>
+                                <th>Client/Facility</th>
+                            </tr>
+                        </thead>
+                        
+                        <tbody id="my_reports_tbody"></tbody>
+                    </table>
 
-            <div class="section_heading pabsolute" id="duration_label">Duration</div>
-                <select type="number" class="round_corners pabsolute" id="hours" required>
-                    <option value="hours" style="font-size:.9em;">Hours</option>
-                </select>
-                <select type="number" class="round_corners pabsolute" id="mins" required/>
-                    <option value="mins" style="font-size:.9em;">Mins</option>
-                </select>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Back</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="container">
+            <form>
+                <div class="input-group">
+                    <span class="input-group-addon">Facility</span>
+                    <input id="facility" type="text" class="form-control" placeholder="facility name">
+                </div><br>
 
-            <div class="section_heading pabsolute" id="engagement_status_label">Status</div>
-                <select type="number" class="round_corners pabsolute" id="engagement_status" required/></select>
 
-            <textarea class="round_corners pabsolute" id="issues_arising" placeholder="issues arising" required/></textarea>
+                <p></p>
+                <div class="panel panel-success">
+                    <div class="panel-heading"><strong>Activity</strong></div>
+                        <br>
+                        <div class="input-group">
+                            <span class="input-group-addon">Activities performed</span>
+                            <select id="activities" type="select" class="form-control" multiple></select>
+                        </div><br>
 
-            <textarea class="round_corners pabsolute" id="performance_against_target" placeholder="performance against target" required/></textarea>
+                        <div class="input-group">
+                            <span class="input-group-addon">No. of engaged personnel</span>
+                            <input id="engaged_personnel" type="number" class="form-control" placeholder="number">
+                        </div><br>
 
-            <textarea class="round_corners pabsolute" id="remark" placeholder="Remark" required/></textarea>
+                        <div class="input-group">
+                            <span class="input-group-addon" style="padding-right:5px;">Activity Duration</span>
 
-            <input type="submit" class="round_corners black pabsolute" value="Submit Report" id="send_report">
-        </form>
+                                <div class="input-group" style="padding-left:2px;">
+                                    <span class="input-group-addon">hr(s)</span>
+                                    <select id="hours" type="select" class="form-control"></select>
+                                </div>
 
-        <script src="scripts/technicalrep_core.js"></script>
+                                <div class="input-group" style="padding-left:2px;">
+                                    <span class="input-group-addon">mins</span>
+                                    <select id="mins" type="select" class="form-control"></select>
+                                </div>
+
+                        </div><br>
+
+
+                        <div class="input-group">
+                            <span class="input-group-addon">Session status</span>
+                            <select id="engagement_status" type="select" class="form-control"></select>
+                        </div><br>
+
+                    </div>
+
+
+                <p></p>
+                <div class="panel panel-success">
+                    <div class="panel-heading"><strong>Observations</strong></div>
+
+                    <br>
+                    <div class="form-group">
+                        <label style="text-indent:5px;">Issues arising</label>
+                        <textarea id="issues" class="form-control" rows="5" placeholder="type here"></textarea>
+                    </div>                 
+
+                    <div class="form-group">
+                        <label style="text-indent:5px;">Performance against target</label>
+                        <textarea id="PAT" class="form-control" rows="5" placeholder="type here"></textarea>
+                    </div>                 
+
+                    <div class="form-group">
+                        <label style="text-indent:5px;">Remark</label>
+                        <textarea id="remark" class="form-control" rows="5" placeholder="type here..."></textarea>
+                    </div>                 
+
+                </div>
+
+
+                <p></p>
+                <div>
+                <div>
+                    <button type="button" class="btn btn-info" style="width:48%;" 
+                        onclick="
+                        document.getElementById('report_date').value = '-- select date --';
+                        show_modal('my-reports-modal');">My Reports</button>
+                    <button id="send" type="button" class="btn btn-success" style="width:48%; left:50%;" onclick="submit_report()">Submit</button>
+                </div>
+                <p></p>
+
+            </form>
+        </div>
+
+        <div id="chatroom" style="
+            position:fixed;
+            left: 0%;
+            top:0%;
+            
+            width: 100%;
+            height: 100%;
+            
+            background: #111;
+            opacity: 0.99;
+
+            z-index:1000000;
+            
+            display: none;
+            
+            overflow: auto;
+        ">
+            <object data="" 
+                style="
+                    position:fixed; 
+                    left:0%; 
+                    width:100%; 
+                    height:90%;
+                    top: 2%;
+                    
+                    
+                    border-radius: 5px;
+                "
+            ></object>
+            
+            <button style="
+                position:fixed;
+
+                width: 30%;
+                left: 35%;
+                
+                top: 94%;
+                height: 5%;
+                
+                background: red;
+                color: white;
+                
+                border: 2px;
+                border-radius: 5px;
+                "
+                
+                onclick="document.getElementById('chatroom').style.display = 'none';"
+            >Back</button>      
+        </div>    
+
     </body>
-
 </html>

@@ -1,6 +1,17 @@
 // this file contains variables that are global to all html files of this project
-URL = "http://139.162.235.29:8123/" /*uname:<root>, pswd:<jmsrt123#>*/
-//URL = "http://0.0.0.0:8123/"
+//var URL = "http://139.162.235.29:8123/" /*uname:<root>, pswd:<jmsrt123#>*/
+var URL = "http://0.0.0.0:8123/"
+var CHAT_URL = "http://45.33.74.38:60101/";
+
+var GPS_FETCH_TIMEOUT = 2; // seconds
+var GOT_GPS = false;
+
+var EDIT_REPORT_STOP_DATE = "";
+var EDITING = []; // empty if not editing report, otherwise [uname,date,time,lat,lon]
+
+var PAYLOAD = null;
+
+var ACCOUNT;
 
 function clear(mom)
 {
@@ -10,33 +21,59 @@ function clear(mom)
     }
 }
 
-function convert_figure_to_human_readable(figure)
-// this is my initial conception of this function. am sure it can be made more efficient(not that it isnt!)
+function convert_figure_to_human_readable(value, dp)
 {
-    var fig = (""+figure).split("");
-    fig.reverse();
-    
-    var _fig = [];
-    
-    while (fig.length>0)
-    {
-        if (fig.length>3)
-        {
-            _fig = _fig.concat(  (fig.slice(0,3)).concat([","])   );
-            fig = fig.slice(3, fig.length);
-        }
+    try{
+        value/2.3;
+        
+        if (!isNaN(dp))
+            value = value.toFixed(dp);
         else
-        {
-            _fig = _fig.concat(fig);
-            fig = []; // force termination of loop
-        }
+            value = value.toString();
+    }
+    catch(e){
+        // value already a string as we want it!
     }
     
-    _fig.reverse();
-    var human_readable = "";
-    for (var i=0; i<_fig.length; i++) {human_readable += _fig[i];}
-    return human_readable;
+    if (isNaN(parseFloat(value)))
+    {
+        return value;
+    }
+
+    dp_index = value.indexOf(".");
+    dp_index = dp_index<0 ? value.length-1 : dp_index-1;
+        
+        // array to contain new human-readable value format...
+    value_reverse = [];
+    for (var i=value.length-1; i!=dp_index; --i)
+        value_reverse.push(value[i]);
+    
+    for (var i=dp_index, counter=1; i>=0; --i)
+    {
+        value_reverse.push(value[i]);
+        if (counter==3 && i)
+        {
+            value_reverse.push(",");
+            counter = 0;
+        }
+
+        counter++;
+    }
+
+    value_reverse.reverse();
+
+    if (!isNaN(dp) && !dp)
+    {
+        value = value_reverse.join("");
+        if (value.indexOf(".")>=0)
+            return value.slice(0, value.indexOf("."));
+    }
+    
+    return value_reverse.join("");
+
+    
 }
+
 
 function logout()
 {
@@ -76,27 +113,24 @@ function quit()
 function USER(user)
 // create a user pbject to be used when changin the account password...
 {
-    this.uname = "";
-    this.pswd = "";
-    this.account_type = "";
+    user = user.split(";")
+
+    this.uname = user[0];
+    this.pswd = user[1];
+    this.account_type = user[2];
+    this.email = user[3];
     
-    var terminations = 0;
-    for (var i=0; i<user.length; i++)
-    {
-        if (user[i]==";") {terminations += 1; continue;}
-        if (terminations===0) {this.uname += user[i];}
-        else if (terminations===1) {this.pswd += user[i];}
-        if (terminations===2) {this.account_type += user[i];}
-    }
      
 }
 
 function edit_account_handler()
 {
+    stop_connecting();
+    
     if (this.status===200)
     {    
         //stop_connecting(); // not needed as slat(...) will close any exixsting sweetalert first..
-    
+        
         swal({
             title: "Password reset info",
             text: "password set sucessfully!",
@@ -116,47 +150,34 @@ function edit_account_handler()
 
 }
 
+function _edit_account()
+{
+
+    hide_modal("edit-account-modal");
+
+    var user = new USER(window.name); 
+
+    var form = new FormData();
+
+    var new_pswd = document.getElementById("account_pswd").value;
+    var new_email = document.getElementById("account_email").value;
+
+    // our form is built in such a way that we only edit the user's password
+    form.append("old_uname", user.uname);
+    form.append("new_uname", user.uname);
+    form.append("pswd", new_pswd.length?new_pswd:user.pswd);
+    form.append("email", new_email.length?new_email:user.email);
+    form.append("account_type", user.account_type);
+
+    send_request("POST", URL+"edit_account",edit_account_handler,form);
+
+    document.getElementById("account_pswd").value = "";
+    document.getElementById("account_email").value = "";
+}
+
 function edit_account()
 {
-    swal({
-          title: "Edit password",
-          text: "Enter your new password please",
-          type: "input",
-          showCancelButton: true,
-          closeOnConfirm: false,
-          animation: "slide-from-top",
-          inputPlaceholder: "new password"
-        },
-        
-        function(new_pswd){
-            if (new_pswd === false) {return false;} // clicked "cancel"
-
-            if (new_pswd === "") 
-            {
-                swal.showInputError("Password cant be empty!");
-                return false
-            }
-          
-            var user = new USER(window.name); 
-
-            var req = new XMLHttpRequest();
-
-            req.open("POST", URL+"edit_account", true);
-
-            req.onload = edit_account_handler;
-
-            var form = new FormData();
-
-            // our form is built in such a way that we only edit the user's password
-            form.append("old_uname", user.uname);
-            form.append("new_uname", user.uname);
-            form.append("pswd", new_pswd);
-            form.append("account_type", user.account_type);
-
-            req.send(form);
-            start_connecting("editting password...");
-        }
-    );
+    show_modal("edit-account-modal");
 }
 
 function change_date(date)
@@ -202,18 +223,30 @@ function change_figure(figure)
     return changed_figure;
 }
 
-function start_connecting(info)
+function stop_connecting()
 {
-    if (info==null) {info="connecting...";}
-    swal({
-        title: "",
-        text: info,
-        type: "info",
-        showConfirmButton: false
-    });
+    document.getElementById("loading_div").style.display = "none";
 }
 
-function stop_connecting(){swal.close();}
+function start_connecting()
+{
+    document.getElementById("loading_div").style.display = "block";
+}
+
+
+function gps_failed_for_long()
+{
+    stop_connecting();
+    if(!GOT_GPS)
+    {
+        // gps spent too long before fetching
+        on_locate({ // simulate a sucess in fetching gps location ...
+            coords:{latitude:0.2958474, longitude:32.5953291},
+            gps_failed:true
+            });
+        return;
+    }
+}
 
 function locate() 
 {
@@ -234,7 +267,9 @@ function locate()
     if (navigator.geolocation) 
     {
         // function <on_locate> is defined wherever locate will be called (salesrep.js and technicalrep.js for our case)
-        navigator.geolocation.getCurrentPosition(on_locate);
+        GOT_GPS=false;
+        setTimeout(gps_failed_for_long, GPS_FETCH_TIMEOUT*1000);
+        navigator.geolocation.getCurrentPosition(function(lov){GOT_GPS=true; on_locate(loc);});
 
         start_connecting("getting gps location...");
                 
@@ -256,27 +291,207 @@ function on_fail_to_locate()
 
 function report_handler()
 {
+    stop_connecting();
+
     if (this.status===200)
     {
-        swal({
-            title: "Report Status",
-            text: "report sent sucessfully",
-            type: "success",
-            confirmButtonText: "Ok"
-          });
+        if (EDITING.length)
+            show_success("report updated sucessfully");
+        else
+            show_success("report sent sucessfully");
+    
+        document.getElementById("send").innerHTML = "Submit";
     }
     else
     {
-        swal({
-            title: "Server Error",
-            text: "error: "+this.status+"; "+this.responseText,
-            type: "error",
-            confirmButtonText: "Ok"
-          });
+        flag_error("error: "+this.status+"; "+this.responseText);
     }
 
 }
 
+function send_request(mtd,url,handler,payload=null)
+{
+    var req = new XMLHttpRequest();
+    
+    req.open(mtd, url, true);
+    
+    req.onload = handler;
+    
+    req.send(payload);
+    
+    start_connecting();
+
+}
+
+function show_modal(modal_id){$('#'+modal_id).modal('show');}
+function hide_modal(modal_id){$('#'+modal_id).modal('hide');}
+
+function flag_error(error)
+{
+    swal({
+        title: "Error!",
+        text: error,
+        type: "error",
+        confirmButtonText: "Ok"
+    });
+}
+
+function show_info(msg)
+{
+    swal({
+        title: "Info!",
+        text:msg,
+        type: "info",
+        confirmButtonText: "Ok"
+    });
+}
+
+function show_success(msg)
+{
+    swal({
+        title: "Info!",
+        text:msg,
+        type: "success",
+        confirmButtonText: "Ok"
+    });
+}
+
+function fetched_my_reports()
+{
+    stop_connecting();
+
+    if (this.status===200)
+    {
+        stop_connecting();
+        reports = JSON.parse(this.responseText);
+
+        clear("my_reports_tbody");
+
+        var tbody = document.getElementById("my_reports_tbody");
+
+        var tr, td;
+
+        for (var i=0; i<reports.length; i++)
+        {
+            tr = document.createElement("tr");
+                td = document.createElement("td");
+                td.innerHTML = reports[i][0];
+                tr.appendChild(td);
+
+                td = document.createElement("td");
+                td.innerHTML = reports[i][1];
+                td.style.color = "#00d";
+                td.time_stamp = reports[i][0];
+                td.onclick = fetch_specific_report;
+                tr.appendChild(td);
+            
+            tbody.appendChild(tr);
+        }
+    }
+    else
+    {
+        flag_error("error: "+this.status+"; "+this.responseText);
+    }
+}
 
 
+function fetch_my_reports(select)
+{
+    var date = select.value;
+    
+    if (date=="-- select date --")
+        return;
+    
+    if (date=="Today's Reports")
+    {
+        var today = new Date();
+        date = today.getDate()+"/"+(today.getMonth()+1)+"/"+today.getFullYear();
+    }
+    else if (date=="Yesterday's Reports")
+    {
+        var today = new Date();
+        today.setDate(today.getDate()-1);
+        date = today.getDate()+"/"+(today.getMonth()+1)+"/"+today.getFullYear();
+    }
+    
+    
+    date = change_date(date);
+    
+    CURRENT_REPORT_DATE = date;
+    
+    var user = new USER(window.name);
 
+    // generate and send request
+    var form = new FormData();
+    form.append("agent", user.uname);
+    form.append("date", date);
+    form.append("account", ACCOUNT);
+
+    send_request("POST",URL+"agent_reports",fetched_my_reports,form);
+}
+
+function fetch_specific_report()
+{
+    var user = new USER(window.name);
+    
+    var form = new FormData();
+    form.append("time", this.time_stamp);
+    form.append("agent", user.uname);
+    form.append("account", ACCOUNT);
+
+    send_request("POST",URL+"agent_specific_report",fetched_specific_report,form);
+
+}
+
+function bug_report_url()
+{
+    var user = new USER(window.name);
+    
+    return CHAT_URL+user.uname+"/JMS";
+}
+
+function attempt_password_reset()
+{
+    stop_connecting();
+    if(this.status===200)
+    {
+        reply = this.responseText;
+        
+        if(reply[0]=="0")
+        {
+            flag_error(reply.slice(2,reply.length));
+            return
+        }
+        
+        hide_modal("forgot-password-modal");
+        show_success("reset code sent to <"+reply.slice(2,reply.length)+">");
+    }
+    else
+        flag_error("error: "+this.status+"; "+this.responseText);
+}
+
+function reset_password()
+{
+    var uname = document.getElementById("reset_username").value;
+    if(!uname.length)
+    {
+        flag_error("please enter your username!");
+        return;
+    }
+
+    var form = new FormData();
+    form.append("resetting","yes");
+    form.append("uname",uname);
+    
+    document.getElementById("reset_username").value = "";
+    
+    send_request("POST",URL+"edit_account",attempt_password_reset,form);
+
+}
+
+
+// Disable the 'back' button on droid in phonegap..
+//Deviceready function
+document.addEventListener('deviceready', function(){
+    document.addEventListener("backbutton",function(){},false);
+}, false);

@@ -1,214 +1,818 @@
 <!doctype html>
 <html>
     <head>
-        <meta charset="utf-8"/>
-        <metaname="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Admin</title>
+        <meta charset="utf-8">        
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
 
-        <script>
-            screen.orientation.lock('landscape');
-        </script>
 
-        <link href="scripts/admin.css" rel="stylesheet"/>
-        <script src="scripts/globals.js"></script>
+        <title>JMS RT</title>
+    
+        <link rel="stylesheet" href="scripts/bootstrap-3.3.7/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="scripts/admin.css">
+
+        <!-- jQuery library -->
+        <script src="scripts/jquery-3.3.1.min.js"></script>
+
+        <!-- Latest compiled JavaScript -->
+        <script src="scripts/bootstrap-3.3.7/dist/js/bootstrap.min.js"></script>    
+
+        <link rel="stylesheet" href="scripts/rotate.css">
+        <script src="scripts/globals.js"></script>    
+        <script src="scripts/admin.js"></script>    
 
         <!-- sweet alert -->
         <script src="scripts/sweetalert/sweetalert.min.js"></script>
         <link rel="stylesheet" href="scripts/sweetalert/sweetalert.css">
 
-
-        <link rel="stylesheet" href="scripts/calendar/calendar.css">
-        <script src="scripts/calendar/calendar.js">
-            /*
-                to use the calendar;
-                <input class="auto-kal [other classes...]" readonly/>
-            */
-        </script>
-
-        <script src="scripts/admin.js">
-            // our admin.js sript uses calendar.js for datepicker so we call it after calling calendar.js
-        </script>
+        <style>
+            body { 
+                padding-top: 50px;
+            }
+        </style>
         
-
     </head>
 
-    <body id="body">
-        <p class="bars underneath" id="menu">
-            <p class="menu_item underneath" id="quit" onclick="javascript:quit();"><b>Q</b>uit</p>
-            <p class="menu_item underneath" id="accounts" onclick="javascript:accounts();"><b>A</b>ccounts</p>
-            <select class="menu_item round_corners underneath" id="edit_options" required>
-            </select>
-            <p class="menu_item underneath" id="logout" onclick="javascript:logout();"><b>L</b>ogout</p>
-        </p>
-        
-        <form id="main_form" class="underneath">
-            <p class="section_heading" id="search_label">Search</p>
-            <p id="search_fields">
-                <input type="text" id="target" class="round_corners grey" placeholder="search entry"/>
-                <select class="round_corners grey2" id="search_category"></select>
-                <select class="round_corners grey2" id="search_duration"></select>
-                <input type="button" id="search_btn" class="round_corners black" value="Search"/>
-            </p>
-        </form>
-
-        <div id="results_div" class="underneath">
-            <div id="results_cols"></div>
-            <div id="results_data"></div>
+    <body>
+        <div class="rotate" id="loading_div"
+            style="
+                position:fixed; 
+                left:45%; 
+                top:45%; 
+                z-index:1000000; 
+                font-size:2em;
+                color:green;
+                display: none;
+                ">
+            <strong>......</strong>
         </div>
 
-        <input type="button" value="Save Results" class="round_corners black  underneath" id="save_results" style="display:none;"/>
-        <input type="button" value="Email Results" class="round_corners black  underneath" id="email_results"/>
-
-        <div id="n_results_found"></div>
-
-        <div id="edit_div" class="top"></div>
-        
-        <div id="custom_search_duration">
-            <form>
-                <div id="date_from_label">From</div>
-                <input type="text" id="date_from" placeholder="MM/DD/YYYY" class="round_corners auto-kal" readonly required/>
-                <div id="date_to_label">To</div>
-                <input type="text" id="date_to" placeholder="MM/DD/YYYY" class="round_corners auto-kal" readonly required/>
-                <input type="button" id="cancel_custom_duration" class="round_corners red" value="Cancel"/>
-                <input type="button" id="confirm_custom_duration" class="round_corners green" value="Done"/>
-            </form>
+        <div class="modal fade" id="edit-account-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Edit Account</h4>
+              </div>
+              <div class="modal-body">
+                    <label>Password</label>
+                    <input id="account_pswd" type="text" class="form-control" placeholder="if empty, wont be updated">
+                    <br>
+                    <label>Email</label>
+                    <input id="account_email" type="text" class="form-control" placeholder="if empty, wont be updated">
+                    <br>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Back</button>
+                <button type="button" class="btn btn-success" onclick="_edit_account()">Update</button>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div id="loaded_salesrep_report_div" class="loaded_report_div">
-            <div class="report_section">
-                <div class="report_item" id="client_name_label">Client</div>
-                <div class="report_value" id="client_name_value"></div>
+        <div class="navbar-fixed-top" style="background-color: black; height:32px;">
+            <div class="col-sm-3" 
+                style="
+                    font-size:1.3em; 
+                    color:#aaa; 
+                    line-height:30px;">
+                
+                <img id="logo" class="img-circle" 
+                    src="data/JMS.png" width="30" height="30">
 
-                <div class="report_item" id="client_segment_label">Client Segment</div>
-                <div class="report_value" id="client_segment"></div>
+                JMS RT
+            </div>
 
-                <div class="report_item" id="new_client_label">Known Client</div>
-                <div class="report_value" id="new_client"></div>
+            <div class="col-sm-1 hovers __menu_accounts__" onclick="fetch_users()"><strong>A</strong>ccounts</div>
+            
+            <div class="col-sm-4 __edit_items__">
 
-                <div class="report_item fullwidth" id="cp_1_label">Contact Person 1</div>
+                <div class="dropdown">
+                    <button class="btn dropdown-toggle" 
+                        type="button" data-toggle="dropdown"
+                         style="
+                            "
+                        id="__menu_edit__"
+                        >Edit System Data
+                        <span class="caret"></span>
+                    </button>
+                    
+                    <ul class="dropdown-menu">
 
-                <div class="report_item" id="cp_1_names_label">Names</div>
-                <div class="report_value" id="cp_1_names"></div>
+                        <li class="dropdown-header __sr__">Sales Reps data...</li> 
+                        <li><a onclick="fetch_promotional_items()" class="__sr__">Promotional Items</a></li>
+                        <li><a onclick="
+                            DATA_SECTION.category = 'client_categories';
+                            DATA_SECTION.title = 'client categories';
+                            fetch_data()" class="__sr__">Client Segments</a></li>
 
-                <div class="report_item" id="cp_1_contact_label">Contact</div>
-                <div class="report_value" id="cp_1_contact"></div>
+                        <li class="divider"></li>
+                        
+                        <li class="dropdown-header">Technical Reps data...</li> 
+                        <li><a onclick="
+                            DATA_SECTION.category = 'training_topics';
+                            DATA_SECTION.title = 'training topics';
+                            fetch_data()">Training Topics</a></li>
+                        <li><a onclick="
+                            DATA_SECTION.category = 'support_areas';
+                            DATA_SECTION.title = 'support areas';
+                            fetch_data()">Support Areas (TR 3rd Party)</a></li>
+                        <li><a onclick="
+                            DATA_SECTION.category = 'activities';
+                            DATA_SECTION.title = 'activities';
+                            fetch_data()">Activities (TR core)</a></li>
 
-                <div class="report_item" id="cp_1_email_label">Email</div>
-                <div class="report_value" id="cp_1_email"></div>
+                        <li class="divider __super__"></li>
+                        <li class="dropdown-header __super__">Admin data...</li> 
+                        <li><a onclick="
+                            DATA_SECTION.category = 'email_recepients';
+                            DATA_SECTION.title = 'email recepients';
+                            fetch_data()" class="__super__">Email Recepients</a></li>
+                        
+                    </ul>
+                </div> 
 
-                <div class="report_item fullwidth" id="cp_2_label">Contact Person 2</div>
+            </div>
 
-                <div class="report_item" id="cp_2_names_label">Names</div>
-                <div class="report_value" id="cp_2_names"></div>
+            <div class="col-sm-1 hovers __logout__"
+                onclick="document.getElementById('chatroom').style.display = 'block';"
+            ><strong>S</strong>upport</div>
 
-                <div class="report_item" id="cp_2_contact_label">Contact</div>
-                <div class="report_value" id="cp_2_contact"></div>
+            <div class="col-sm-1 hovers __logout__" onclick="edit_account()"><strong>E</strong>dit</div>
+            <div class="col-sm-1 hovers __logout__" onclick="logout()"><strong>l</strong>ogout</div>
+            <div class="col-sm-1 hovers __quit__" onclick="quit()"><strong>Q</strong>uit</div>
+        </div>
 
-                <div class="report_item" id="cp_2_email_label">Email</div>
-                <div class="report_value" id="cp_2_email"></div>
+        <div class="modal fade" id="accounts-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">User Accounts</h4>
+              </div>
+              <div class="modal-body">
+                    <table class="table table-responsive table-striped table-bordered">
+                        <thead style="background-color: #444; color:white;">
+                            <tr>
+                                <th>#</th>
+                                <th>Username</th>
+                                <th>Account Type</th>
+                            </tr>
+                        </thead>
+                        
+                        <tbody id="accounts_tbody"></tbody>
+                    </table>
 
-                <div class="report_item fullwidth" id="orders_label">Orders</div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Back</button>
+                <button id="_new_user_btn" type="button" class="btn btn-success" onclick="show_modal('new-user-modal')">New User</button>
+              </div>
+            </div>
+          </div>
+        </div>
 
-                <div class="report_item" id="og_label">O.G</div>
-                <div class="report_value" id="og_value"></div>
+        <div class="modal fade" id="new-user-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">New User</h4>
+              </div>
+              <div class="modal-body">
+                    <div class="input-group">
+                        <span class="input-group-addon">Username</span>
+                        <input id="new_user_uname" type="text" class="form-control" placeholder="username" required>
+                    </div><br>
+                    <div class="input-group">
+                        <span class="input-group-addon">User Password</span>
+                        <input id="new_user_pswd" type="text" class="form-control" placeholder="123" required>
+                    </div><p></p>
+                    <div class="input-group">
+                        <span class="input-group-addon">Account Type</span>
+                        <select id="new_user_category" type="select" class="form-control" required>
+                            <option class="__super__">Admin(SalesReps)</option>
+                            <option class="__super__">Admin(TechnicalReps)</option>
+                            <option class="__super__">Admin(TechnicalReps-Core)</option>
+                            <option class="__super__">Admin(TechnicalReps - Third Party)</option>
+                            <option class="__sr__">SalesRep</option>
+                            <option class="__tr__">TechnicalRep</option>
+                            <option class="__trc__">TechnicalRep Core</option>
+                            <option class="__trtp__">TechnicalRep Third Party</option>
+                        </select>
+                    </div><br>
 
-                <div class="report_item" id="or_label">O.R</div>
-                <div class="report_value" id="or_value"></div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Back</button>
+                <button type="button" class="btn btn-success" onclick="user_in_system()">Add User</button>
+              </div>
+            </div>
+          </div>
+        </div>
 
-                <div class="report_item" id="dc_label">D.C</div>
-                <div class="report_value" id="dc_value"></div>
+        <div class="modal fade" id="data-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 id="data-title" class="modal-title" id="myModalLabel"></h4>
+              </div>
+              <div class="modal-body">
+                    <div class="container" id="data_div"></div>
 
-                <div class="report_item fullwidth" id="items_promoted_label">Items Promoted</div>
-                <div class="remark_area" id="items_promoted_value">
-                    <!-- each item is addd as "item (qty) -> amount<br>" -->
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Back</button>
+                <button type="button" class="btn btn-success" onclick="new_data_entry()">Add</button>
+                <button type="button" class="btn btn-warning" onclick="update_data()">Update</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="promotion-items-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document" style="width:90%;">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Promotional Items</h4>
+              </div>
+              <div class="modal-body">
+                    <table class="table table-responsive table-striped table-bordered">
+                        <thead style="background-color: #444; color:white;">
+                            <tr>
+                                <th></th>
+                                <th>Item</th>
+                                <th>From</th>
+                                <th>To</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        
+                        <tbody id="promotional_items_tbody"></tbody>
+                    </table>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Back</button>
+                <button type="button" class="btn btn-success" onclick="new_promotional_item()">Add</button>
+                <button type="button" class="btn btn-warning" onclick="update_promotional_items()">Update</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="reports-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document" style="width:95%;">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Results</h4>
+              </div>
+              <div class="modal-body">
+                    <table class="table table-responsive table-striped table-bordered">
+                        <thead style="background-color: #444; color:white;">
+                            <tr id="reports_thead_tr"></tr>
+                        </thead>                        
+                        <tbody id="reports_tbody"></tbody>
+                    </table>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Back</button>
+                <button type="button" class="btn btn-success" onclick="show_modal('email-modal')">
+                    <span class="glyphicon glyphicon-envelope"></span> Email Results
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="duration-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document" style="width:40%;">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Duration</h4>
+              </div>
+              <div class="modal-body">
+                    <div class="input-group">
+                        <span class="input-group-addon">From</span>
+                        <input id="duration_from" type="date" class="form-control">
+                    </div><br>
+                    <div class="input-group">
+                        <span class="input-group-addon">To</span>
+                        <input id="duration_to" type="date" class="form-control">
+                    </div><p></p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Back</button>
+                <button type="button" class="btn btn-success" onclick="set_duration()">Done</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="email-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Email Results</h4>
+              </div>
+              <div class="modal-body">
+                    <label>Email</label>
+                    <input id="mail_destination" type="text" class="form-control" placeholder="mail@example.com">
+                    <br>
+                    <label>Email Subject</label>
+                    <input id="mail_subject" type="text" class="form-control" placeholder="JMS RT reports">
+                    <br>
+                    <label>Email Body</label>
+                    <input id="mail_body" type="text" class="form-control" placeholder="type message here">
+                    <br>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Back</button>
+                <button type="button" class="btn btn-success" onclick="mail_results()">Proceed</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BEGIN: full report modals...-->
+        <div class="modal fade" id="SalesRep-report-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-body">                    
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">Agent</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">Date</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>
+                    <br>
+
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">Client</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">Category</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">Old Client?</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>
+                    <br>
+
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">Contact 1</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">Contact 2</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>
+                    <br>
+                    
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">O. Generated</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">O. Received</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">Debt Collected</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>
+                    <br>
+
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">Promoted Items</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>
+                    <br>
+
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">Remark</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+
+                    <div class="map"></div>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal">Done</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="TechnicalRep-TP-report-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-body">                    
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">Agent</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">Date</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>
+                    <br>
+
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">Facility</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">Incharge</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>
+                    <br>
+                    
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">Support</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>
+                    <br>
+
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">Trainees</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">Remark</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>
+                    <br>
+
+                    <div class="map"></div>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal">Done</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="TechnicalRep-Core-report-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-body">                    
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">Agent</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">Date</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>
+                    <br>
+
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">Facility</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">Activities</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>                    
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">No. Engaged</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">Duration</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>                    
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">Status</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>                    
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">Performance</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>                    
+                    <br>
+
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">Issues</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">Remark</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>
+                    <br>
+                    
+                    <div class="map"></div>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal">Done</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="TechnicalRep-report-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-body">                    
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">Agent</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">Date</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>
+                    <br>
+
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">CMEs</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">Topic</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>                    
+                    <br>
+
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-3" style="font-weight:bold;">Remark</div>
+                            <div class="col-md-9 e"></div>
+                        </div>
+                    </div>
+                    <br>
+
+                    <div class="map"></div>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal">Done</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="get-email-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Destination Email</h4>
+              </div>
+              <div class="modal-body">
+                    <label>Email</label>
+                    <input type="text" class="form-control" placeholder="mail@example.com">
+                    <br>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Back</button>
+                <button type="button" class="btn btn-success" onclick="send_last_months_reports()">Proceed</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- END: full report modals...-->
+
+        <div class="container-fluid">
+            <p></p>
+            <h4>Search Reports</h4>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div  class="input-group">
+                            <span class="input-group-addon">Target</span>
+                            <input id="search-target" type="text" class="form-control" placeholder="search target">
+                        </div>
+                    </div>
+
+                    <div class="col-sm-8">
+
+                        <div class="dropdown" style="display:inline;">
+                            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Search Duration
+                                <span class="caret"></span>
+                            </button>
+                            
+                            <ul class="dropdown-menu">
+
+                                <li><a onclick="SEARCH_DURATION='today'">Today</a></li>
+                                <li><a onclick="SEARCH_DURATION='last-week'">Last Week (sunday-saturday)</a></li>
+                                <li><a onclick="SEARCH_DURATION='past-week'">Past Week (last 7 days)</a></li>
+                                <li><a onclick="SEARCH_DURATION='last-month'">Last Month (1<sup>st</sup> - end of month)</a></li>
+                                <li><a onclick="SEARCH_DURATION='past-month'">Past Month (last 30 days)</a></li>
+                                <li><a onclick="show_modal('duration-modal')">Other</a></li>
+
+                            </ul>
+                        </div> 
+
+                        <div class="dropdown" style="display:inline;">
+                            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Search Category
+                                <span class="caret"></span>
+                            </button>
+                            
+                            <ul class="dropdown-menu">
+
+                                <li class="dropdown-header">Field Staff...</li> 
+                                <li><a onclick="
+                                    prepare_report_table('salesreps');
+                                    " class="__sr__">Salesreps</a></li>
+                                <li><a onclick="
+                                    prepare_report_table('technicalreps');
+                                    " class="__tr__">Technical Reps</a></li>
+                                <li><a onclick="
+                                    prepare_report_table('trc');
+                                    " class="__trc__">Technical Reps Core</a></li>
+                                <li><a onclick="
+                                    prepare_report_table('trtp');
+                                    " class="__trtp__">Technical Reps 3rd Party</a></li>
+
+                                <li class="divider"></li>                            
+                                <li class="dropdown-header">overall reports...</li> 
+                                <li><a onclick="
+                                    prepare_report_table('reports');
+                                    ">All Field Reports</a></li>
+                                <li><a onclick="show_modal('get-email-modal')">Last Month's Field Reports</a></li>
+                                <!--<li><a >Last Month's Asset Reports</a></li>-->
+                                <li class="divider"></li>
+
+                                <li class="dropdown-header">Clients...</li> 
+                                <li><a onclick="
+                                    prepare_report_table('clients-visited');
+                                    ">Clients Visited</a></li>
+                                <li><a onclick="
+                                    prepare_report_table('new-clients');
+                                    " class="__sr__">New Clients</a></li>
+                                <li><a onclick="
+                                    prepare_report_table('client-segments');
+                                    " class="__sr__">Client Segments</a></li>
+
+                                <li class="divider __sr__"></li>
+                                <li class="dropdown-header __sr__">Orders...</li> 
+                                <li><a onclick="
+                                    prepare_report_table('orders');
+                                    " class="__sr__">Orders Made</a></li>
+                                <li><a onclick="
+                                    prepare_report_table('debts-collected');
+                                    " class="__sr__">Debts Collected</a></li>
+
+                                <li class="divider"></li>
+                                <li class="dropdown-header">Other...</li> 
+                                <li><a onclick="
+                                    prepare_report_table('products-promoted');
+                                    ">Promoted Items</a></li>
+                                <li><a onclick="
+                                    prepare_report_table('topics-taught');
+                                    " class="__tr__">Topics Taught</a></li>
+
+                            </ul>
+                        </div> 
+                        
+                    <!--    
+                        <button type="button" class="btn btn-default">
+                            <span class="glyphicon glyphicon-search"></span> Search
+                        </button>
+                    -->
+
+                    </div>
                 </div>
-
-                <div class="report_item fullwidth" id="remark_label">Remark</div>
-                <div class="remark_area" id="remark_value"></div>
-
-            </div>
-            <iframe class="map_div" id="salesrep_map"> </iframe>
-            <div class="report_time" id="salesrep_report_time"></div>
-            <input type="button" id="done_viewing_salesrep_report" class="round_corners black close_report" value="Done"/>
         </div>
-
-        <div id="loaded_technicalrep_report_div" class="loaded_report_div">
-            <div class="report_section" id="technicalrep_report_section">
-                <div class="report_item" id="CMEs_label">CMEs Conducted</div>
-                <div class="report_value" id="CMEs_value">2</div>
-
-                <div class="report_item" id="facility_label">Facility</div>
-                <div class="report_value" id="facility_value"></div>
-
-                <div class="report_item" id="topic_trained_label">Topic Trained</div>
-                <div class="report_value" id="topic_trained_value"></div>
-
-                <div class="report_item  fullwidth" id="technical_remark_label">Remark</div>
-                <div class="remark_area" id="technical_remark_value"></div>
-            </div>
+        
+        <div id="chatroom" style="
+            position:absolute;
+            left: 0%;
+            top:0%;
             
-            <iframe class="map_div" id="technicalrep_map"> </iframe>
-            <div class="report_time" id="technicalrep_report_time"></div>
-            <input type="button" id="done_viewing_technicalrep_report" class="round_corners black close_report" value="Done"/>
-        </div>
-
-        <div id="loaded_technicalrep_tp_report_div" class="loaded_report_div">
-            <div class="report_section" id="technicalrep_tp_report_section">
-                <div class="report_item" id="facility_tp_label">Facility</div>
-                <div class="report_value" id="facility_tp_value"></div>
-
-                <div class="report_item" id="support_areas_tp_label">Support Areas</div>
-                <div class="report_value" id="support_areas_tp_value"></div>
-
-                <div class="report_item" id="incharge_tp_label">Incharge</div>
-                <div class="report_value" id="incharge_tp_value"></div>
-
-                <div class="report_item  fullwidth" id="trainees_tp_label">Trainees</div>
-                <div class="remark_area" id="trainees_tp_value"></div>
-
-                <div class="report_item  fullwidth" id="technical_tp_remark_label">Remark</div>
-                <div class="remark_area" id="technical_tp_remark_value"></div>
-            </div>
+            width: 100%;
+            height: 100%;
             
-            <iframe class="map_div" id="technicalrep_tp_map"> </iframe>
-            <div class="report_time" id="technicalrep_tp_report_time"></div>
-            <input type="button" id="done_viewing_technicalrep_tp_report" class="round_corners black close_report" value="Done"/>
-        </div>
+            background: #111;
+            opacity: 0.99;
 
-        <div id="loaded_technicalrep_core_report_div" class="loaded_report_div">
-            <div class="report_section" id="technicalrep_core_report_section">
-                <div class="report_item" id="facility_core_label">Facility</div>
-                <div class="report_value" id="facility_core_value"></div>
-
-                <div class="report_item" id="activities_core_label">Actvities</div>
-                <div class="report_value" id="activities_core_value"></div>
-
-                <div class="report_item" id="personnel_engaged_core_label">Engaged Personnel</div>
-                <div class="report_value" id="personnel_engaged_core_value"></div>
-
-                <div class="report_item" id="duration_core_label">Duration</div>
-                <div class="report_value" id="duration_core_value"></div>
-
-                <div class="report_item" id="engagement_core_label">Engagement Status</div>
-                <div class="report_value" id="engagement_core_value"></div>
-
-                <div class="report_item  fullwidth" id="issues_arising_core_remark_label">Issues Arising</div>
-                <div class="remark_area" id="issues_arising_core_remark_value"></div>
-
-                <div class="report_item  fullwidth" id="performance_against_target_core_remark_label">Perfomance Against Target</div>
-                <div class="remark_area" id="performance_against_target_core_remark_value"></div>
-
-                <div class="report_item  fullwidth" id="technical_core_remark_label">Remark</div>
-                <div class="remark_area" id="technical_core_remark_value"></div>
-
-            </div>
+            z-index:1000000;
             
-            <iframe class="map_div" id="technicalrep_core_map"> </iframe>
-            <div class="report_time" id="technicalrep_core_report_time"></div>
-            <input type="button" id="done_viewing_technicalrep_core_report" class="round_corners black close_report" value="Done"/>
-        </div>
+            display: none;
+        ">
+            <object data="" 
+                style="
+                    position:fixed; 
+                    left:30%; 
+                    width:40%; 
+                    height:90%;
+                    top: 2%;
+                    
+                    
+                    border-radius: 5px;
+                "
+            ></object>
+            
+            <button style="
+                position:absolute;
 
+                width: 30%;
+                left: 35%;
+                
+                top: 94%;
+                height: 5%;
+                
+                background: red;
+                color: white;
+                
+                border: 2px;
+                border-radius: 5px;
+                "
+                
+                onclick="document.getElementById('chatroom').style.display = 'none';"
+            >Back</button>      
+        </div>    
 
     </body>
+
+    
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDOMbfS5q6uxoThKf5cmeuF_tmbTyL40P8&callback=initMap">
+    </script>
+
+    <script>start_connecting();</script>
 
 </html>

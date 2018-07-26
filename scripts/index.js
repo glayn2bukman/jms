@@ -2,35 +2,26 @@ function login_handler(){
     if (this.status===200){
         if ( this.responseText.indexOf("Error")>=0 )
         {
-            swal({
-                title: "Login Error",
-                text: this.responseText,
-                type: "info",
-                confirmButtonText: "Ok"
-              });
-              
+            stop_connecting();
+            flag_error(this.responseText);
+
            return 0;
         }
 
         if (typeof(Storage) !== "undefined") {
-            // sing localstorage clears the data when i redirect the page...
+            // using localstorage clears the data when i redirect the page...
             var user = new USER(this.responseText);
             localStorage.setItem("user", user);
             
             //so to solve this, i use a simple hack -> store my data as a string in window.name!
             window.name = this.responseText;
         } else {
-            swal({
-                title: "Memory Error",
-                text: "No local Storage available",
-                type: "error",
-                confirmButtonText: "Ok"
-              });
+            flag_error("No local Storage available");
         }
 
         var user = new USER(window.name);
 
-        if ( user.account_type=="Admin" )
+        if ( user.account_type.indexOf("Admin")>=0)
         {
             // load admin page...        
             window.location.href = "admin.html";
@@ -63,12 +54,7 @@ function login_handler(){
     }
     else
     {
-        swal({
-            title: "Server Error",
-            text: "error: "+this.status+"; "+this.responseText,
-            type: "error",
-            confirmButtonText: "Ok"
-          });
+        flag_error("error: "+this.status+"; "+this.responseText);
     }
     
 }

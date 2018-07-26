@@ -1,40 +1,144 @@
 <!doctype html>
 <html>
     <head>
-        <meta charset="utf-8">
-        <title>Login</title>
+        <meta charset="utf-8">        
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
 
-        <script>
-            screen.orientation.lock('portrait');
-        </script>
 
-        <link href="scripts/index.css" rel="stylesheet"/>
+        <title>JMS RT</title>
+    
+        <link rel="stylesheet" href="scripts/bootstrap-3.3.7/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="scripts/index.css">
+
+        <!-- jQuery library -->
+        <script src="scripts/jquery-3.3.1.min.js"></script>
+
+        <!-- Latest compiled JavaScript -->
+        <script src="scripts/bootstrap-3.3.7/dist/js/bootstrap.min.js"></script>    
 
         <!-- sweet alert -->
         <script src="scripts/sweetalert/sweetalert.min.js"></script>
         <link rel="stylesheet" href="scripts/sweetalert/sweetalert.css">
 
-        <script src="scripts/globals.js"></script>
-        <script src="scripts/index.js"></script>
+        <link rel="stylesheet" href="scripts/rotate.css">
+        <script src="scripts/globals.js"></script>    
+
+        <script src="scripts/index.js"></script>    
+
+        <script>
+            $(document).ready(function () {
+              $(".navbar-nav li div").click(function(event) {
+                $(".navbar-collapse").collapse('hide');
+              });
+            });
+
+            window.onload = function() {
+                function fade_logo()
+                {
+                    document.getElementById("logo").style.opacity = "0.2";
+                    
+                    setTimeout(unfade_logo, 1500);
+                }
+                function unfade_logo()
+                {
+                    document.getElementById("logo").style.opacity = "1";
+                    setTimeout(fade_logo, 1500);
+                }
+                
+                fade_logo();
+            };
+        </script>
+
 
     </head>
 
-    <body id="body">
+    <body>
+        <div class="rotate" id="loading_div"
+            style="
+                position:fixed; 
+                left:45%; 
+                top:45%; 
+                z-index:1000000; 
+                font-size:2em;
+                color:green;
+                display: none;
+                ">
+            <strong>......</strong>
+        </div>
 
-        <p id="logo"><b id="jms">JMS</b> Reporting Tool</p>
+        <div class="modal fade" id="forgot-password-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Reset Password</h4>
+              </div>
+              <div class="modal-body">
+                    Please provide your username here.<br>
+                    The email registered with your username will receive a reset code that you can use as your password<br><br>
+                    If you din't register an email with your account, please contact the admin to help with this
+                    <p></p><br>
+                    <label>Username</label>
+                    <input id="reset_username" type="text" class="form-control" placeholder="username">
+                    <br>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Back</button>
+                <button type="button" class="btn btn-success" onclick="reset_password()">Reset Password</button>
+              </div>
+            </div>
+          </div>
+        </div>
 
-        <form action="javascript:post();" id="form">
-            <input type="text" id="uname" class="round_corners" placeholder="Username" required/>
-            <br>
-            <input type="password" id="pswd" class="round_corners" placeholder="Password" required/>
-            <br><br>
-            <input type="submit" id="login" value="Login" class="round_corners"/>
-        </form>
+        <div class="container">
+            
+            <p>.</p>
+            <p>.</p>
+            
+            <img id="logo" class="img-circle img-responsive center-block" 
+                src="data/JMS.png" width="100" height="100">
+                        
+            <p>.</p>
+            <p>.</p>
 
-        <footer>
-            (Powered by <a href="http://www.jermtechnology.com" style="color:#009494">JERM Technology</a>)
-        </footer>
+            <form>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                    <input id="uname" type="text" class="form-control i" name="uname" placeholder="Username">
+                </div>
+                
+                <p></p>
+                
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                    <input id="pswd" type="password" class="form-control i" name="pswd" placeholder="Password">
+                </div>
+
+                <div style="
+                    text-align:right;
+                    margin-top: 15px;
+                    color: #666;
+                    opacity: 0.8;
+                    "
+                    class="hover"
+                    onclick="show_modal('forgot-password-modal');">forgot password?</div>
+
+                <div class="pager">
+                    <button type="button" class="next btn btn-success" style="width:50%;" onclick="post()">Login</button>
+                </div> 
+
+                <div id="powered_by" style="
+                    width:100%;
+                    left:0%; 
+                    text-align:center; 
+                    z-index: -2;">
+                    (Powered by <a href="http://www.jermtechnology.com">JERM Technology</a>)
+                </div>
+
+            </form>
+
+        </div>
+        
 
     </body>
-    
-    </html>
+</html>

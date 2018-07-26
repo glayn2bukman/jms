@@ -1,14 +1,265 @@
-var SEARCH_DURATION = [];
-var ROW_HEIGHT = 10; //value(%) of each row in edit_div...
-var DELETE_ROW_WIDTH = 5; // value(%) of the delete-row-button in edit_div
-var COL_TOP = 8; //value(%) to act as the "top" of the column titles in edit_div
-var BUTTON_HEIGHT = 10; //value(%) update n add-row(bottom buttons) height
-var _ROW_HEIGHT = 13; // row height in the items_div inside edit_div
+var SEARCH_DURATION = "";
 
-var ITEMS_ADDED = 0; /* when updating items(emails, training topics, etc) they are added sequentially
-                        rather than all at once*/
+var DATA_SECTION = {category:null, title: null}
 
-var RESULTS_ROW_HEIGHT = 8; // height of each row in "results_div"->"results_data"
+REPORT_DETAILS = {
+    names: {
+        "salesreps":"Sales Reps",
+        "technicalreps":"Technical Reps",
+        "trc":"Technical Reps-Core",
+        "trtp": "Technical Reps-TP",
+        "client-segments":"Clients Segments",
+        "clients-visited":"Clients Visited",
+        "debts-collected":"Debts Collected",
+        "new-clients":"New Clients",
+        "orders":"Orders",
+        "products-promoted":"Products Promoted",
+        "topics-taught":"Topics Taughed",
+        "reports":"Agent's Peports",
+    },
+
+    titles: {
+        "salesreps":["Date","Time","Agent","Client","Category","Old Client","O.G","O.R","D.C"],
+        "technicalreps":["Date","Time","Agent","Facility","CMEs","Topic Trained"],
+        "trc":["Date","Time","Agent","Facility","Duration","Status","Activities"],
+        "trtp": ["Date","Time","Agent","Facility","Incharge","Support Areas"],
+        "client-segments":["Date","Time","Agent","Client","Segment"],
+        "clients-visited":["Date","Time","Agent","Client"],
+        "debts-collected":["Date","Time","Agent","Client","Debt Collected"],
+        "new-clients":["Date","Time","Agent","Client"],
+        "orders":["Date","Time","Agent","Client","O Generated","O Recieved"],
+        "products-promoted":["Date","Time","Agent","Item","Qty","Amount"],
+        "topics-taught":["Date","Time","Agent","Facility","Topic"],
+        "reports":["Date","Time","Agent","Client"],
+    },
+    
+    urls: {
+        "salesreps":"agents_report_all_data",
+        "technicalreps":"agents_report_all_data",
+        "trc":"agents_report_all_data",
+        "trtp": "agents_report_all_data",
+        "client-segments":"clients_segments_report",
+        "clients-visited":"clients_visited_report",
+        "debts-collected":"debts_collected_report",
+        "new-clients":"new_clients_report",
+        "orders":"orders_report",
+        "products-promoted":"products_promoted_report",
+        "topics-taught":"topics_taughed_report",
+        "reports":"agents_report",
+    },
+
+    url_special_keys: {
+        "salesreps":[["account_type", "salesrep"]],
+        "technicalreps":[["account_type", "technicalrep"]],
+        "trc":[["account_type", "technicalrep_core"]],
+        "trtp": [["account_type", "technicalrep_tp"]],
+        "client-segments":[],
+        "clients-visited":[],
+        "debts-collected":[],
+        "new-clients":[],
+        "orders":[],
+        "products-promoted":[],
+        "topics-taught":[],
+        "reports":[],    
+    }
+}
+
+var REPORT_DATA;
+
+var CURRENT_SEARCH_CATEGORY;
+
+var CURRENT_MAP_DIV;
+
+function set_duration()
+{
+    var from = document.getElementById("duration_from").value;
+    var to = document.getElementById("duration_to").value;
+    
+    if(!from.length || !to.length)
+    {
+        flag_error("please provide both dates!");
+        return;
+    }
+
+    from = from.split("-")
+    to = to.split("-")
+
+    from = from[0] + (from[1].length>1?from[1]:"0"+from[1]) + (from[2].length>1?from[2]:"0"+from[2]);
+    to = to[0] + (to[1].length>1?to[1]:"0"+to[1]) + (to[2].length>1?to[2]:"0"+to[2]);
+
+    if(from>=to)
+    {
+        flag_error("'from' must be an earlier date than 'to'");
+        return;
+    }
+
+    SEARCH_DURATION = from+":"+to;
+    
+    hide_modal("duration-modal");
+}
+
+function show_reports()
+{
+    stop_connecting();
+    
+    if(this.status===200)
+    {
+        var data = JSON.parse(this.responseText);
+
+        if (!data.length)
+        {
+            show_info("no results found!");
+            return;
+        }
+        
+        clear("reports_tbody");
+        
+        var tr, td, tbody = document.getElementById("reports_tbody");
+        
+        var totals = [], got_totals_row=false;
+        
+        for(var i=0; i<data.length; i++)
+        {
+            tr = document.createElement("tr");
+            
+            if(CURRENT_SEARCH_CATEGORY=="products-promoted")
+                data[i] = data[i].slice(0,3).concat(data[i][3].split(":"));
+            
+            for (var j=0; j<data[i].length; ++j)
+            {
+                td = document.createElement("td");
+                
+                if(totals[j]==undefined)
+                    totals.push(0);
+                
+                if(!j)
+                    td.innerHTML = data[i][j].slice(0,4)+"-"+data[i][j].slice(4,6)+"-"+data[i][j].slice(6,8);
+                else if(!isNaN(data[i][j]))
+                {
+                    td.innerHTML = convert_figure_to_human_readable(data[i][j],0);
+                    
+                    if(data[i][j]!="")
+                    {
+                        totals[j] += data[i][j];
+                        
+                        // this line should not be necessary but turns out data[i][j] is a number when its an empty string!
+                        totals[j] = parseFloat(totals[j]); 
+                        
+                        got_totals_row = true;
+                    }
+                }    
+                else
+                    td.innerHTML = data[i][j];
+
+                if(CURRENT_SEARCH_CATEGORY=="reports" && j==(data[i].length-1))
+                {
+                    td.style.color="blue";
+                    td.setAttribute("class","hovers");
+                    td.data = data[i].slice(0,3);
+                    td.onclick = fetch_full_report;
+                }
+                
+                tr.appendChild(td);
+            }
+            
+            tbody.appendChild(tr);
+        }
+        
+        if(got_totals_row)
+        {
+            tr = document.createElement("tr");
+
+            for(var i=0; i<totals.length; ++i)
+            {
+                td = document.createElement("td");
+                
+                if(totals[i])
+                {
+                    td.innerHTML = convert_figure_to_human_readable(totals[i],0);
+                    td.style.fontWeight = "bold";
+                    td.style.backgroundColor = "black";
+                    td.style.color = "white";
+                }
+
+                tr.appendChild(td);
+            }
+
+            tbody.appendChild(tr);
+        }
+        
+        REPORT_DATA = data;
+        
+        show_modal("reports-modal");
+    }
+    else
+        flag_error("error: "+this.status+"; "+this.responseText);
+}
+
+
+function fetched_report_span()
+{
+    stop_connecting();
+    
+    if(this.status===200)
+    {
+        var time_data = JSON.parse(this.responseText);
+
+        var form = new FormData();
+        form.append("from", time_data.from);
+        form.append("to", time_data.to);
+        form.append("target", document.getElementById("search-target").value);
+        
+        var user = new USER(window.name);
+        
+        form.append("category", user.account_type);
+        
+        for(var i=0; i<REPORT_DETAILS.url_special_keys[CURRENT_SEARCH_CATEGORY].length; ++i)
+        {
+            form.append(
+                REPORT_DETAILS.url_special_keys[CURRENT_SEARCH_CATEGORY][i][0],
+                REPORT_DETAILS.url_special_keys[CURRENT_SEARCH_CATEGORY][i][1]
+            );
+        }
+        
+        send_request("POST",URL+REPORT_DETAILS.urls[CURRENT_SEARCH_CATEGORY],show_reports, form);
+
+    }
+    else
+        flag_error("error: "+this.status+"; "+this.responseText);
+}
+
+function prepare_report_table(category)
+{
+    if(!SEARCH_DURATION.length)
+    {
+        show_info("please select a search duration first");
+        return;
+    }
+    
+    CURRENT_SEARCH_CATEGORY = category;
+
+    var titles = REPORT_DETAILS.titles[category]
+    
+    clear("reports_thead_tr")
+    var tr = document.getElementById("reports_thead_tr");
+    
+    var td;
+    
+    for (var i=0; i<titles.length; ++i)
+    {
+        td = document.createElement("td")
+        td.innerHTML = titles[i];
+        
+        tr.appendChild(td);
+    }
+    
+    var form = new FormData();
+    form.append("time-data", SEARCH_DURATION);
+
+    send_request("POST",URL+"generate_report_span",fetched_report_span,form);
+    
+    //show_modal("reports-modal");
+}
 
 function leave_edit()
 {
@@ -52,427 +303,6 @@ function delete_entire_row()
             mom.rows -= 1;
         }
     }
-}
-
-function add_item_handler()
-{
-    if (this.status===200)
-    {
-        ITEMS_ADDED += 1;
-        if (ITEMS_ADDED==this.total_items_to_send)
-        {
-            // stop_connecting(); called automaticaly when new swal is called...            
-            swal({
-                title: "Data Update",
-                text: "sucessfully updated "+this.title,
-                type: "success",
-                confirmButtonText: "Ok",
-                closeOnConfirm: false
-                },
-                leave_edit
-                );
-        }
-    }
-    else
-    {
-        swal({
-            title: "Server Error",
-            text: "error: "+this.status+"; "+this.responseText,
-            type: "error",
-            confirmButtonText: "Ok"
-          });
-    }
-
-}
-
-function delete_item_handler()
-{
-    if (this.status===200)
-    {
-        console.log("Deleted "+this.title);
-    }
-    else
-    {
-        swal({
-            title: "Server Error",
-            text: "error: "+this.status+"; "+this.responseText,
-            type: "error",
-            confirmButtonText: "Ok"
-          });
-    }
-
-}
-
-function update_data()
-{
-    // reset value of items added...
-    ITEMS_ADDED = 0;
-
-    // check if all fields are filled
-    var mom = document.getElementById("items_div");
-    var children = mom.childNodes;
-    for (var i=0; i<children.length; i++)
-    {
-        if (children[i].type=="button"){continue;} // delete-row btn...
-        if (children[i].value=="")
-        // empty field found
-        {
-            swal({
-                title: "Input Error",
-                text: "please fill all fields!",
-                type: "error",
-                confirmButtonText: "Ok"
-              });
-
-            return 0;
-        }        
-    }
-
-    // *_url -> [url, param-name1, param-name2,...]
-    // the param-name* values are what will be used when sending requests to the server
-    var delete_url = [], add_url = [];
-
-    if (this.field.title=="Promotional Items")
-    {
-        delete_url=["delete_promotional_item","name"]; 
-        add_url=["add_promotional_item", "name", "from", "to", "unit_price"];
-    }
-    else if (this.field.title=="Client Segments")
-    {
-        delete_url=["delete_client_segments","name"]; 
-        add_url=["add_client_segments","name"];
-    }
-    else if (this.field.title=="Training Topics")
-    {
-        delete_url=["delete_training_topics", "name"];
-        add_url=["add_training_topics", "name"]; 
-    }
-    else if (this.field.title=="Email Recepients")
-    {
-        delete_url=["delete_mail_recepients","email"]; 
-        add_url=["add_mail_recepients","email"];
-    }
-    else if (this.field.title=="Support Areas(TRTP)")
-    {
-        delete_url=["delete_support_areas","name"]; 
-        add_url=["add_support_areas","name"];
-    }
-    else if (this.field.title=="Activities(TRC)")
-    {
-        delete_url=["delete_activities","name"]; 
-        add_url=["add_activities","name"];
-    }
-    else if (this.field.title=="Engagement Statuses(TRC)")
-    {
-        delete_url=["delete_statuses","name"]; 
-        add_url=["add_statuses","name"];
-        url="";
-    }
-
-
-    // first delete all items ...(consumes data i admit, look at it when upgrading the JMS HTML app!)
-    start_connecting("reaching server...");
-    for (var i=0; i<this.field.data.length; i++)
-    {
-        var req = new XMLHttpRequest();
-        
-        req.open("POST", URL+delete_url[0], false); /* request is blocking...
-             this will ensure that we leave this for-block
-             only when all items have been deleted from db...
-             if we dont make it blocking, an item might be deleted while also 
-             being added at the same time in the db as both deleting $ adding 
-             would be async. you dont want this, trust me!
-                                                     */
-
-        req.total_items_to_send = children.length/L;
-        req.title = this.field.data[i][0];
-        req.onload = delete_item_handler;
-
-        var form = new FormData();
-        form.append(delete_url[1], this.field.data[i][0]);
-        req.send(form);
-    }
-
-    stop_connecting();
-    
-    // add items...
-    var form = new FormData();
-    var L = this.field.cols.length+1; // we add one coz there is an excess col(delete-row btn)
-    var row = 0;
-    for (var item_index=0; item_index<children.length; item_index++)
-    {
-        if (item_index%L==0){continue;} // delete-row button
-
-        // add data to form object...
-        if (this.field.cols[item_index%L-1][2]=="date")
-        {
-            var changed_date = change_date(children[item_index].value);
-            form.append(add_url[item_index%L], changed_date);
-        }
-        else if (this.field.cols[item_index%L-1][2]=="num")
-        {
-            var changed_figure = change_figure(children[item_index].value);
-            if (parseInt(changed_figure)==NaN)
-            {
-                swal({
-                    title: "Invalid Type",
-                    text: "invalid figure found in <Price> column",
-                    type: "error",
-                    confirmButtonText: "Ok"
-                  });
-                return 0;                
-            }
-            form.append(add_url[item_index%L], parseInt(changed_figure));
-        }
-        else 
-        {
-            form.append(add_url[item_index%L], children[item_index].value);
-        }
-
-        if ( (item_index+1)%L== 0) // row-completion logic...
-        // submit the generated form to the add_url
-        {
-            var req = new XMLHttpRequest();
-            
-            req.open("POST", URL+add_url[0], true);
-
-            req.total_items_to_send = children.length/L;
-            req.title = this.field.title;
-            req.onload = add_item_handler;
-
-            req.send(form);
-
-            start_connecting("updating database...");
-
-            form = new FormData();
-        }
-        
-    }
-
-}
-
-function populate_edit_div(field)
-// function to be called as a handler after creating an <edit> object
-// see "edit_field_handler"
-{
-    clear("edit_div");
-    
-    var mom = document.getElementById("edit_div");
-    
-    // title
-    var title = document.createElement("div");
-    title.innerHTML = "Edit -> "+field.title;
-    title.className = "section_heading";
-    title.style.textIndent = "10px";
-
-    mom.appendChild(title);
-
-    // update button...
-    var update = document.createElement("input");
-    update.type="button";
-    update.value = "Update";
-    update.className = "round_corners black";
-    update.style.position = "absolute";
-    update.style.left = "78%";
-    update.style.top = "90%";
-    update.style.width = "20%";
-    update.style.height = BUTTON_HEIGHT+"%";
-
-    update.field = field;
-    update.onclick = update_data;
-    
-    mom.appendChild(update);
-
-    // add-row btn
-    var new_row = document.createElement("input");
-    new_row.type="button";
-    new_row.value = "+";
-    new_row.className = "round_corners green";
-    new_row.style.position="absolute";
-    new_row.style.left="72%";
-    new_row.style.top="90%";
-    new_row.style.width="5%";
-    new_row.style.height="10%";
-    new_row.style.textIndent = "0px";
-    new_row.style.fontWeight="bold";
-    new_row.style.fontSize="1.2em";
-    
-    new_row.field = field;
-    new_row.onclick = function(){
-        for (var col=0, xpos=DELETE_ROW_WIDTH; col<this.field.cols.length; col++)
-        {
-            if (col==0)
-            // draw delete-row btn
-            {
-                // delete-row btn
-                var delete_row = document.createElement("input");
-                delete_row.type="button";
-                delete_row.value = "X";
-                delete_row.className = "round_corners red";
-                delete_row.style.position = "absolute";
-                delete_row.style.left = "0%";
-                delete_row.style.top = (
-                    (_ROW_HEIGHT*document.getElementById("items_div").rows)
-                        +
-                     document.getElementById("items_div").rows
-                    )+"%";
-                delete_row.style.width = DELETE_ROW_WIDTH+"%";
-                delete_row.style.height = _ROW_HEIGHT+"%";
-                delete_row.style.textIndent = "0px";
-                delete_row.style.fontWeight="bold";
-                delete_row.style.fontSize="1.2em";
-                
-                delete_row.row_length = field.cols.length;
-                delete_row.onclick = delete_entire_row;
-                
-                document.getElementById("items_div").appendChild(delete_row);
-            }
-
-            var entry = document.createElement("input")
-            
-            entry.setAttribute("class","round_corners");
-            entry.style.textIndent = "5px";
-            
-            // modify entry depending on if its to contain a string,number or date
-            if (field.cols[col][2]=="str") {entry.type="text";}
-            else if (field.cols[col][2]=="num") {entry.type="number";}
-            else if (field.cols[col][2]=="date") 
-            {
-                entry.setAttribute("type","text");
-                entry.setAttribute("placeholder", "DD/MM/YYYY");
-                //entry.setAttribute("readonly",true);
-                entry.setAttribute("class","round_corners auto-kal");
-            }
-
-            entry.setAttribute("value","");
-
-            entry.style.position="absolute";
-            entry.style.left = xpos+"%";
-            entry.style.top = (
-                (_ROW_HEIGHT*document.getElementById("items_div").rows)
-                    +
-                 document.getElementById("items_div").rows)+"%";
-            entry.style.width = (this.field.cols[col][1]-1)+"%";
-            entry.style.height = _ROW_HEIGHT+"%";
-
-            document.getElementById("items_div").appendChild(entry);
-            xpos += field.cols[col][1];
-        }
-        document.getElementById("items_div").rows += 1;
-
-    };
-    
-    mom.appendChild(new_row);
-
-    // back button...
-    var back = document.createElement("input");
-    back.type="button";
-    back.value = "Back";
-    back.className = "round_corners black";
-    back.style.position = "absolute";
-    back.style.left = "51%";
-    back.style.top = "90%";
-    back.style.width = "20%";
-    back.style.height = BUTTON_HEIGHT+"%";
-    
-    back.onclick = leave_edit;
-    
-    mom.appendChild(back);
-
-    // column titles...
-    for (var i=0, xpos=DELETE_ROW_WIDTH; i<field.cols.length; i++)
-    {
-        var col = document.createElement("div")
-        col.innerHTML = field.cols[i][0];
-        col.style.position="absolute";
-        col.style.left = xpos+"%";
-        col.style.top = COL_TOP+"%";
-        col.style.width = field.cols[i][1]+"%";
-        col.style.height = ROW_HEIGHT+"%";
-
-        col.style.color="#111111";
-        col.style.borderLeft="1px solid";
-        col.style.borderLeftColor="#ffffff";
-        col.style.fontSize="1.4em";
-
-        mom.appendChild(col);
-        xpos += field.cols[i][1];
-    }
-
-    // items-div
-    var items_div = document.createElement("div");
-    items_div.setAttribute("id", "items_div");
-    items_div.style.position="absolute";
-    items_div.style.left = "0%";
-    items_div.style.top = COL_TOP+ROW_HEIGHT+"%";
-    items_div.style.width = "100%";
-    items_div.style.height = (100-ROW_HEIGHT-COL_TOP-BUTTON_HEIGHT-1)+"%";
-
-    items_div.style.border="1px solid";
-    items_div.style.borderColor="#ffffff";
-    items_div.style.borderRadius="20px";
-    items_div.style.overflow = "auto";
-
-    items_div.row = 0;
-
-    mom.appendChild(items_div);
-
-    // now draw real data...
-    for (items_div.rows=0; items_div.rows<field.data.length; items_div.rows++)
-    {
-        for (var col=0, xpos=DELETE_ROW_WIDTH; col<field.cols.length; col++)
-        {
-            if (col==0)
-            // draw delete-row btn
-            {
-                // delete-row btn
-                var delete_row = document.createElement("input");
-                delete_row.type="button";
-                delete_row.value = "X";
-                delete_row.className = "round_corners red";
-                delete_row.style.position = "absolute";
-                delete_row.style.left = "0%";
-                delete_row.style.top = ((_ROW_HEIGHT*items_div.rows)+items_div.rows)+"%";
-                delete_row.style.width = DELETE_ROW_WIDTH+"%";
-                delete_row.style.height = _ROW_HEIGHT+"%";
-                delete_row.style.textIndent = "0px";
-                delete_row.style.fontWeight="bold";
-                delete_row.style.fontSize="1.2em";
-
-                delete_row.row_length = field.cols.length;
-                delete_row.onclick = delete_entire_row;
-                
-                items_div.appendChild(delete_row);
-            }
-
-            var entry = document.createElement("input")
-            
-            entry.setAttribute("class","round_corners");
-            entry.style.textIndent = "5px";
-            
-            // modify entry depending on if its to contain a string,number or date
-            if (field.cols[col][2]=="str") {entry.type="text";}
-            else if (field.cols[col][2]=="num") {entry.type="number";}
-            else if (field.cols[col][2]=="date") 
-            {
-                entry.type="text";
-                //entry.setAttribute("readonly",true);
-                entry.setAttribute("placeholder","DD/MM/YYYY");
-                entry.setAttribute("class","round_corners auto-kal");
-            }
-
-            entry.value = field.data[items_div.rows][col];
-            entry.style.position="absolute";
-            entry.style.left = xpos+"%";
-            entry.style.top = ((_ROW_HEIGHT*items_div.rows)+items_div.rows)+"%";
-            entry.style.width = (field.cols[col][1]-1)+"%";
-            entry.style.height = _ROW_HEIGHT+"%";
-
-            items_div.appendChild(entry);
-            xpos += field.cols[col][1];
-        }
-    }
-
 }
 
 function set_date()
@@ -542,9 +372,422 @@ function confirm_set_custon_search_duration()
 }
 
 
-function accounts()
+function fetched_users()
 {
-    window.location.href = "users.html";
+    stop_connecting();
+    
+    if(this.status===200)
+    {
+        var users = JSON.parse(this.responseText);
+
+        clear("accounts_tbody");
+
+        var tbody = document.getElementById("accounts_tbody");
+
+        var tr, td;
+
+        for (var i=0; i<users.length; i++)
+        {
+            tr = document.createElement("tr");
+                td = document.createElement("td");
+                td.innerHTML = (i+1);
+                td.style.fontWeight = "bold";
+                tr.appendChild(td);
+
+                td = document.createElement("td");
+                td.innerHTML = users[i][0];
+                td.uname = users[i][0];
+                td.onclick = delete_user;
+                td.style.color = "#00d";
+                td.setAttribute("class", "hovers");
+                tr.appendChild(td);
+
+                td = document.createElement("td");
+                td.innerHTML = users[i][1];
+                tr.appendChild(td);
+            
+            tbody.appendChild(tr);
+        }
+
+        show_modal("accounts-modal");
+
+    }
+    else
+        flag_error("error: "+this.status+"; "+this.responseText);
+}
+
+function fetch_users()
+{
+    send_request("GET",URL+"users",fetched_users);
+}
+
+function delete_user()
+{
+        
+    var user = new USER(window.name);
+    if (user.uname!="admin")
+    {
+        return;
+    }
+
+    if(this.uname=="admin")
+    {
+        show_info("this account can not be deleted!");
+        return;
+    }
+
+    DELETE_TARGET_ACCOUNT = this.uname;
+    swal({
+          title: "Delete Account",
+          text: "delete user account <"+DELETE_TARGET_ACCOUNT+">?",
+          type: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#DD6B55",
+          confirmButtonText: "Delete",
+          closeOnConfirm: true
+        },
+        
+        function()
+        {
+            var form = new FormData();
+            form.append("uname", DELETE_TARGET_ACCOUNT);
+
+            send_request("POST", URL+"delete_account",fetch_users,form);
+        }
+    );
+
+}
+
+function add_user()
+{
+    stop_connecting();
+    
+    if(this.status===200)
+    {
+        if (this.responseText=="1")
+        {
+            flag_error("username already in system!");
+            return;
+        }
+
+        var new_user_uname = document.getElementById("new_user_uname").value;
+        var new_user_pswd = document.getElementById("new_user_pswd").value;
+            new_user_pswd = new_user_pswd.length?new_user_pswd:"123";
+        
+        var new_user_category = document.getElementById("new_user_category").value;
+
+
+        var form = new FormData();
+        form.append("uname", new_user_uname);
+        form.append("pswd", new_user_pswd);
+        form.append("account_type", new_user_category);
+
+        send_request("POST", URL+"register", function(){
+            stop_connecting();show_success('user added to system!')}, 
+        form);
+        
+        hide_modal('new-user-modal');
+        hide_modal('accounts-modal');
+        
+    }
+    else
+        flag_error("error: "+this.status+"; "+this.responseText);
+}
+
+function user_in_system()
+{
+    var new_user_uname = document.getElementById("new_user_uname").value;
+    if (!new_user_uname.length)
+    {
+        flag_error("new username?");
+        return;
+    }
+
+    var form = new FormData();
+    form.append("target", new_user_uname);
+
+    send_request("POST", URL+"user_in_system", add_user,form);
+
+}
+
+function delete_promotion_item_row()
+{
+    document.getElementById("promotional_items_tbody").removeChild(this.mom);
+}
+
+function new_promotional_item(_item="",_from="",_to="",_price="")
+{
+    var tr = document.createElement("tr"),
+        td;
+    
+    var _delete_row = document.createElement("div");
+    _delete_row.setAttribute("class","col-xs-1 delete_row hovers");
+    _delete_row.innerHTML = "x";
+    _delete_row.mom = tr;
+    _delete_row.onclick = delete_promotion_item_row;
+
+    var td = document.createElement("td");
+        td.appendChild(_delete_row);
+        tr.appendChild(td);
+
+    var item = document.createElement("input");
+    item.style.height = "100%"
+    item.style.border = "0px";
+    item.style.borderRadius = "5px";
+    item.style.borderBottom = "1px solid #ddd";
+    item.setAttribute("placeholder","item");
+    item.setAttribute("class","form-control");
+    item.value = _item;
+
+        td = document.createElement("td");
+        td.appendChild(item);
+        tr.appendChild(td);
+
+    var from = document.createElement("input");
+    from.style.height = "100%"
+    from.style.border = "0px";
+    from.style.borderRadius = "5px";
+    from.style.borderBottom = "1px solid #ddd";
+    from.setAttribute("type","date");
+    from.setAttribute("class","form-control");
+    from.value = _from;
+
+        td = document.createElement("td");
+        td.appendChild(from);
+        tr.appendChild(td);
+
+    var to = document.createElement("input");
+    to.style.height = "100%"
+    to.style.border = "0px";
+    to.style.borderRadius = "5px";
+    to.style.borderBottom = "1px solid #ddd";
+    to.setAttribute("type","date");
+    to.setAttribute("class","form-control");
+    to.value = _to;
+
+        td = document.createElement("td");
+        td.appendChild(to);
+        tr.appendChild(td);
+
+    var price = document.createElement("input");
+    price.style.height = "100%"
+    price.style.border = "0px";
+    price.style.borderRadius = "5px";
+    price.style.borderBotpricem = "1px solid #ddd";
+    price.setAttribute("type","number");
+    price.setAttribute("class","form-control");
+    price.value = _price;
+
+        td = document.createElement("td");
+        td.appendChild(price);
+        tr.appendChild(td);
+
+
+    document.getElementById("promotional_items_tbody").appendChild(tr);
+}
+
+function fetched_promotional_items()
+{
+    stop_connecting();
+    
+    if(this.status===200)
+    {
+        var data = JSON.parse(this.responseText);
+        
+        clear("promotional_items_tbody");
+        
+        var from,to;
+        for(var i=0; i<data.length; ++i)
+        {
+            from = data[i][1];
+            to = data[i][2];
+            from = from.slice(0,4)+"-"+from.slice(4,6)+"-"+from.slice(6,8);
+            to = to.slice(0,4)+"-"+to.slice(4,6)+"-"+to.slice(6,8);
+            new_promotional_item(data[i][0], from, to, data[i][3]);
+        }
+        show_modal('promotion-items-modal');
+    }
+    else
+        flag_error("error: "+this.status+"; "+this.responseText);
+}
+
+function fetch_promotional_items()
+{
+    send_request("GET", URL+"promotional_items_all",fetched_promotional_items); 
+}
+
+function updated_promotional_items()
+{
+    stop_connecting();
+    
+    if(this.status===200)
+    {
+        show_success("updated romotional items!");
+        hide_modal('promotion-items-modal');
+    }
+    else
+        flag_error("error: "+this.status+"; "+this.responseText);
+
+}
+
+function update_promotional_items()
+{
+    var items = "";
+    var rows = document.getElementById("promotional_items_tbody").getElementsByTagName("tr");
+    var inputs, from, to;
+    for (var i=0; i<rows.length; ++i)
+    {
+        inputs = rows[i].getElementsByTagName("input");
+        for (var j=0; j<inputs.length; ++j)
+        {
+            if (!inputs[j].value.length)
+            {
+                flag_error("please fill all data for all items!");
+                return;
+            }            
+        }
+
+        if(isNaN(inputs[3].value))
+        {
+            flag_error("please provide a figure or all prices!");
+            return;
+        }
+        
+        if(items.length)
+            items += ";"
+        
+        from = inputs[1].value.split("-");
+        to = inputs[2].value.split("-");
+        
+        from = from[0] + (from[1].length>1?from[1]:"0"+from[1]) + (from[2].length>1?from[2]:"0"+from[2])
+        to = to[0] + (to[1].length>1?to[1]:"0"+to[1]) + (to[2].length>1?to[2]:"0"+to[2])
+        
+        items += inputs[0].value+":"+from+":"+to+":"+parseFloat(inputs[3].value);
+
+    }
+    
+    var form = new FormData();
+    form.append("data", items);
+    form.append("category", "promotional_items");
+
+    send_request("POST", URL+"reset_data",updated_promotional_items,form);
+}
+
+function delete_row()
+{
+    document.getElementById("data_div").removeChild(this.mom);
+    document.getElementById("data_div").removeChild(this.mom_br);
+}
+
+function new_data_entry(entry="")
+{
+    var row = document.createElement("div");
+    var row_br = document.createElement("br");
+
+    row.setAttribute("class","row");
+    
+    var _delete_row = document.createElement("div");
+    _delete_row.setAttribute("class","col-xs-1 delete_row hovers");
+    _delete_row.innerHTML = "x";
+    _delete_row.mom = row;
+    _delete_row.mom_br = row_br;
+    _delete_row.onclick = delete_row;
+    
+    var seg = document.createElement("input");
+    seg.value = entry;
+    seg.style.height = "25px"
+    seg.style.border = "0px";
+    seg.style.borderRadius = "5px";
+    seg.style.borderBottom = "1px solid #ddd";
+    seg.setAttribute("class","col-xs-4");
+    seg.setAttribute("placeholder",DATA_SECTION.title);
+
+    row.appendChild(_delete_row);
+    row.appendChild(seg);
+    
+    document.getElementById("data_div").appendChild(row);
+    document.getElementById("data_div").appendChild(row_br);
+}
+
+function fetched_data()
+{
+    stop_connecting();
+    
+    if(this.status===200)
+    {
+        var data = JSON.parse(this.responseText);
+        
+        clear("data_div");
+        
+        for(var i=0; i<data.length; ++i)
+            new_data_entry(data[i]);
+        
+        document.getElementById("data-title").innerHTML = DATA_SECTION.title;
+        show_modal('data-modal');
+    }
+    else
+        flag_error("error: "+this.status+"; "+this.responseText);
+}
+
+function fetch_data()
+{
+    var url;
+    
+    if(DATA_SECTION.category=="client_categories")
+        url = "client_segments";
+    else if(DATA_SECTION.category=="training_topics")
+        url = "training_topics";
+    else if(DATA_SECTION.category=="support_areas")
+        url = "support_areas";
+    else if(DATA_SECTION.category=="activities")
+        url = "activities";
+    else if(DATA_SECTION.category=="email_recepients")
+        url = "mail_recepients";
+    
+    send_request("GET",URL+url,fetched_data);
+}
+
+function updated_data()
+{
+    stop_connecting();
+    
+    if(this.status===200)
+    {
+        show_success("updated "+DATA_SECTION.title+"!");
+        hide_modal('data-modal');
+    }
+    else
+        flag_error("error: "+this.status+"; "+this.responseText);
+}
+
+function update_data()
+{
+    var segment_divs = document.getElementById("data_div").getElementsByClassName("row"),
+        segment,
+        segments="";
+
+    for(var i=0; i<segment_divs.length; ++i)
+    {
+        segment = segment_divs[i].getElementsByTagName("input")[0].value;
+        
+        if (!segment.length)
+        {
+            flag_error("one or more "+DATA_SECTION.title+" left blank!");
+            return;
+        }
+
+        if (segments.length)
+            segments += ";";
+        
+        segments += segment;
+    }
+
+    var form = new FormData();
+    form.append("data", segments);
+    form.append("category", DATA_SECTION.category);
+
+    send_request("POST",URL+"reset_data", updated_data,form);
+
 }
 
 function deactivate_results_buttons()
@@ -696,15 +939,19 @@ function edit_field()
     start_connecting("fetching data...");
 }
 
-function load_full_report_handler()
+function fetched_full_report()
 {
+    stop_connecting();
+    
     if (this.status===200)
     {
-        stop_connecting();
-        report = JSON.parse(this.responseText);
+        reply = JSON.parse(this.responseText);
 
-        if (report.length==14)
-        // salesrep
+        var modal = document.getElementById(reply.account_type+"-report-modal");
+        var entries = modal.getElementsByClassName("e");
+        CURRENT_MAP_DIV = modal.getElementsByClassName("map")[0];
+
+        if (reply.account_type=="SalesRep")
         {
 /*
          0    uname varchar(30),
@@ -722,52 +969,53 @@ function load_full_report_handler()
          12   products_promoted varchar(500),
          13   remark varchar(300)
 */
-
-            document.getElementById("client_name_value").innerHTML = report[3];
-            document.getElementById("client_segment").innerHTML = report[6];         
-            document.getElementById("new_client").innerHTML = report[7];
-            document.getElementById("remark_value").innerHTML = report[13];        
-            document.getElementById("og_value").innerHTML = convert_figure_to_human_readable(report[9]);        
-            document.getElementById("or_value").innerHTML = convert_figure_to_human_readable(report[10]);        
-            document.getElementById("dc_value").innerHTML = convert_figure_to_human_readable(report[11]);        
-
-            // contact personnel...
-            var cp1 = "::", cp2 = "::";
-            var cps = (report[8]).split(";");
-            if (cps.length>1){cp1 = cps[0]; cps2 = cps[1];}
-            else {cp1=cps[0]}
+            entries[0].innerHTML = reply.data[0]
+            entries[1].innerHTML = 
+                reply.data[1].slice(0,4)+"-"+
+                reply.data[1].slice(4,6)+"-"+
+                reply.data[1].slice(6,8)+" "+reply.data[2]
             
-            console.log(cp1, report[8], cps);
+            entries[2].innerHTML = reply.data[3];
+            entries[3].innerHTML = reply.data[6];
+            entries[4].innerHTML = reply.data[7];
             
-            var _cp1 = cp1.split(":");
-            document.getElementById("cp_1_names").innerHTML = _cp1[0];
-            document.getElementById("cp_1_contact").innerHTML = _cp1[1];         
-            document.getElementById("cp_1_email").innerHTML = _cp1[2];        
-
-            var _cp2 = cp2.split(":");
-            document.getElementById("cp_2_names").innerHTML = _cp2[0];
-            document.getElementById("cp_2_contact").innerHTML = _cp2[1];
-            document.getElementById("cp_2_email").innerHTML = _cp2[2];        
-
-            document.getElementById("salesrep_report_time").innerHTML = report[0]+"("+(report[1]).slice(6,8)+"-"+(report[1]).slice(4,6)+"-"+(report[1]).slice(0,4)+", "+report[2]+")";        
-            
-            // items promoted...
-            if (report[12].length>0)
+            if(reply.data[8].indexOf(";")>=0)
             {
-                var items = (report[12]).split(";");
-                var item = [];
-                for (var i=0; i<items.length; i++)
-                {
-                    item = (items[i]).split(":");
-                    document.getElementById("items_promoted_value").innerHTML += item[0]+" ("+convert_figure_to_human_readable(item[1])+") -> "+convert_figure_to_human_readable(item[2])+"<br>";                    
-                }
+                var cps = reply.data[8].split(";");
+                cp = cps[0].split(":");
+                entries[5].innerHTML = cp[0]+" ("+cp[1]+(cp[2].length?", ":"")+cp[2]+")";
+                
+                cp = cps[1].split(":");
+                entries[6].innerHTML = cp[0]+" ("+cp[1]+(cp[2].length?", ":"")+cp[2]+")";
             }
-            
-            document.getElementById("salesrep_map").src = URL+"map/"+report[4]+"/"+report[5];
-            document.getElementById("loaded_salesrep_report_div").style.visibility="visible";
+            else
+            {
+                var cp = reply.data[8].split(":");
+                entries[5].innerHTML = cp[0]+" ("+cp[1]+(cp[2].length?", ":"")+cp[2]+")";
+                entries[6].innerHTML = "-";
+            }
 
+            entries[7].innerHTML = reply.data[9]?convert_figure_to_human_readable(reply.data[9], 0):"-";
+            entries[8].innerHTML = reply.data[10]?convert_figure_to_human_readable(reply.data[10], 0):"-";
+            entries[9].innerHTML = reply.data[11]?convert_figure_to_human_readable(reply.data[11], 0):"-";
+
+            var _PIs = reply.data[12].split(";");
+            entries[10].innerHTML = "";
+            for(var i=0; i<_PIs.length; ++i)
+            {
+                if(!_PIs[i].length)
+                {
+                    entries[10].innerHTML = "-"
+                    break;
+                }
+                entries[10].innerHTML += _PIs[i].split(":")[0]+" ("+_PIs[i].split(":")[1]+")<br>";
+            }
+
+            entries[11].innerHTML = reply.data[13].replace("\n",".<br>");
+            
+            initMap(parseFloat(reply.data[4]), parseFloat(reply.data[5]));
         }
-        else if (report.length==9)
+        else if (reply.account_type=="TechnicalRep")
         // technical rep
         {
 /*
@@ -780,20 +1028,27 @@ function load_full_report_handler()
        6     lon varchar(12),
        7     area_trained varchar(30),
        8     remark varchar(300)
-
 */
-            document.getElementById("CMEs_value").innerHTML = report[1]+"";
-            document.getElementById("facility_value").innerHTML = report[2];
-            document.getElementById("topic_trained_value").innerHTML = report[7]+"";
-            document.getElementById("technical_remark_value").innerHTML = report[8]+"";
 
-            document.getElementById("technicalrep_report_time").innerHTML = report[0]+" ("+(report[3]).slice(6,8)+"-"+(report[3]).slice(4,6)+"-"+(report[3]).slice(0,4)+", "+report[4]+")";        
+            if (reply.data==null)
+            {
+                show_info("sorry, report can't seem to be found in the system");
+                return;
+            }
+            
+            entries[0].innerHTML = reply.data[0];
+            entries[1].innerHTML = 
+                reply.data[3].slice(0,4)+"-"+
+                reply.data[3].slice(4,6)+"-"+
+                reply.data[3].slice(6,8)+" "+reply.data[4]
 
-            document.getElementById("technicalrep_map").src = URL+"map/"+report[5]+"/"+report[6];
-            document.getElementById("loaded_technicalrep_report_div").style.visibility="visible";
+            entries[2].innerHTML = reply.data[1];
+            entries[3].innerHTML = reply.data[7];
+            entries[4].innerHTML = reply.data[8].replace("\n",".<br>");
 
+            initMap(parseFloat(reply.data[5]), parseFloat(reply.data[6]));
         }
-        else if (report.length==10)
+        else if (reply.account_type=="TechnicalRep-TP")
         // technical rep - tp
         {
 /*
@@ -808,27 +1063,37 @@ function load_full_report_handler()
        8     trainees varchar(300),
        9     remark varchar(300)
 */
-            document.getElementById("facility_tp_value").innerHTML = report[1];
-            document.getElementById("support_areas_tp_value").innerHTML = report[6]+"";
-            document.getElementById("incharge_tp_value").innerHTML = report[7]+"";
-            document.getElementById("technical_tp_remark_value").innerHTML = report[9]+"";
+            if (reply.data==null)
+            {
+                show_info("sorry, report can't seem to be found in the system");
+                return;
+            }
+            
+            entries[0].innerHTML = reply.data[0];
+            entries[1].innerHTML = 
+                reply.data[2].slice(0,4)+"-"+
+                reply.data[2].slice(4,6)+"-"+
+                reply.data[2].slice(6,8)+" "+reply.data[3]
 
-            document.getElementById("technicalrep_tp_report_time").innerHTML = report[0]+" ("+(report[2]).slice(6,8)+"-"+(report[2]).slice(4,6)+"-"+(report[2]).slice(0,4)+", "+report[3]+")";        
+            entries[2].innerHTML = reply.data[1];
+            entries[3].innerHTML = reply.data[7];
+            entries[4].innerHTML = reply.data[6];
 
-            document.getElementById("technicalrep_tp_map").src = URL+"map/"+report[4]+"/"+report[5];
-            document.getElementById("loaded_technicalrep_tp_report_div").style.visibility="visible";
-
-            var trainees = (report[8]).split(";");
+            var trainees = (reply.data[8]).split(";");
             var _trainees = "";
             for (var i=0; i<trainees.length; i++)
             {
                 var trainee = trainees[i].split(":");
-                _trainees += (trainee[0]+" ("+trainee[1]+")"+"\n");
+                _trainees += (trainee[0]+" ("+trainee[1]+")"+"<br>");
             }
-            document.getElementById("trainees_tp_value").innerHTML = _trainees;
+            entries[5].innerHTML = _trainees.length?_trainees:"-";
+
+            entries[6].innerHTML = reply.data[9].replace("\n",".<br>");
+
+            initMap(parseFloat(reply.data[4]), parseFloat(reply.data[5]));
 
         }
-        else if (report.length==13)
+        else if (reply.account_type=="TechnicalRep-Core")
         // technical rep - tc
         {
 /*
@@ -846,446 +1111,100 @@ function load_full_report_handler()
        11     perfomance_against_target varchar(200),
        12     remark varchar(300)
 */
-            document.getElementById("facility_core_value").innerHTML = report[1];
-            document.getElementById("activities_core_value").innerHTML = report[6]+"";
-            document.getElementById("personnel_engaged_core_value").innerHTML = report[7]+"";
-            document.getElementById("duration_core_value").innerHTML = report[9]+"";
-            document.getElementById("engagement_core_value").innerHTML = report[10]+"";
-            document.getElementById("issues_arising_core_remark_value").innerHTML = report[8]+"";
-            document.getElementById("performance_against_target_core_remark_value").innerHTML = report[11]+"";
-            document.getElementById("technical_core_remark_value").innerHTML = report[12]+"";
 
-            document.getElementById("technicalrep_core_report_time").innerHTML = report[0]+" ("+(report[2]).slice(6,8)+"-"+(report[2]).slice(4,6)+"-"+(report[2]).slice(0,4)+", "+report[3]+")";        
+            if (reply.data==null)
+            {
+                show_info("sorry, report can't seem to be found in the system");
+                return;
+            }
+            
+            entries[0].innerHTML = reply.data[0];
+            entries[1].innerHTML = 
+                reply.data[2].slice(0,4)+"-"+
+                reply.data[2].slice(4,6)+"-"+
+                reply.data[2].slice(6,8)+" "+reply.data[3]
 
-            document.getElementById("technicalrep_core_map").src = URL+"map/"+report[4]+"/"+report[5];
-            document.getElementById("loaded_technicalrep_core_report_div").style.visibility="visible";
+            entries[2].innerHTML = reply.data[1];
+            entries[3].innerHTML = reply.data[6];
+            entries[4].innerHTML = reply.data[7];
+            entries[5].innerHTML = reply.data[9];
+            entries[6].innerHTML = reply.data[10];
+            entries[7].innerHTML = reply.data[11];
+            entries[8].innerHTML = reply.data[8].replace("\n",".<br>");
+            entries[9].innerHTML = reply.data[12];
+
+            initMap(parseFloat(reply.data[4]), parseFloat(reply.data[5]));
 
         }
+
+        show_modal(reply.account_type+"-report-modal");
 
     }
     else
     {
-        swal({
-            title: "Server Error",
-            text: "error: "+this.status+"; "+this.responseText,
-            type: "error",
-            confirmButtonText: "Ok"
-          });
+        flag_error("error: "+this.status+"; "+this.responseText);
     }
 
 }
 
-function load_full_report()
+function fetch_full_report()
 {
-    var req = new XMLHttpRequest();
-    
-    req.open("POST", URL+"full_report", true);
-
-    req.onload = load_full_report_handler;
-
     var form = new FormData();
-    form.append("date", this.report_data[0]);
-    form.append("time", this.report_data[1]);
-    form.append("target", this.report_data[2]);
+    form.append("date", this.data[0]);
+    form.append("time", this.data[1]);
+    form.append("target", this.data[2]);
     
-    req.send(form);
-    start_connecting("fetching report...");
-
-}
-
-function search_db_handler()
-{
-    if (this.status===200)
-    {    
-        results = JSON.parse(this.responseText);
-        
-        if (results.length==0)
-        {
-            swal({
-                title: "Server Reply",
-                text: "no results found",
-                type: "info",
-                confirmButtonText: "Ok"
-            });
-            
-            return 0;
-        }
-
-        stop_connecting();
-        
-        // do some primary processingon the data...
-        if (this.search_category=="Products Promoted")
-        {
-            var _results = [];
-            for (var row=0; row<results.length; row++)
-            {
-                var _row = [];
-                for (var col=0; col<results[row].length-1; col++){_row[col]=results[row][col];}
-                var items = (results[row][results[row].length-1]).split(";");
-                for (var i=0; i<items.length; i++)
-                {
-                    var item = items[i].split(":");
-                    var __row = [];
-                    __row[0] = item[0];
-                    __row[1] = parseInt(item[1]);
-                    __row[2] = parseInt(item[2]);
-                    
-                    _results[row] = _row.concat(__row);
-                }
-            }
-            
-            results = _results;
-        }
-        
-        var results_cols = document.getElementById("results_cols");
-        var results_data = document.getElementById("results_data");
-
-        // draw respective column titles...
-        if ((this.search_category).indexOf("Reps")>=0)
-        // columns are too many and large so we shall need to scroll horizontally...
-        {
-            for (var col=0, xpos=0; col<this.cols.length; col++)
-            {
-                var div = document.createElement("div");
-
-                div.innerHTML = this.cols[col][0];
-                
-                div.style.position = "absolute";
-                div.style.top = 0+"%";
-                div.style.left = xpos+"%";
-                div.style.width = this.cols[col][1]+"%";
-                div.style.color = "#111111";
-                div.style.fontSize = "1.2em";
-                xpos += this.cols[col][1];
-                
-                results_data.appendChild(div);
-            }        
-        }
-        else
-        {
-            for (var col=0, xpos=0; col<this.cols.length; col++)
-            {
-                var div = document.createElement("div");
-                div.innerHTML = this.cols[col][0];
-                div.style.position = "absolute";
-                div.style.left = xpos+"%";
-                div.style.width = this.cols[col][1]+"%";
-                xpos += this.cols[col][1];
-                
-                results_cols.appendChild(div);
-            }
-        }
-        // now populate data...
-        for (var row=0; row<results.length; row++)
-        {
-            for (var col=0, xpos=0; col<this.cols.length; col++)
-            {
-                var div = document.createElement("div");
-
-                if (col==0)
-                {
-                    var date = results[row][col];
-                    div.innerHTML = date.slice(6,8)+"-"+date.slice(4,6)+"-"+date.slice(0,4);
-                }
-                else 
-                {
-                    if (!isNaN(results[row][col])) {div.innerHTML = convert_figure_to_human_readable(results[row][col]);}
-                    else {div.innerHTML = results[row][col];}
-                }
-                
-                div.style.position = "absolute";
-                div.style.top = ((row+1)*RESULTS_ROW_HEIGHT)+"%";
-                div.style.left = xpos+"%";
-                div.style.width = this.cols[col][1]+"%";
-                xpos += this.cols[col][1];
-                
-                if (this.search_category=="Reports" && col==(this.cols.length-1))
-                {
-                    div.style.color = "#ffffff";
-                    div.class += " clickable";
-                    div.style.cursor = "pointer";
-                    div.report_data = (results[row]).slice(0,results[row].length-1);
-                    div.onclick = load_full_report;
-                }
-                
-                results_data.appendChild(div);
-            }
-        }
-        
-        document.getElementById("n_results_found").innerHTML = "<b>"+results.length+"</b> result(s) found";
-        activate_results_buttons();
-        
-        document.getElementById("email_results").cols = this.cols;
-        document.getElementById("email_results").data = results;
-    }
-    else
-    {
-        swal({
-            title: "Server Error",
-            text: "error: "+this.status+"; "+this.responseText,
-            type: "error",
-            confirmButtonText: "Ok"
-          });
-    }
-
-}
-
-function search_db()
-{
-    deactivate_results_buttons();
-    
-    if (SEARCH_DURATION.length==0)
-    {
-        swal({
-        title: "Search Error",
-        text: "please select search duration",
-        type: "info",
-        confirmButtonText: "Ok"
-      });
-        return 0;
-    }
-
-    if (document.getElementById("search_category").value=="Search Category")
-    {
-        swal({
-        title: "Search Error",
-        text: "please select a search category",
-        type: "info",
-        confirmButtonText: "Ok"
-      });
-        return 0;
-    }
-
-    // clear "n_results_found", "results_cols" and "results_data" then populate data...
-    clear("results_cols");
-    clear("results_data");
-    clear("n_results_found");
-
-    // create request and send it...
-    var req = new XMLHttpRequest();
-    var url = "";
-    var form = new FormData();
-    
-    var search_category = document.getElementById("search_category").value;
-
-    req.search_category = search_category;
-
-    if (search_category=="Clients Visited")
-    {
-        req.cols = [
-            // [col_title, %width]
-            ["Date", 16],
-            ["Time", 16],
-            ["Agent", 20],
-            ["Client",48]
-        ];
-                
-        url = "clients_visited_report";
-    }
-    else if (search_category=="Debts Collected")
-    {
-        req.cols = [
-            // [col_title, %width]
-            ["Date", 16],
-            ["Time", 12],
-            ["Agent", 18],
-            ["Client",42],
-            ["D.C", 12]
-        ];
-        
-        url = "debts_collected_report";
-    }
-    else if (search_category=="Products Promoted")
-    {
-        req.cols = [
-            // [col_title, %width]
-            ["Date", 16],
-            ["Time", 12],
-            ["Agent", 18],
-            ["Item",32],
-            ["Qty", 10],
-            ["Amount", 12]
-        ];
-        
-        url = "products_promoted_report";
-    }
-    else if (search_category=="Client Segments")
-    {
-        req.cols = [
-            // [col_title, %width]
-            ["Date", 16],
-            ["Time", 12],
-            ["Agent", 18],
-            ["Client",42],
-            ["Segmnt", 12]
-        ];
-        
-        url = "clients_segments_report";
-    }
-    else if (search_category=="New Clients")
-    {
-        req.cols = [
-            // [col_title, %width]
-            ["Date", 16],
-            ["Time", 16],
-            ["Agent", 20],
-            ["Client",48],
-        ];
-        
-        url = "new_clients_report";
-    }
-    else if (search_category=="Orders")
-    {
-        req.cols = [
-            // [col_title, %width]
-            ["Date", 16],
-            ["Time", 12],
-            ["Agent", 18],
-            ["Client",30],
-            ["O.G",12],
-            ["O.R", 12]
-            
-        ];
-        
-        url = "orders_report";
-    }
-    else if (search_category=="Topics Taught")
-    {
-        req.cols = [
-            // [col_title, %width]
-            ["Date", 16],
-            ["Time", 12],
-            ["Agent", 18],
-            ["Facility",38],
-            ["Topic",16]            
-        ];
-        
-        url = "topics_taughed_report";
-    }
-    else if (search_category=="Sales Reps")
-    {
-        req.cols = [
-            // [col_title, %width]
-            ["Date", 20],
-            ["Time", 12],
-            ["Agent", 20],
-            ["Client", 30],
-            ["Category", 20],
-            ["Old Client", 20],
-            ["O.G", 20],
-            ["O.R", 20],
-            ["D.C", 20]
-        ];
-        
-        url = "agents_report_all_data";
-        form.append("account_type", "salesrep");
-    }
-    else if (search_category=="Technical Reps")
-    {
-        req.cols = [
-            // [col_title, %width]
-            ["Date", 20],
-            ["Time", 12],
-            ["Agent", 20],
-            ["Facility", 30],
-            ["CMEs", 10],
-            ["Topic Trained", 30],
-        ];
-        
-        url = "agents_report_all_data";
-        form.append("account_type", "technicalrep");
-    }
-    else if (search_category=="Technical Reps(TRTP)")
-    {
-        // horizontally scrollable ...
-        req.cols = [
-            // [col_title, %width]
-            ["Date", 20],
-            ["Time", 12],
-            ["Agent", 20],
-            ["Facility", 30],
-            ["Incharge", 30],
-            ["Support Areas", 40],
-        ];
-        
-        url = "agents_report_all_data";
-        form.append("account_type", "technicalrep_tp");
-    }
-    else if (search_category=="Technical Reps(TRC)")
-    {
-        // scrollable
-        req.cols = [
-            // [col_title, %width]
-            ["Date", 20],
-            ["Time", 12],
-            ["Agent", 20],
-            ["Facility", 30],
-            ["Duration", 12],
-            ["Status", 15],
-            ["Activities", 40]
-        ];
-        
-        url = "agents_report_all_data";
-        form.append("account_type", "technicalrep_core");
-    }
-    else if (search_category=="Reports")
-    {
-        req.cols = [
-            // [col_title, %width]
-            ["Date", 16],
-            ["Time", 16],
-            ["Agent", 20],
-            ["Client", 48]
-        ];
-        
-        url = "clients_visited_report";
-    }
-    
-    document.getElementById("email_results").search_category = search_category;
-
-    req.onload = search_db_handler;
-
-    req.open("POST", URL+url, true);
-
-    var search_from = change_date(SEARCH_DURATION[0]), search_to = change_date(SEARCH_DURATION[1]);
-    form.append("target", document.getElementById("target").value);
-    form.append("from", search_from);
-    form.append("to", search_to)
-
-    req.send(form);
-
-    start_connecting("searching...");
-
+    send_request("POST", URL+"full_report",fetched_full_report,form);    
 }
 
 function send_mail_handler()
 {
+    stop_connecting();
     if (this.status===200)
     {
-        swal({
-            title: "Email Status",
-            text: "email sent sucessfully",
-            type: "success",
-            confirmButtonText: "Ok"
-          });
-        
-        //window.location.href = "admin.html";
+        show_success("email sent sucessfully");
     }
     else
     {
-        swal({
-            title: "Server Error",
-            text: "error: "+this.status+"; "+this.responseText,
-            type: "error",
-            confirmButtonText: "Ok"
-          });
+        flag_error("error: "+this.status+"; "+this.responseText);
     }
 
 }
 
 function mail_results()
 {
-    var mail_data = this.data;
+
+    var subject = document.getElementById("mail_subject").value,
+        email = document.getElementById("mail_destination").value, 
+        message = document.getElementById("mail_body").value;
+    
+    if(!email.length)
+    {
+        show_info("please provide destination email");
+        return;
+    }
+    if(email.indexOf("@")<0)
+    {
+        show_info("invalid email provided");
+        return;
+    }
+
+    if(!subject.length)
+    {
+        show_info("please provide email subject");
+        return;
+    }
+
+    if(!message.length)
+    {
+        show_info("please provide email body");
+        return;
+    }
+
+    hide_modal("email-modal");
+
+    var mail_data = REPORT_DATA;
+
     var old_dates = [];
     for (var i=0; i<mail_data.length; i++)
     {
@@ -1294,214 +1213,171 @@ function mail_results()
         mail_data[i][0]=date.slice(6,8)+"/"+date.slice(4,6)+"/"+date.slice(0,4);
     }
     
-    var mail_cols = [];
-    for (var i=0; i<this.cols.length; i++)
-    {
-        mail_cols[i] = this.cols[i][0];
-    }
-    var mail_field = this.search_category;
     
-    swal({
-          title: "Email Address",
-          text: "enter email address",
-          type: "input",
-          showCancelButton: true,
-          closeOnConfirm: false,
-          animation: "slide-from-top",
-          inputPlaceholder: "email@example.com"
-        },
-        
-        function(email){
-            if (email === false) {return false;} // clicked "cancel"
+    var mail_cols = REPORT_DETAILS.titles[CURRENT_SEARCH_CATEGORY];
 
-            if (email === "") 
-            {
-                swal.showInputError("email address cant be empty!");
-                return false
-            }
-            else if (email.indexOf("@")==-1)
-            {
-                swal.showInputError("invalid email address!");
-                return false
-            }
+    var mail_field = REPORT_DETAILS.names[CURRENT_SEARCH_CATEGORY];
+    
+    var data = ["JMS-Report("+mail_field+")", mail_cols, mail_data, mail_field, subject,email, message];
+    var form = new FormData();
+    form.append("data", JSON.stringify(data));
 
-            swal({
-                  title: "Subject",
-                  text: "type the email subject please",
-                  type: "input",
-                  showCancelButton: true,
-                  closeOnConfirm: false,
-                  animation: "slide-from-top",
-                  inputPlaceholder: "my subject"
-                },
-                
-                function(subject){
-                    if (subject === false) {return false;} // clicked "cancel"
+    send_request("POST", URL+"send_mail",send_mail_handler,form);
 
-                    if (subject === "") 
-                    {
-                        swal.showInputError("subject cant be empty!");
-                        return false
-                    }
+    // reconvert the dates into old format...just in case another function will use this data
+    for (var i=0; i<mail_data.length; i++)
+    {
+        mail_data[i][0] = old_dates[i];
+    }
 
-                    swal({
-                          title: "Message",
-                          text: "type a short message please",
-                          type: "input",
-                          showCancelButton: true,
-                          closeOnConfirm: false,
-                          animation: "slide-from-top",
-                          inputPlaceholder: "message"
-                        },
-                        
-                        function(message){
-                            if (message === false) {return false;} // clicked "cancel"
-
-                            if (message === "") 
-                            {
-                                swal.showInputError("provide a short message please");
-                                return false
-                            }
-
-                            var data = ["JMS-Report("+mail_field+")", mail_cols, mail_data, mail_field, subject,email, message];
-                            
-                            // generate request and send it...
-                            var req = new XMLHttpRequest();
-
-                            req.open("POST", URL+"send_mail", true);
-
-                            req.onload = send_mail_handler;
-
-                            var form = new FormData();
-                            form.append("data", JSON.stringify(data));
-
-                            req.send(form);
-                            start_connecting("sending email...");
-                            
-                            // reconvert the dates into old format...just in case this email z gonna be sent twice
-                            for (var i=0; i<mail_data.length; i++)
-                            {
-                                mail_data[i][0] = old_dates[i];
-                            }
-
-                            
-                        }
-                        );
-                }
-                );
-        }
-        );
+                                
 }
+
+function initMap(lat=null, lng=null) {
+    
+    if(lat==null)
+        return;
+
+    var myLatLng = {lat: lat, lng: lng};
+
+    var map = new google.maps.Map(CURRENT_MAP_DIV, {
+    zoom: 18,
+    center: myLatLng
+    });
+
+    <!-- set map type to satellite
+    map.setMapTypeId(google.maps.MapTypeId.HYBRID); 
+
+    var marker = new google.maps.Marker({
+    position: myLatLng,
+    map: map,
+    title: 'map'
+    });
+
+    // Add circle overlay and bind to marker
+    var circle = new google.maps.Circle({
+    map: map,
+    radius: 50,    // metres
+    fillColor: '#AA0000'
+    });
+    circle.bindTo('center', marker, 'position');
+}
+
+function sent_last_months_reports()
+{
+    stop_connecting();
+    if (this.status===200)
+    {
+        if(this.responseText=="1")
+            show_success("email sent sucessfully");
+        else
+            show_info("no reports were found for the last month!");
+    }
+    else
+    {
+        flag_error("error: "+this.status+"; "+this.responseText);
+    }
+}
+
+function send_last_months_reports()
+{
+    var user = new USER(window.name);
+
+    var email = document.getElementById("get-email-modal").getElementsByTagName("input")[0].value;
+    if(!email.length)
+    {
+        if(!user.email.length)
+        {
+            flag_error("please provide the destination email or go to Edit->Email and set your default email address");
+            return;
+        }
+        
+        email = user.email
+    }
+    
+    if(email.indexOf("@")<=0)
+    {
+        flag_error("invalid email provided!");
+        return;
+    }
+    
+    hide_modal("get-email-modal");
+    
+    var form = new FormData();
+    form.append("category", user.account_type);
+    form.append("destination", email);
+
+    send_request("POST",URL+"send_last_months_reports",sent_last_months_reports,form)
+}
+
+
 
 window.onload = function() 
 {
     if (window.name==""){window.location.href="index.html"; return 0;}
     
-    // hide edit_div
-    document.getElementById("edit_div").style.visibility = "hidden";
-
-    // edit options ...
-    var edit_options = ["Edit","Promotional Items", "Client Segments", 
-                        "Training Topics", "Email Recepients",
-                        "Support Areas(TRTP)", "Activities(TRC)", "Engagement Statuses(TRC)"
-                       ];
-
-    for (var i=0; i<edit_options.length; i++)
-    {
-        var option = document.createElement("option");
-        option.value = edit_options[i];
-        option.innerHTML = edit_options[i];
-        if (option.value=="Edit") {option.style.visibility="hidden";}
-        document.getElementById("edit_options").appendChild(option);
-    }
-    document.getElementById("edit_options").onchange = edit_field;
+    document.getElementsByTagName("object")[0].data = bug_report_url();
     
-
-    // search categories ...
-    var search_categories = ["Reports","Clients Visited", 
-                            "New Clients","Products Promoted",
-                            "Debts Collected","Topics Taught",
-                            "Sales Reps","Technical Reps",
-                            "Technical Reps(TRTP)","Technical Reps(TRC)",
-                            "Client Segments","Orders"];
-    search_categories.sort();
-    search_categories.splice(0,0,"Search Category"); // insert item
-
-    for (var i=0; i<search_categories.length; i++)
-    {
-        var option = document.createElement("option");
-        option.value = search_categories[i];
-        option.innerHTML = search_categories[i];
-        if (option.value=="Search Category") {option.style.visibility="hidden";}
-        document.getElementById("search_category").appendChild(option);
-    }
-
-
-    // search duration ...
-    var search_duration = ["Search Duration","Today", "Past Week", "Past Month", "Other"];
-
-    for (var i=0; i<search_duration.length; i++)
-    {
-        var option = document.createElement("option");
-        option.value = search_duration[i];
-        option.innerHTML = search_duration[i];
-        if (option.value=="Search Duration") {option.style.visibility="hidden";}
-        document.getElementById("search_duration").appendChild(option);
-    }
-    document.getElementById("search_duration").onchange = set_date;
-
-    // deactivate "results" buttons ...
-    deactivate_results_buttons();
-    document.getElementById("email_results").onclick = mail_results;
-
-    // bind "search" button
-    document.getElementById("search_btn").onclick = search_db;
-    
-    // hide custon search_duration div...
-    document.getElementById("custom_search_duration").style.visibility="hidden";
-    document.getElementById("cancel_custom_duration").onclick=cancel_set_custon_search_duration;
-    document.getElementById("confirm_custom_duration").onclick=confirm_set_custon_search_duration;
-
-    // bind "done_veiwing_report" btn...
-    document.getElementById("done_viewing_salesrep_report").onclick = function ()
-    {
-        document.getElementById("loaded_salesrep_report_div").style.visibility="hidden";
-    };
-    document.getElementById("loaded_salesrep_report_div").style.visibility="hidden";
-
-    document.getElementById("done_viewing_technicalrep_report").onclick = function ()
-    {
-        document.getElementById("loaded_technicalrep_report_div").style.visibility="hidden";
-    };
-    document.getElementById("loaded_technicalrep_report_div").style.visibility="hidden";
-
-    document.getElementById("done_viewing_technicalrep_tp_report").onclick = function ()
-    {
-        document.getElementById("loaded_technicalrep_tp_report_div").style.visibility="hidden";
-    };
-    document.getElementById("loaded_technicalrep_tp_report_div").style.visibility="hidden";
-
-    document.getElementById("done_viewing_technicalrep_core_report").onclick = function ()
-    {
-        document.getElementById("loaded_technicalrep_core_report_div").style.visibility="hidden";
-    };
-    document.getElementById("loaded_technicalrep_core_report_div").style.visibility="hidden";
-
-    // deactivate "edit" and "accounts" section if not super-user
+    // deactivate adding new user if not super-user
     var user = new USER(window.name);
     if (user.uname!="admin")
     {
-        document.getElementById("accounts").innerHTML = "My Account";
-        document.getElementById("accounts").onclick = edit_account;
-        document.getElementById("edit_options").disabled = true;
+        if(user.uname="Admin")
+        {
+            swal({
+              title: "Account Upgrade Needed",
+              text: "you're account does not have a category. please talk to the admin about this as its most likely to be caused by the system upgrade",
+              type: "warning",
+              showCancelButton: false,
+              confirmButtonColor: "#DD6B55",
+              confirmButtonText: "Ok",
+              closeOnConfirm: false
+            },
+            function(){
+              window.location.href="index.html";
+              return;
+            });
+        }
+        
+        var super_previlages = document.getElementsByClassName("__super__");
+        var salesreps_previleges = document.getElementsByClassName("__sr__");
+        var technicalreps_previleges = document.getElementsByClassName("__tr__");
+        var trc_previleges = document.getElementsByClassName("__trc__");
+        var trtp_previleges = document.getElementsByClassName("__trtp__");
+        
+        var not_previlaged = [];
+        
+        if(user.account_type.indexOf("Sales")>=0) // salesrep
+        {
+            not_previlaged = [super_previlages,technicalreps_previleges,trc_previleges,trtp_previleges];
+        }
+        
+        else if(user.account_type.indexOf("Core")>=0) // TRC
+        {
+            not_previlaged = [super_previlages,technicalreps_previleges,salesreps_previleges,trtp_previleges];
+        }
+
+        else if(user.account_type.indexOf("Third")>=0) // TRTP
+        {
+            not_previlaged = [super_previlages,technicalreps_previleges,salesreps_previleges,trc_previleges];
+        }
+
+        else // TR
+        {
+            not_previlaged = [super_previlages,trtp_previleges,salesreps_previleges,trc_previleges];
+        }
+
+        for(var i=0; i<not_previlaged.length; ++i)
+        {
+            for (var j=0; j<not_previlaged[i].length; ++j)
+                not_previlaged[i][j].style.display = "none";
+        }
+
     }
+    
+    if (user.email.length)
+        document.getElementById("get-email-modal").getElementsByTagName("input")[0].setAttribute("placeholder", user.email);
+    
+    stop_connecting();
 
-
-    // set body size to a fixed value corresponding to the screen...
-    //document.getElementById("body").style.height = window.innerHeight+"px";
-    //document.getElementById("body").style.width = window.innerWidth+"px";
 }
-
-
-
-
