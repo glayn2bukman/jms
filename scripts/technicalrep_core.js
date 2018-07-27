@@ -353,6 +353,7 @@ window.onload = function ()
     req.send(null);
     start_connecting("fetching activities...");
 
-    document.getElementsByTagName("object")[0].data = bug_report_url();
+    var user = new USER(window.name);
+    __BRE__setup("chat-container",user.uname,"JMS",CHAT_DIV_DIMENSIONS);
     
 };

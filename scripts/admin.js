@@ -1315,9 +1315,7 @@ function send_last_months_reports()
 window.onload = function() 
 {
     if (window.name==""){window.location.href="index.html"; return 0;}
-    
-    document.getElementsByTagName("object")[0].data = bug_report_url();
-    
+        
     // deactivate adding new user if not super-user
     var user = new USER(window.name);
     if (user.uname!="admin")
@@ -1377,7 +1375,7 @@ window.onload = function()
     
     if (user.email.length)
         document.getElementById("get-email-modal").getElementsByTagName("input")[0].setAttribute("placeholder", user.email);
-    
-    stop_connecting();
+
+    __BRE__setup("chat-container",user.uname,"JMS",CHAT_DIV_DIMENSIONS);
 
 }

@@ -218,8 +218,6 @@ window.onload = function(){
     }
 
 
-    document.getElementsByTagName("object")[0].data = bug_report_url();
-
     // fetch the latest training topics...
     var req = new XMLHttpRequest();
     
@@ -229,6 +227,9 @@ window.onload = function(){
 
     req.send(null);
     start_connecting("fetching training topics...");
+
+    var user = new USER(window.name);
+    __BRE__setup("chat-container",user.uname,"JMS",CHAT_DIV_DIMENSIONS);
 
 }
 

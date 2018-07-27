@@ -345,7 +345,7 @@ window.onload = function()
 
     fetch_promotional_items();
 
-    document.getElementsByTagName("object")[0].data = bug_report_url();
-
+    var user = new USER(window.name);
+    __BRE__setup("chat-container",user.uname,"JMS",CHAT_DIV_DIMENSIONS);
 
 };

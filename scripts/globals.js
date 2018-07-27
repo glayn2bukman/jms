@@ -2,6 +2,9 @@
 var URL = "http://139.162.235.29:8123/" /*uname:<root>, pswd:<jmsrt123#>*/
 //var URL = "http://0.0.0.0:8123/"
 var CHAT_URL = "http://45.33.74.38:60101/";
+//var CHAT_URL = "http://0.0.0.0:60101/";
+
+var CHAT_DIV_DIMENSIONS = [];
 
 var GPS_FETCH_TIMEOUT = 2; // seconds
 var GOT_GPS = false;

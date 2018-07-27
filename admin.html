@@ -759,7 +759,7 @@
         </div>
         
         <div id="chatroom" style="
-            position:absolute;
+            position:fixed;
             left: 0%;
             top:0%;
             
@@ -771,23 +771,23 @@
 
             z-index:1000000;
             
-            display: none;
+            overflow: auto;
         ">
-            <object data="" 
+            <div id="chat-container" 
                 style="
                     position:fixed; 
-                    left:30%; 
+
+                    left:0%; 
                     width:40%; 
                     height:90%;
                     top: 2%;
-                    
-                    
+                                        
                     border-radius: 5px;
                 "
-            ></object>
+            ></div>
             
             <button style="
-                position:absolute;
+                position:fixed;
 
                 width: 30%;
                 left: 35%;
@@ -804,7 +804,16 @@
                 
                 onclick="document.getElementById('chatroom').style.display = 'none';"
             >Back</button>      
-        </div>    
+        </div>
+        <script>
+            var _ = document.getElementById("chat-container");
+            CHAT_DIV_DIMENSIONS = [_.offsetWidth, _.offsetHeight];
+            document.getElementById("chatroom").style.display = "none";
+        </script>
+        <script id="load_embedded_js_script"></script>
+        <script>
+            document.getElementById("load_embedded_js_script").src=CHAT_URL+"static/embedded/embedded.js";
+        </script>
 
     </body>
 
