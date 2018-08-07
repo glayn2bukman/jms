@@ -82,7 +82,9 @@
                 JMS RT
             </div>
 
-            <div class="col-sm-1 hovers __menu_accounts__" onclick="fetch_users()"><strong>A</strong>ccounts</div>
+            <div class="col-sm-1 hovers __menu_accounts__" onclick="
+                DELETE_TARGET_ACCOUNT = '';
+                fetch_users()"><strong>A</strong>ccounts</div>
             
             <div class="col-sm-4 __edit_items__">
 
@@ -283,6 +285,57 @@
                 <button type="button" class="btn btn-success" onclick="show_modal('email-modal')">
                     <span class="glyphicon glyphicon-envelope"></span> Email Results
                 </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="edit-account-modal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Edit Account (<span id="target-edit-account">characharles</span>)</h4>
+              </div>
+              <div class="modal-body" style="background: #ddd;">
+                    -> <span class="hovers" onclick="delete_user()">Delete Account</span><br>
+                    -> <span class="hovers"
+                        onclick="
+                            var display = document.getElementById('account-type-div').style.display;
+                            display = display=='block'?'none':'block';
+                        document.getElementById('account-type-div').style.display = display;">
+                        Change Account Type</span>
+                        
+                        <div id="account-type-div" style="margin-left:20px; display:none;">
+                            <div class="input-group">
+                                <span class="input-group-addon">Account Type</span>
+                                <select id="new_account_category" type="select" class="form-control" required>
+                                    <option class="__super__">Admin(SalesReps)</option>
+                                    <option class="__super__">Admin(TechnicalReps)</option>
+                                    <option class="__super__">Admin(TechnicalReps-Core)</option>
+                                    <option class="__super__">Admin(TechnicalReps - Third Party)</option>
+                                    <option class="__sr__">SalesRep</option>
+                                    <option class="__tr__">TechnicalRep</option>
+                                    <option class="__trc__">TechnicalRep Core</option>
+                                    <option class="__trtp__">TechnicalRep Third Party</option>
+                                </select>
+                            </div>
+                            
+                            <div style="
+                                position: relative;
+                                right: 0px;
+                                width: 30%;
+                                left: 70%;
+                                text-align: right;
+                                color: blue;
+                                margin-top: 10px;"
+                                class="hovers"
+                                onclick="update_account_type()">Update</div>
+                        </div>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Back</button>
               </div>
             </div>
           </div>
@@ -777,7 +830,7 @@
                 style="
                     position:fixed; 
 
-                    left:0%; 
+                    left:30%; 
                     width:40%; 
                     height:90%;
                     top: 2%;

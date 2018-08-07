@@ -21,11 +21,41 @@ function login_handler(){
 
         var user = new USER(window.name);
 
+        var proceed = true;
+
         if ( user.account_type.indexOf("Admin")>=0)
         {
-            // load admin page...        
-            window.location.href = "admin.html";
+            if ((user.uname!="admin") && (user.account_type=="Admin"))
+            {
+                proceed = false;
+                window.name = "";
+                stop_connecting();
+
+                swal({
+                  title: "Account Upgrade Needed",
+                  text: "your Admin account does not have a category. Please talk to the admin about this as its most likely to be caused by the system upgrade",
+                  type: "warning",
+                  showCancelButton: false,
+                  confirmButtonColor: "#DD6B55",
+                  confirmButtonText: "Ok",
+                  closeOnConfirm: true
+                },
+                function(){
+                  //window.location.href="index.html";
+                  return;
+                });
+            }
+            else
+                // load admin page...        
+                window.location.href = "admin.html";
         }
+        
+        if(!proceed)
+        {
+            window.name = "";
+            return;
+        }
+
 
         else if ( user.account_type=="SalesRep" )
         {

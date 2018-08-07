@@ -2,6 +2,8 @@ var SEARCH_DURATION = "";
 
 var DATA_SECTION = {category:null, title: null}
 
+var DELETE_TARGET_ACCOUNT="";
+
 REPORT_DETAILS = {
     names: {
         "salesreps":"Sales Reps",
@@ -371,6 +373,40 @@ function confirm_set_custon_search_duration()
     document.getElementById("custom_search_duration").style.visibility="hidden";
 }
 
+function open_account_edit_modal2()
+{
+    if(this.uname=="admin")
+    {
+        show_info("this account can not be edited!");
+        return;
+    }
+
+    DELETE_TARGET_ACCOUNT = this.uname;
+    show_modal("edit-account-modal2");
+}
+
+function updated_account_type()
+{
+    stop_connecting();
+    
+    if(this.status===200)
+    {
+        hide_modal("edit-account-modal2");
+        show_success("account type updated successfully");
+    }
+    else
+        flag_error("error: "+this.status+"; "+this.responseText);
+}
+
+function update_account_type()
+{
+    var form = new FormData();
+
+    form.append("uname",DELETE_TARGET_ACCOUNT);
+    form.append("account_type",document.getElementById("new_account_category").value);
+
+    send_request("POST",URL+"edit_account_type",updated_account_type, form);
+}
 
 function fetched_users()
 {
@@ -397,7 +433,7 @@ function fetched_users()
                 td = document.createElement("td");
                 td.innerHTML = users[i][0];
                 td.uname = users[i][0];
-                td.onclick = delete_user;
+                td.onclick = open_account_edit_modal2;
                 td.style.color = "#00d";
                 td.setAttribute("class", "hovers");
                 tr.appendChild(td);
@@ -416,27 +452,27 @@ function fetched_users()
         flag_error("error: "+this.status+"; "+this.responseText);
 }
 
+
 function fetch_users()
 {
+    if (DELETE_TARGET_ACCOUNT.length)
+    {
+        hide_modal("edit-account-modal2");
+        show_success("account deleted successfully");
+    
+        DELETE_TARGET_ACCOUNT = "";
+    }
     send_request("GET",URL+"users",fetched_users);
 }
 
 function delete_user()
 {
-        
-    var user = new USER(window.name);
-    if (user.uname!="admin")
+    if(DELETE_TARGET_ACCOUNT=="admin")
     {
+        show_info("this account can not be edited!");
         return;
     }
 
-    if(this.uname=="admin")
-    {
-        show_info("this account can not be deleted!");
-        return;
-    }
-
-    DELETE_TARGET_ACCOUNT = this.uname;
     swal({
           title: "Delete Account",
           text: "delete user account <"+DELETE_TARGET_ACCOUNT+">?",
@@ -1377,5 +1413,8 @@ window.onload = function()
         document.getElementById("get-email-modal").getElementsByTagName("input")[0].setAttribute("placeholder", user.email);
 
     __BRE__setup("chat-container",user.uname,"JMS",CHAT_DIV_DIMENSIONS);
+    document.getElementById("__BRE__parent_div_bgImg").style.left = "30%";
+
+    stop_connecting();
 
 }
